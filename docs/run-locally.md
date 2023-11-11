@@ -24,6 +24,6 @@ First get the latest version of the code from the repository
 
 === "For self-hosters (SSL and keycloak-based user authentication)"
 
-	Convert-Pheno is designed to be run as a collection of microservices.
+	Pheno-Ranker is designed to be run as a collection of microservices.
 
-	Please consult the [dev_docs](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md) in the repository for more information.
+	Please consult the [dev_docs](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md) in the repository for more information.

@@ -13,7 +13,7 @@ Frequently Asked Questions
 ??? faq "I have troubles to self-host `Pheno-Ranker-UI`"
 
     We feel you. It can be indeed quite daunting sometimes to make an application working which comprises
-    of multiple microservices. Make sure that you were following the [instructions](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md) carefully.
-    If you still have troubles, please [open an issue](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/issues/new) and we will try to help you.
+    of multiple microservices. Make sure that you were following the [instructions](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md) carefully.
+    If you still have troubles, please [open an issue](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/issues/new) and we will try to help you.
 
     ##### last change 2023-22-06 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)

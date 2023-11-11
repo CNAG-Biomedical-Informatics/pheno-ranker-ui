@@ -2,7 +2,7 @@
 #
 #   make file for building the documentation
 #
-#   This file is part of convert-pheno-ui
+#   This file is part of pheno-ranker-ui
 #
 #   Last Modified: Jun/21/2023
 #

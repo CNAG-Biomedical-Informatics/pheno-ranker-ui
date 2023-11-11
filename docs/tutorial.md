@@ -19,7 +19,7 @@
 		So please do not upload any sensitive data.
 
 	<figure markdown>
-	[![Convert-Pheno-UI](img/conversion-screen.png)](https://convert-pheno.cnag.cat/#/conversion/)
+	[![Pheno-Ranker-UI](img/conversion-screen.png)](https://pheno-ranker.cnag.cat/#/conversion/)
 	<figcaption> Use example data selected</figcaption>
 	</figure>
 
@@ -33,5 +33,5 @@
 
 	<!-- below should be a gif
 	<figure markdown>
-	[![Convert-Pheno-UI](img/results-screen.png)]()
+	[![Pheno-Ranker-UI](img/results-screen.png)]()
 	</figure>

@@ -1,9 +1,9 @@
 # What is Pheno-Ranker-UI?
 
-is a web-interface for [`Convert-Pheno`](https://cnag-biomedical-informatics.github.io/pheno-ranker/), a software toolkit for the interconversion of standard data models for phenotypic data.
+is a web-interface for [`Pheno-Ranker`](https://cnag-biomedical-informatics.github.io/pheno-ranker/), a software toolkit for the interconversion of standard data models for phenotypic data.
 
 <figure markdown>
- ![Convert-Pheno-UI](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/raw/main/docs/ui.gif)
+ ![Pheno-Ranker-UI](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/raw/main/docs/ui.gif)
 </figure>
 
 <!-- add a gif -->

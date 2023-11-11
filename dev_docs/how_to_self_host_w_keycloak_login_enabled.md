@@ -44,7 +44,7 @@ with your domain name.
 ## Containerized
 
 1. Install [Docker](https://docs.docker.com/get-docker/) and [Docker compose](https://docs.docker.com/compose/install/)
-2. rename the file [example.env](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/blob/main/example.env) to .env and fill in the variables
+2. rename the file [example.env](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/example.env) to .env and fill in the variables
 3. Run `docker-compose up -d`
 4. Open your browser and go to `https://<yourDomain>/auth` to access the Keycloak admin console
 5. Create a new user in the realm you defined in the .env file
@@ -55,7 +55,7 @@ with your domain name.
 
 - Install and run a PostgreSQL database server (>= 9.5)
 
-- Install [Convert::Pheno](https://metacpan.org/pod/Convert%3A%3APheno) from CPAN or build it from [source](https://github.com/cnag-biomedical-informatics/convert-pheno)
+- Install [Convert::Pheno](https://metacpan.org/pod/Convert%3A%3APheno) from CPAN or build it from [source](https://github.com/cnag-biomedical-informatics/pheno-ranker)
 
 - Install and configure [Keycloak](https://www.keycloak.org/)
 
@@ -63,7 +63,7 @@ with your domain name.
 
 #### Server Pre-requisites:
 
-- rename the file [convertPheno_server/example.env](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/blob/main/convertPheno_server/example.env) to .env and fill in the variables
+- rename the file [convertPheno_server/example.env](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/convertPheno_server/example.env) to .env and fill in the variables
 
 ```shell
 cd convertPheno_server
@@ -78,7 +78,7 @@ FLASK_APP=server.app.py FLASK_RUN_PORT=5000 flask run
 #### Client Pre-requisites:
 
 - Install [Node.js](https://nodejs.org/en) (>= 14.15)
-- rename the file [convertPheno_client/example.env](https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui/blob/main/convertPheno_client/example.env) to .env and fill in the variables
+- rename the file [convertPheno_client/example.env](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/convertPheno_client/example.env) to .env and fill in the variables
 
 ```shell
 cd convertPheno_client

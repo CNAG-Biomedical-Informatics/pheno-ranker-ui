@@ -91,7 +91,7 @@ mod_about_page_ui <- function(id){
             area = "logo3",
             card_body(
               img(
-                src = "https://cnag-biomedical-informatics.github.io/convert-pheno/img/3tr-funding.png",
+                src = "https://cnag-biomedical-informatics.github.io/pheno-ranker/img/3tr-funding.png",
                 height = "80px"
               )
             )
