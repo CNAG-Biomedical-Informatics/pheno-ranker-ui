@@ -1,4 +1,4 @@
-name: Docker build client
+name: Docker build
 
 on:
   workflow_dispatch:
