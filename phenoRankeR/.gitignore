@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+inst/doc
+cfg.json
+inst/extdata/output/simulatedData
+inst/extdata/output/rankedCohortMatrixes
+inst/extdata/output/convertedData
+inst/extdata/output/rankedPatients
+inst/extdata/output/tmp
+inst/extdata/uploads/ontologies
+inst/extdata/uploads/rankInput
+inst/extdata/uploads/weights
+inst/extdata/uploads/config
+Rplots.pdf

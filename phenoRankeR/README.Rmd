@@ -1,0 +1,63 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# phenoRankeR
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Codecov test coverage](https://codecov.io/gh/bag-cnag/pheno-ranker/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bag-cnag/pheno-ranker?branch=main)
+<!-- badges: end -->
+
+The goal of phenoRankeR is to ...
+
+## Installation
+
+You can install the development version of phenoRankeR from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("bag-cnag/pheno-ranker")
+``
+
+# NOTE:
+# InteractiveComplexHeatmap is not rendered when using R-shiny version > 1.7.4.1
+
+For the build you need to install pandoc and qpdf. 
+
+On Ubuntu:
+```bash
+sudo apt-get install pandoc
+sudo apt-get install qpdf
+```
+
+How to do a local package install
+```r
+devtools::install_local("phenoRankeR_0.0.0.9000.tar.gz")
+```
+
+How to run the app
+```r
+options(shiny.host='0.0.0.0', shiny.port=3838)
+phenoRankeR::run_app()
+```
+
+Note that in run app should be defined the golem_opts. See
+https://cran.r-project.org/web/packages/golem/vignettes/e_config.html
+
+At the moment in the codebase golem config is used
+but this was actually not a good idea golem_opts should be used instead.
+Because then we could pass the environment variables to the app
+for e.g. configuring the database password etc.
+```r

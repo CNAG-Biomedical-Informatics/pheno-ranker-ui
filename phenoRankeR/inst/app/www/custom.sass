@@ -1,0 +1,73 @@
+/* error messages */
+.red-text
+  color: red // for error messages
+
+/* make the history sidebar overlay the main content */
+$bgColor: lightgray
+$sidebarPadding: 20px
+
+#PatientHistorySidebar, #CohortHistorySidebar, #SimulateHistorySidebar, #ConvertHistorySidebar
+  display: none // Hide the elements initially
+  background-color: $bgColor
+  height: 100%
+  position: fixed
+  top: 0
+  right: 0
+  width: 20%
+  z-index: 999 // Ensure the sidebar is on top of other content
+  padding: $sidebarPadding
+  overflow: auto
+
+.history-sidebar-header
+  position: fixed
+  width: 18%
+  background-color: white
+  top: 0
+  height: 6%
+
+/* for the header bar */
+
+// overwrites the navbarPage css in order
+// to make the navbar title transparent
+.navbar-brand
+  opacity: 0
+  &:hover
+    opacity: 0
+
+.side-by-side-container
+  display: flex
+  justify-content: flex-end
+  position: fixed
+  top: 0
+  right: 0
+  width: 20%
+
+  > *
+    margin: 5px
+
+.logo-icon
+  background: url('logo.svg')
+  // background: url('https://github.com/CNAG-Biomedical-Informatics/pheno-ranker/raw/main/docs/img/PR-logo.png')
+  background-repeat: no-repeat
+  background-size: 150px
+  width: 150px
+  height: 100px
+  top: 12px
+  position: absolute
+
+/* for the table in simulation mode */
+.dataTable
+  td:nth-child(3)
+    .my-input-class
+      width: 100px
+  td:nth-child(4)
+    .my-input-class
+      width: 100px
+
+/* for the table in patient mode */
+#phenoBlastTable tbody tr:first-child
+  position: -webkit-sticky
+  position: sticky
+  top: 0
+  background: #ffffff
+  z-index: 10

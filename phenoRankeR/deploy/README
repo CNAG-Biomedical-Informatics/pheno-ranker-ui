@@ -1,0 +1,13 @@
+docker build -f Dockerfile_base --progress=plain -t phenoranker_base .
+docker build -f Dockerfile --progress=plain -t phenoranker:latest .
+docker run -p 3838:3838 phenoranker:latest
+# then go to 127.0.0.1:3838
+
+# HOW to locally build
+https://engineering-shiny.org/deploy.html
+
+remotes::install_local()
+
+# TODO
+# have two docker files one for building the package and one for running the app
+# the one for running the application should be pushed to docker hub

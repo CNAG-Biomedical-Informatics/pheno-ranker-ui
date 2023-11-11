@@ -1,0 +1,21 @@
+id;ref;indicator;tar;weight;hamming-distance;json-path;label
+PR_00000001;1;-----;1;1;0;Bar.bar1a;bar1a
+PR_00000001;1;-----;1;1;0;Bar.bar1b;bar1b
+PR_00000001;0;     ;0;1;0;Bar.bar2a;bar2a
+PR_00000001;0;     ;0;1;0;Bar.bar2b;bar2b
+PR_00000001;1;-----;1;1;0;Baz.baz1;baz1
+PR_00000001;0;     ;0;1;0;Baz.baz2;baz2
+PR_00000001;1;-----;1;1;0;Foo.foo1;foo1
+PR_00000001;0;     ;0;1;0;Foo.foo2;foo2
+PR_00000001;1;-----;1;1;0;id.PR_00000001;id.PR_00000001
+PR_00000001;0;     ;0;1;0;id.PR_00000002;id.PR_00000002
+PR_00000002;0;--xxx;1;1;1;Bar.bar1a;bar1a
+PR_00000002;0;--xxx;1;1;1;Bar.bar1b;bar1b
+PR_00000002;1;xxx--;0;1;1;Bar.bar2a;bar2a
+PR_00000002;1;xxx--;0;1;1;Bar.bar2b;bar2b
+PR_00000002;0;--xxx;1;1;1;Baz.baz1;baz1
+PR_00000002;1;xxx--;0;1;1;Baz.baz2;baz2
+PR_00000002;0;--xxx;1;1;1;Foo.foo1;foo1
+PR_00000002;1;xxx--;0;1;1;Foo.foo2;foo2
+PR_00000002;0;--xxx;1;1;1;id.PR_00000001;id.PR_00000001
+PR_00000002;1;xxx--;0;1;1;id.PR_00000002;id.PR_00000002

@@ -1,0 +1,711 @@
+#' helpers 
+#'
+#' @description A fct function
+#'
+#' @return The return value, if any, from executing the function.
+#'
+
+### Data loaders ###
+
+#' Get file extension
+#' @noRd
+
+get_file_ext <- function(filepath) {
+  ext <- sub(".*\\.", "", filepath)
+  if (ext == filepath) {
+    return(NULL)  # Return NULL if there is no file extension
+  }
+  return(ext)
+}
+
+#' Read Tabular data
+#' @noRd
+
+readTxt <- function(
+  path,
+  fileName_suffix=NULL,
+  runId=NULL, 
+  sep = "", 
+  header = TRUE,
+  row_names = NULL
+  ){
+  # examples for path
+  # data/output/rankedPatients/
+  # data/output/rankedCohortMatrixes/
+  
+  if (Sys.getenv("R_PACKAGE_BUILD") == "T"){
+    if("rankedPatients" %in% path){
+      path <- "tests/fixtures/rankedPatients"
+      runId <- "rankedPatients"
+    } else if ("rankedCohortMatrixes" %in% path){
+      path <- "tests/fixtures/rankedCohortMatrixes"
+      runId <- "rankedCohortMatrixes"
+    }
+  } 
+
+  suffix = ".txt"
+  if (!is.null(fileName_suffix)) {
+    suffix = fileName_suffix
+  }
+
+  filePath <- paste0(
+    path,
+    "/",
+    runId,
+    "/",
+    runId,
+    suffix
+  )
+
+  if (!file.exists(filePath)) {
+    print("file does not exist")
+    # TODO
+    # throw error
+    # or during build return a default
+    return()
+  }
+
+  txtData <- tryCatch(
+    {
+      print("sep")
+      print(sep)
+
+      # The package build actually does not fail here
+      # because even commenting out the build fails
+      read.table(
+        filePath, 
+        header = header, 
+        row.names = row_names,
+        sep = sep
+      )
+    },
+    error = function(e) {
+      # maybe it needs to be stronger than a warning
+      print("Error reading the file: ")
+      cat("Error reading the file: ", e, "\n")
+      print(e)
+      # throw error
+      # or during build return a default
+      return()
+    } 
+  )
+  print("HERE data")
+  print(str(txtData))
+  return(txtData)
+}
+
+### Validators ###
+
+#' Validate YAML input
+#' @import yaml
+#' @importFrom jsonlite toJSON
+#' @noRd
+
+validateYAML <- function(yaml_input) {
+  if (yaml_input == "") {
+    return("No YAML input")
+  }
+  result <- tryCatch(
+    {
+      yaml.load(yaml_input)
+      "YAML is valid"
+    },
+    error = function(e) {
+      print(as.character(e))
+      error_message <- as.character(e)
+      match <- regexpr("(?<=error: ).*", error_message, perl = TRUE)
+      ifelse(match > 0, substr(error_message, match, match + attr(match, "match.length") - 1), NA)
+      # str_extract(as.character(e), "(?<=error: ).*")
+    }
+  )
+  return(result)
+}
+
+#' Data download handler'
+#' @importFrom shiny downloadHandler
+#' @import zip
+#' @noRd
+
+outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE) {
+  downloadHandler(
+    filename = function() {
+      if (zip_download) {
+        "phenoRankerSim.zip"
+      } else {
+        paste0(file_names, ".json")
+      }
+    },
+    content = function(file) {
+      if (zip_download) {
+        temp_dir <- file.path(".", get_golem_options("tempFolder"))
+        # temp_dir <- file.path(".", "./data/output/tmp")
+        dir.create(temp_dir)
+
+        # Need to set wd otherwise the files will be inside nested folders
+        setwd(temp_dir)
+
+        for (i in seq_along(data_sources)) {
+          content_file <- file.path(paste0(file_names[i], ".json"))
+          writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+        }
+        zip(
+          file,
+          files = paste0(file_names, ".json")
+        )
+        unlink(temp_dir, recursive = TRUE)
+      } else {
+        writeLines(as.character(toJSON(data_sources)), file)
+      }
+    }
+  )
+}
+
+#' Database helper'
+#' @noRd
+
+store_job_in_db <- function(runId,userId, mode,label, settings, db_conn) {
+  query <- sprintf(
+    "
+      INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+      VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
+    ",
+    runId, userId, mode,label, toJSON(settings), "success"
+  )
+  tryCatch({
+    rows_affected <- dbExecute(db_conn, query)
+    print("Rows affected:")
+    print(rows_affected)
+  }, 
+  error = function(e) {
+    print("Error occurred:")
+    print(e)
+  })
+}
+
+
+### Listeners for the patient/cohort mode ###  
+
+#' Observe tab change events
+#' @importFrom shiny observeEvent updateSelectInput
+#' @importFrom DBI dbGetQuery
+#' @noRd
+
+observeTabChangeEvent <- function(
+  input,
+  session,
+  panel_id, 
+  condition, 
+  conditionCheckFun, 
+  notificationText, 
+  updateValue) {
+  observeEvent(input[[panel_id]], {
+    if (input[[panel_id]] == condition) {
+      if (conditionCheckFun()) {
+        showNotification(
+          notificationText,
+          type = "error"
+        )
+        updateTabsetPanel(
+          session,
+          panel_id,
+          updateValue
+        ) 
+      }
+    }
+  })
+}
+
+observeTabChangeToSimulateData <- function(
+  input,
+  session,
+  db_conn, 
+  panel_id, 
+  dropdown_id
+  ) {
+  
+  # should not be hardcoded
+  user_id <- 1
+  
+  query <- sprintf(
+    "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'sim' AND status = 'success' ORDER BY submitted_at DESC",
+    user_id
+  )
+
+  res <- dbGetQuery(db_conn, query)
+  choices <- setNames(res$run_id, res$label)
+
+  updateSelectInput(
+    session,
+    dropdown_id,
+    choices = choices,
+    selected = NULL
+  )
+
+  observeTabChangeEvent(
+    input,
+    session,
+    panel_id,
+    "Simulated data",
+    function() {
+      nrow(res) == 0
+    },
+    "Please run simulate BFF/PXF first",
+    "Upload"
+  )
+}
+
+observeTabChangeToConvertedData <- function(
+  input,
+  session,
+  db_conn,
+  panel_id, 
+  dropdown_id) {
+  # TODO
+  # get user id from the database
+  user_id <- 1
+
+  query <- sprintf(
+    "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'conv' AND status = 'success' ORDER BY submitted_at DESC",
+    user_id
+  )
+  res <- dbGetQuery(db_conn, query)
+  choices <- setNames(res$run_id, res$label)  
+
+  updateSelectInput(
+    session,
+    dropdown_id,
+    choices = choices,
+    selected = NULL
+  )
+
+  observeTabChangeEvent(
+    input,
+    session,
+    panel_id,
+    "Converted data",
+    function() {
+      nrow(res) == 0
+    },
+  "Please run CSV Conversion first",
+    "Upload"
+  )
+}
+
+create_new_mapping_df <- function() {
+  return(data.frame(
+    original_fn = character(),
+    new_fn = character(),
+    id_prefixes = character(),
+    simulatedData = logical(),
+    file_info = character(),
+    stringsAsFactors = FALSE
+  ))
+}
+
+#' Observe tab change events
+#' @importFrom shiny observeEvent
+#' @importFrom DBI dbGetQuery
+#' @noRd
+
+observeSimulatedDataChange <- function(
+  session,
+  input,
+  output,
+  db_conn,
+  rv,
+  rv_sim,
+  input_id, 
+  yaml_editor_id, 
+  expected_row_count) {
+  # possible values:
+  # input_id <-
+  # "patient_sim_reference",
+  # "patient_sim_target",
+  # "patient_sim_cohort"
+
+  observeEvent(input[[input_id]], {
+    if(length(input[[input_id]]) == 0) {
+      rv$inputFormat <- NULL
+      return()
+    }
+
+    if (is.null(rv$mappingDf)) {
+      mapping_df <- create_new_mapping_df()
+    } else {
+      mapping_df <- rv$mappingDf
+    }
+
+    file_info <- ""
+    file_info <- "Cohort"
+    if (grepl("reference", input_id)) {
+      id_prefix <- "R"
+      file_info <- "Reference"
+      rv$useSimulatedReference <- TRUE
+      mapping_df <- create_new_mapping_df()
+    } else if (grepl("target", input_id)) {
+      id_prefix <- "T"
+      file_info <- "Target"
+      rv$useSimulatedTarget <- TRUE
+      print("mapping_df before subset")
+      print(mapping_df)
+      mapping_df <- subset(mapping_df, file_info != "Target")
+      print("mapping_df after subset")
+      print(mapping_df)
+    } else {
+      id_prefix <- "C"
+      mapping_df <- create_new_mapping_df()
+    }
+
+    if (is.null(rv$inputFormat)) {
+      rv$inputFormat <- "bff"
+    }
+
+    # get the possible radio button choices from the database
+    if (length(input[[input_id]]) == 1){
+      query <- sprintf(
+        "
+          SELECT settings FROM jobs
+          WHERE run_id = '%s'
+            AND user_id = %d
+            AND mode = 'sim'
+            AND status = 'success'
+          GROUP BY settings
+          HAVING COUNT(*) = %d
+        ",
+        input[[input_id]],1,expected_row_count
+      )
+    } else {
+      query <- sprintf(
+        "
+          SELECT settings FROM jobs
+          WHERE run_id IN (%s)
+            AND user_id = %d
+            AND mode = 'sim'
+            AND status = 'success'
+        ",
+        paste(input[[input_id]], collapse = ","),
+        1
+      )
+    }
+    print("query")
+    print(query)
+
+    res <- dbGetQuery(db_conn,query)
+    print("res")
+    print(res)
+
+
+    if (expected_row_count == 1) {
+      # res is a json get the values of the key outputFormats
+      formats <- fromJSON(res$settings[1])$outputFormats
+      # print(formats)
+    } else {
+      output_formats <- lapply(res$settings, function(setting) {
+        parsed_setting <- fromJSON(setting)
+        return(parsed_setting$outputFormats)
+      })
+      formats <- Reduce(intersect, output_formats)
+      if (length(formats) == 1) {
+        formats <- list(formats)
+      }
+    }
+    print("formats")
+    print(formats)
+
+    # selected should be the first element of the list
+    selected <- formats[1]
+
+    print("session$ns(simulatedRefsInputFormatRadio)")
+    print(session$ns("simulatedRefsInputFormatRadio"))
+
+    output$simulatedRefsInputFormats <- renderUI({
+      radioButtons(
+        session$ns("simulatedRefsInputFormatRadio"),
+        "Format:",
+        choices = formats,
+        selected = selected
+      )
+    })
+
+    # TODO
+    # render below only if in cohort tab
+    output$simulatedCohortInputFormats <- renderUI({
+      radioButtons(
+        session$ns("simulatedCohortInputFormatRadio"),
+        "Format:",
+        choices = formats,
+        selected = selected
+      )
+    })
+
+    rv_sim$simulationId <- input[[input_id]]
+
+    print("after inputFormat")
+    print(input[[input_id]])
+
+    # !BUG
+    # switching the target overwrites the whole 
+    # mapping_df to both values having the prefix: T
+    # e.g.
+    # 20230804144608.bff.json:T
+    # 20230804143923.bff.json:T
+
+    # simulatedData_input_dir <- "./data/output/simulatedData/"
+    simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+
+    # Create a list of rows using lapply
+    if (expected_row_count == 1) {
+      rows <- lapply(1:expected_row_count, function(i) {
+        id_prefix_new <- paste0(id_prefix, i)
+
+        print("rv_sim$simulationId")
+        print(rv_sim$simulationId)
+        
+        row <- data.frame(
+          file_info = file_info,
+          original_fn = paste0(
+            rv_sim$simulationId,
+            ".",
+            rv$inputFormat,
+            ".json"
+          ),
+          new_fn = normalizePath(
+            paste0(
+              simulatedData_input_dir,
+              rv_sim$simulationId,
+              ".",
+              rv$inputFormat,
+              ".json"
+            )
+          ),
+          id_prefixes = id_prefix_new,
+          simulatedData = TRUE,
+          stringsAsFactors = FALSE
+        )
+        return(row)
+      })
+    } else {
+      rows <- lapply(1:expected_row_count, function(i) {
+        id_prefix_new <- paste0(id_prefix, i)
+
+        print("rv_sim$simulationId")
+        print(rv_sim$simulationId[i])
+        
+        row <- data.frame(
+          file_info = file_info,
+          original_fn = paste0(
+            rv_sim$simulationId[i],
+            ".",
+            rv$inputFormat,
+            ".json"
+          ),
+          new_fn = normalizePath(
+            paste0(
+              simulatedData_input_dir,
+              rv_sim$simulationId[i],
+              ".",
+              rv$inputFormat,
+              ".json"
+            )
+          ),
+          id_prefixes = id_prefix_new,
+          simulatedData = TRUE,
+          stringsAsFactors = FALSE
+        )
+        return(row)
+      })
+    }
+
+    # Bind rows into data frame
+    rows_df <- do.call(rbind, rows)
+    print("rows_df")
+    print(rows_df)
+    rv$mappingDf <- rbind(mapping_df, rows_df)
+
+    # TODO
+    # the function above unfortunately returns the following:
+
+    #       [[1]]
+    #   file_info             original_fn
+    # 1    Cohort 20230804200724.bff.json
+    # 2    Cohort 20230804182808.bff.json
+    #                                                                                                              new_fn
+    # 1 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804200724.bff.json
+    # 2 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804182808.bff.json
+    #   id_prefixes simulatedData
+    # 1          C1          TRUE
+    # 2          C1          TRUE
+
+    # [[2]]
+    #   file_info             original_fn
+    # 1    Cohort 20230804200724.bff.json
+    # 2    Cohort 20230804182808.bff.json
+    #                                                                                                              new_fn
+    # 1 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804200724.bff.json
+    # 2 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804182808.bff.json
+    #   id_prefixes simulatedData
+    # 1          C2          TRUE
+    # 2          C2          TRUE
+
+    # expected would be:
+    #   file_info             original_fn
+    # 1    Cohort 20230804200724.bff.json
+    # 2    Cohort 20230804182808.bff.json
+    #                                                                                                              new_fn
+    # 1 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804200724.bff.json
+    # 2 /home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/shiny-app/data/output/simulatedData/20230804182808.bff.json
+    #   id_prefixes simulatedData
+    # 1          C1          TRUE
+    # 2          C2          TRUE
+
+    # CHATGPT:
+    # Your output is being duplicated because 
+    # file_info, rv_sim$simulationId, and rv$inputFormat are all vectors. 
+    # This is causing the data.frame function to create a data frame with rows 
+    # for each element of these vectors for each iteration of the loop.
+
+    # To fix this, you should iterate over the length of one of these vectors 
+    # (e.g., file_info) instead of expected_row_count, 
+    # and then generate a single row for each iteration
+    
+    # put this into a general function
+    editor_val <- ""
+    for (j in 1:nrow(rv$mappingDf)) {
+      print("j")
+      print(j)
+      editor_val <- paste0(
+        editor_val,
+        rv$mappingDf$original_fn[j],
+        ":",
+        rv$mappingDf$id_prefixes[j],
+        "\n"
+      )
+      print("editor_val")
+      print(editor_val)
+    }
+    updateAceEditor(
+      session,
+      yaml_editor_id,
+      value = editor_val
+    )
+  })
+}
+
+observeConvertedDataChange <- function(
+  session,
+  input,
+  output,
+  rv, 
+  rv_conversion,
+  input_id, 
+  yaml_editor_id, 
+  yaml_cfg_editor_id) {
+  # possible values:
+  # input_id <-
+  # "patient_conv_reference"
+
+  print("observeConvertedDataChange")
+  observeEvent(input[[input_id]] , {
+    print ("HEREe")
+    
+    convertedId <- input[[input_id]]
+    rv_conversion$id <- convertedId
+    print(convertedId )
+
+    if (convertedId == "") {
+      rv$inputFormat <- NULL
+      return()
+    }
+
+    if (is.null(rv$mappingDf)) {
+      mapping_df <- create_new_mapping_df()
+    } else {
+      mapping_df <- rv$mappingDf
+    }
+
+    file_info <- "Cohort"
+    if(grepl("reference", input_id)) {
+      id_prefix <- "R"
+      file_info <- "Reference"
+      rv$useSimulatedReference <- FALSE
+      rv$useConvertedReference <- TRUE
+      
+      mapping_df <- create_new_mapping_df()
+    } else if (grepl("target", input_id)) {
+      id_prefix <- "T"
+      file_info <- "Target"
+      rv$useSimulatedTarget <- FALSE
+      rv$useConvertedTarget <- TRUE
+      print("mapping_df before subset")
+      print(mapping_df)
+      mapping_df <- subset(mapping_df, file_info != "Target")
+      print("mapping_df after subset")
+      print(mapping_df)
+    } else {
+      id_prefix <- "C"
+      mapping_df <- create_new_mapping_df()
+    }
+    
+    # convertedDataInputDir <- "./data/output/convertedData/"
+    convertedDataInputDir <- get_golem_options("conversionOutputFolder")
+
+    row <- data.frame(
+      file_info = file_info,
+      original_fn = paste0(
+        convertedId ,
+        ".json"
+      ),
+      new_fn = normalizePath(
+        paste0(
+          convertedDataInputDir,
+          paste0(convertedId,"/"),
+          convertedId,
+          ".json"
+        )
+      ),
+      id_prefixes = id_prefix,
+      simulatedData = FALSE,
+      stringsAsFactors = FALSE
+    )
+    rv$mappingDf <- rbind(mapping_df, row)
+
+    print("rv$mappingDf")
+    print(rbind(mapping_df, row))
+
+    # put this into a general function
+    editor_val <- ""
+    for (i in 1:nrow(rv$mappingDf)) {
+      editor_val <- paste0(
+        editor_val,
+        rv$mappingDf$original_fn[i],
+        ":",
+        rv$mappingDf$id_prefixes[i],
+        "\n"
+      )
+    }
+    updateAceEditor(
+      session,
+      yaml_editor_id,
+      value = editor_val
+    )
+
+    # read the config file
+    yamlCfg <- readLines(
+      paste0(
+        get_golem_options("conversionOutputFolder"),
+        # "./data/output/convertedData/",
+        convertedId,
+        "/",
+        convertedId,
+        "_config.yaml"
+      ),
+    )
+
+    # update the extra config 
+    updateAceEditor(
+      session,
+      yaml_cfg_editor_id,
+      value = paste(yamlCfg, collapse = "\n")
+    )
+  })
+}

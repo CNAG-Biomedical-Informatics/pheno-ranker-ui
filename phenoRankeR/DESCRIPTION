@@ -1,0 +1,44 @@
+Package: phenoRankeR
+Title: PKG_TITLE
+Version: 0.0.0.9000
+Authors@R: 
+    person("Ivo Christopher", "Leist", , "ivo.leist@cnag.eu", role = c("cre", "aut"))
+Description: PKG_DESC.
+License: GPL (>= 3)
+Imports: 
+    bslib,
+    ComplexHeatmap,
+    config (>= 0.3.1),
+    DBI,
+    DT,
+    ggplot2,
+    ggrepel,
+    golem (>= 0.4.0),
+    gridlayout,
+    InteractiveComplexHeatmap,
+    jsonlite,
+    listviewer,
+    lubridate,
+    odbc,
+    plotly,
+    reactR,
+    shiny (< 1.7.5),
+    shinyAce,
+    shinyjs,
+    shinyvalidate,
+    sortable,
+    yaml,
+    zip
+Suggests: 
+    knitr,
+    reactlog,
+    rmarkdown,
+    spelling,
+    testthat (>= 3.0.0),
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+RoxygenNote: 7.2.3

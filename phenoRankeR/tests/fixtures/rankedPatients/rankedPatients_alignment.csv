@@ -1,0 +1,5 @@
+Id;bar1a;bar1b;bar2a;bar2b;baz1;baz2;foo1;foo2;id.PR_00000001;id.PR_00000002
+Id;Bar.bar1a;Bar.bar1b;Bar.bar2a;Bar.bar2b;Baz.baz1;Baz.baz2;Foo.foo1;Foo.foo2;id.PR_00000001;id.PR_00000002
+T|PR_00000001;1;1;0;0;1;0;1;0;1;0
+R|PR_00000001;1;1;0;0;1;0;1;0;1;0
+R|PR_00000002;0;0;1;1;0;1;0;1;0;1

@@ -1,0 +1,27 @@
+{
+  "bff": [
+    "diseases",
+    "ethnicity",
+    "exposures",
+    "geographicOrigin",
+    "id",
+    "interventionsOrProcedures",
+    "karyotypicSex",
+    "measures",
+    "pedigrees",
+    "phenotypicFeatures",
+    "sex",
+    "treatments"
+  ],
+  "pxf": [
+    "id",
+    "subject",
+    "phenotypicFeatures",
+    "measurements",
+    "biosamples",
+    "interpretations",
+    "diseases",
+    "medicalActions",
+    "files"
+  ]
+}

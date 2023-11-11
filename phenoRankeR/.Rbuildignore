@@ -1,0 +1,16 @@
+^renv$
+^renv\.lock$
+^\.renvignore$
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+dev_history.R
+^dev$
+$run_dev.*
+^.here$
+^LICENSE\.md$
+^README\.Rmd$
+^CODE_OF_CONDUCT\.md$
+^codecov\.yml$
+^deploy$
+

@@ -1,0 +1,503 @@
+#' The application server-side
+#'
+#' @param input,output,session Internal parameters for {shiny}.
+#'     DO NOT REMOVE.
+#' @importFrom golem get_golem_options
+#' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapWidget
+#' @importFrom jsonlite read_json fromJSON
+#' @importFrom lubridate ymd_hms
+#' @import yaml
+#' @noRd
+
+# good to know:
+# here is how it might be possible to get the currently logged in user
+# https://www.shinyproxy.io/documentation/configuration/#environment-variables
+# SHINYPROXY_USERNAME: the name of the user, as used when logging in
+# SHINYPROXY_USERGROUPS: the groups the authenticated user is a member of, as a comma-separated value
+
+# Function to parse URL parameters
+parseQueryString <- function(s) {
+  if (is.null(s) || nchar(s) == 0) {
+    return(list())
+  }
+  params <- strsplit(gsub("^\\?", "", s), "&", fixed = TRUE)[[1]]
+  pairs <- strsplit(params, "=", fixed = TRUE)
+  keys <- sapply(pairs, "[[", 1)
+  values <- sapply(pairs, function(x) {
+    if (length(x) == 1) {
+      ""
+    } else {
+      URLdecode(x[[2]])
+    }
+  })
+  as.list(setNames(values, keys))
+}
+
+app_server <- function(input, output, session) {
+  
+  # TODO
+  # reactlog should be conditionally enabled
+  # reactlog_enable()
+
+  # initialize reactive values
+  rv_sim <- reactiveValues(
+    dtInputs = NULL,
+    simResult_bff = NULL,
+    simResult_pxf = NULL,
+    simulationId = NULL
+  )
+
+  rv_conversion <- reactiveValues(
+    id = NULL,
+    outputJson = NULL,
+    configYaml = NULL
+  )
+
+  rv_patient <- reactiveValues(
+    inputFormat = NULL,
+    uploadedReferenceFile = NULL,
+    uploadedTargetFile = NULL,
+    mappingDf = NULL,
+    alignmentDf = NULL,
+    id = NULL,
+    mdsPlot = NULL,
+    useSimulatedReference = FALSE,
+    useSimulatedTarget = FALSE,
+    useConvertedReference = FALSE,
+    useConvertedTarget = FALSE,
+    idPrefixesYamlValid = NULL,
+    runId = NULL,
+    pastRunIds = c(),
+    ht = NULL,
+    blastData = NULL,
+    rankingDf = NULL
+  )
+
+  rv_cohort <- reactiveValues(
+    inputFormat = NULL,
+    useSimulatedCohort = NULL,
+    # useConvertedCohort = NULL, is missing
+    mappingDf = NULL,
+    idPrefixesYamlValid = NULL,
+    ht = NULL,
+    mdsPlot = NULL,
+  )
+
+  # load modules
+  db_conn <- mod_db_server("db")
+
+  mod_sim_mode_server(
+    "sim_mode",
+    session,
+    db_conn,
+    rv_sim
+  )
+
+  mod_conv_mode_server(
+    "conv_mode",
+    session,
+    db_conn,
+    rv_conversion
+  )
+
+  mod_patient_mode_server(
+    "patient_mode",
+    session,
+    db_conn,
+    rv_patient,
+    rv_sim,
+    rv_conversion
+  )
+
+  mod_cohort_mode_server(
+    "cohort_mode",
+    session,
+    db_conn,
+    rv_cohort,
+    rv_sim,
+    rv_conversion
+  )
+
+  historySidebars <- c(
+    "SimulateHistorySidebar",
+    "ConvertHistorySidebar",
+    "PatientHistorySidebar",
+    "CohortHistorySidebar"
+  )
+
+  lapply(historySidebars, function(sidebar) {
+    mod_history_sidebar_server(
+      sidebar, 
+      db_conn
+    )
+  })
+ 
+  # TODO
+  # it would be good to have the used
+  # mode inside the ID
+  # e.g. patient mode: pat142551
+  # simulation mode: sim142552
+  # cohort mode: coh42553
+  # convert mode: conv42554
+
+  # maybe below is better in .Renviron?
+  # cfg <- fromJSON(readLines("config/cfg.json"))
+  if(get_golem_options("runWithDocker") == "True") {
+    print("running with docker")
+    Sys.setenv(LD_LIBRARY_PATH = paste(
+      get_golem_options("LD_LIB_PATH"),
+      Sys.getenv("LD_LIBRARY_PATH"), 
+      sep=":"
+      )
+    )
+    print("new LD_LIBRARY_PATH")
+    print(Sys.getenv("LD_LIBRARY_PATH"))
+  } else {
+    print("running without docker")
+  }
+
+  # phenoSimBin <- cfg$PHENO_SIM_BIN
+  phenoSimBin <- get_golem_options("phenoSimBin")
+  # phenoRankBin <- cfg$PHENO_RANK_BIN
+  phenoRankBin <- get_golem_options("phenoRankBin")
+  
+  # maybe better to put this in a separate module(?)
+  getPastRunResults <- function(mode,runId) {
+    # cfg <- fromJSON(readLines("config/cfg.json"))
+
+    # TODO
+    # maybe better to put this in the simulation module
+    # with a flag
+    # if history=True then run below
+    if (mode == "sim") {
+      rv_sim$simulationId <- runId
+      output$simulationId <- renderText(paste0("RUN ID: ",runId))
+      simulationOutputFolder <- get_golem_options("simulationOutputFolder")
+      files <- list.files(
+        # cfg$simulationOutputFolder, 
+        simulationOutputFolder,
+        pattern = paste0(runId,"*.(bff|pxf).json")
+      )
+      if (length(files) == 0) {
+        print("no files found")
+        return()
+      }
+
+      selectedOutputFormats <- c()
+      for (file in files) {
+        if (grepl(file, "bff")) {
+          rv_sim$simResult_bff <- read_json(
+            paste0(simulationOutputFolder,file)
+            # paste0(cfg$simulationOutputFolder,file)
+          )
+          selectedOutputFormats <- c(selectedOutputFormats, "BFF")
+        } else if (grepl(file, "pxf")) {
+          rv_sim$simResult_pxf <- read_json(
+            paste0(simulationOutputFolder,file)
+            # paste0(cfg$simulationOutputFolder,file)
+          )
+          selectedOutputFormats <- c(selectedOutputFormats, "PXF")
+        }
+        mod_json_viewer_server(
+          "sim_mode-json_viewer", 
+          selectedOutputFormats,
+          rv_sim$simResult_bff,
+          rv_sim$simResult_pxf
+        )
+      }
+    }
+    else if (mode == "patient") {
+      rv_patient$runId <- runId
+      output$phenoBlastRunId <- renderText(paste0("RUN ID: ",runId))
+
+      # outDir <- paste0(
+      #   # dirname(getwd()),
+      #   "./data/output/rankedPatients"
+      # )
+
+      outDir <- get_golem_options("patientModeOutputFolder")
+      # outDir <- "data/output/rankedPatients"
+      dirs <- list.dirs(outDir)
+
+      # check if on of the directories contains the runId
+      dirs <- dirs[grepl(dirs, runId)]
+      if (length(dirs) != 1) {
+        # if it would be more than one directory
+        # throw an error
+        # if it would be 0 directories
+        # show a message to the user
+        print("no directory found")
+        return()
+      }
+      dir <- dirs[1]
+
+      # TabHeader: Binary representation
+      rv_patient$blastData <- mod_table_phenoBlast_server(
+        "patient_mode-phenoBlastTable",
+        runId = runId,
+        rv_patient = rv_patient
+      )
+      # TabHeader: Ranking
+      rv_patient$rankingDf <- mod_table_phenoRanking_server(
+        "patient_mode-phenoRankingTable",
+        runId = runId,
+        rv_patient = rv_patient
+      )
+
+      # TabHeader: Hamming Distances Heatmap 
+      mod_heatmap_server(
+        "patient_mode_heatmap",
+        runId,
+        rv_patient,
+        "patient",
+      )
+
+      rv_patient$mappingDf <- read.csv(
+        paste0(
+          get_golem_options("patientModeOutputFolder"),
+          # "data/output/rankedPatients/",
+          runId,
+          "/",
+          runId,
+          "_mapping.csv"
+        ),
+      )
+
+      # TabHeader: Multidimensional Scaling Scatter Plot
+      mod_plot_mds_server(
+        "patient_mode-mds_scatter",
+        runId = runId,
+        rv = rv_patient,
+        mode = "patient"
+      )
+    }
+    else if (mode == "cohort") {
+      rv_cohort$runId <- runId
+      output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ",runId))
+
+      # outDir <- paste0(
+      #   "./data/output/rankedCohortMatrixes"
+      # )
+
+      outDir <- get_golem_options("cohortModeOutputFolder")
+      # outDir <- "data/output/rankedCohortMatrixes"
+      dirs <- list.dirs(outDir)
+      print("dirs")
+      print(dirs)
+
+      # check if on of the directories contains the runId
+      dirs <- dirs[grepl(dirs, runId)]
+      if (length(dirs) != 1) {
+        # if it would be more than one directory
+        # throw an error
+        # if it would be 0 directories
+        # show a message to the user
+        print("no directory found")
+        return()
+      }
+      dir <- dirs[1]
+
+      # query the database for the number of uploaded files
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'cohort'",
+        runId
+      )
+
+      res <- dbGetQuery(db_conn, query)
+      settings <- fromJSON(res$settings)
+
+      uploaded_files_count <- 1
+
+      if("append_prefixes" %in% names(settings)) {
+        uploaded_files_count <- length(settings$append_prefixes)
+      }
+
+      rv_cohort$mappingDf <- read.csv(
+        paste0(
+          get_golem_options("cohortModeOutputFolder"),
+          # "data/output/rankedCohortMatrixes/",
+          runId,
+          "/",
+          runId,
+          "_mapping.csv"
+        ),
+      )
+
+      # TabHeader: Hamming Distances Heatmap
+      mod_heatmap_server(
+        "cohort_mode_heatmap",
+        runId,
+        rv_cohort,
+        "cohort",
+        uploaded_files_count = uploaded_files_count
+      )
+
+      # TabHeader: Multidimensional Scaling Scatter Plot
+      mod_plot_mds_server(
+        "cohort_mode-mds_scatter",
+        runId = runId,
+        rv = rv_cohort,
+        mode = "cohort",
+        uploaded_files_count = uploaded_files_count
+      )
+    }
+    else if (mode == "conv") {
+      rv_conversion$id <- runId
+      output$conversionId <- renderText(paste0("RUN ID: ",runId))
+
+      outDir <- paste0(
+        # cfg$conversionOutputFolder
+        get_golem_options("conversionOutputFolder")
+      )
+
+      dirs <- list.dirs(outDir)
+      print("dirs")
+      print(dirs)
+
+      # check if on of the directories contains the runId
+      dirs <- dirs[grepl(dirs, runId)]
+      if (length(dirs) != 1) {
+        # if it would be more than one directory
+        # throw an error
+        # if it would be 0 directories
+        # show a message to the user
+        print("no directory found")
+        return()
+      }
+
+      dir <- dirs[1]
+
+      jsonData <- read_json(
+        paste0(
+          dir,
+          "/",
+          runId,
+          ".json"
+        )
+      )
+
+      configVal <- paste(
+        readLines(
+          file.path(
+            dir,
+            paste0(runId,"_config.yaml")
+          )
+        ),
+        collapse = "\n"
+      )
+      # for what is that neeeded?
+      rv_conversion$outputJson <- jsonData
+      rv_conversion$configYaml <- as.yaml(yaml.load(configVal))
+ 
+      mod_conv_output_viewer_server(
+        "conv_mode-conv_output_viewer",
+        jsonData,
+        configVal
+      )
+    }
+  }
+  
+  # TODO
+  # maybe better to put this in a separate module(?)
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+
+    # TODO
+    # try to get rid of the lubridate package
+
+    if ("mode" %in% names(query)) {
+      if ( "id" %in% names(query)) {
+        date_time <- ymd_hms(query[["id"]], quiet = TRUE)
+        mode <- query[["mode"]]
+        currentId <- NULL
+        if (mode == "sim") {
+          currentId <- isolate(rv_sim$simulationId)
+        } else if (mode == "patient") {
+          currentId <- isolate(rv_patient$runId)
+        } else if (mode == "cohort") {
+          currentId <- isolate(rv_cohort$runId)
+        }
+
+        if (!is.null(currentId) && currentId == query[["id"]]) {
+          print("run results are currently loaded")
+          return()
+        }
+
+        if (!is.na(date_time)) {
+          print("id is in the expected format")
+          updateNavbarPage(session, "nav", query[["mode"]])
+          session$sendCustomMessage(
+            type = 'changeURL', 
+            message = list(mode=query[["mode"]], id=query[["id"]]
+          ))
+          getPastRunResults(query[["mode"]],query[["id"]])
+        } else {
+          # update the run ID field with information that the ID is not valid
+        }
+      }
+      else {
+        updateNavbarPage(session, "nav", query[["mode"]])
+      }
+    }
+  })
+
+  observeEvent(input$nav, {
+    id <- NULL
+    if (input$nav == "sim") {
+      id <- rv_sim$simulationId
+    } else if (input$nav == "patient") {
+      id <- rv_patient$runId
+    } else if (input$nav == "cohort") {
+      id <- rv_cohort$runId
+    }
+    #check 
+    runId <- id
+    if (is.null(id)) {
+      runId <- ""
+    }
+    msg <- list(mode=input$nav, id=runId)
+    session$sendCustomMessage(
+      type = 'changeURL', 
+      message = list(mode=input$nav, id=runId
+    ))
+  })
+
+  observeEvent(rv_patient$ht, {
+    print("before rendering the heatmap")
+    
+    InteractiveComplexHeatmapWidget(
+      input,
+      output,
+      session,
+      ht=rv_patient$ht,
+      output_id = "patient_mode-patient_heatmap",
+      close_button = FALSE,
+      layout = "1|23",
+      width1 = "100%",
+      width2 = "700px",
+      width3 = "300px",
+      height1 = "500px",
+      height2 = "410px"
+    )
+  })
+
+  # TODO
+  # wrap below in a function
+  observeEvent(rv_cohort$ht, {
+    print("before rendering the cohort heatmap")
+    InteractiveComplexHeatmapWidget(
+      input,
+      output,
+      session,
+      ht=rv_cohort$ht,
+      output_id = "cohort_mode-cohort_heatmap",
+      close_button = FALSE,
+      layout = "1|23",
+      width1 = "100%",
+      width2 = "700px",
+      width3 = "300px",
+      height1 = "500px",
+      height2 = "410px"
+    )
+  })
+}

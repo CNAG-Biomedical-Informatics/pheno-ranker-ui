@@ -1,0 +1,30 @@
+#RANK	REFERENCE(ID)	TARGET(ID)	FORMAT	LENGTH	WEIGHTED	HAMMING-DISTANCE	DISTANCE-Z-SCORE	DISTANCE-P-VALUE	DISTANCE-Z-SCORE(RAND)	JACCARD-INDEX	JACCARD-Z-SCORE	JACCARD-P-VALUE
+1	PR_00000001	PR_00000001	CSV	     5	True	   0	 -0.707	   0.2397501	 -2.2361	  1.000	  0.707	   0.6151981
+--------------------------------------------------------------------------------
+REF -- TAR
+1 ----- 1 | (w:  1|d:  0|cd:  0|) Bar.bar1a (bar1a)
+1 ----- 1 | (w:  1|d:  0|cd:  0|) Bar.bar1b (bar1b)
+0       0 | (w:  1|d:  0|cd:  0|) Bar.bar2a (bar2a)
+0       0 | (w:  1|d:  0|cd:  0|) Bar.bar2b (bar2b)
+1 ----- 1 | (w:  1|d:  0|cd:  0|) Baz.baz1 (baz1)
+0       0 | (w:  1|d:  0|cd:  0|) Baz.baz2 (baz2)
+1 ----- 1 | (w:  1|d:  0|cd:  0|) Foo.foo1 (foo1)
+0       0 | (w:  1|d:  0|cd:  0|) Foo.foo2 (foo2)
+1 ----- 1 | (w:  1|d:  0|cd:  0|) id.PR_00000001 (id.PR_00000001)
+0       0 | (w:  1|d:  0|cd:  0|) id.PR_00000002 (id.PR_00000002)
+
+#RANK	REFERENCE(ID)	TARGET(ID)	FORMAT	LENGTH	WEIGHTED	HAMMING-DISTANCE	DISTANCE-Z-SCORE	DISTANCE-P-VALUE	DISTANCE-Z-SCORE(RAND)	JACCARD-INDEX	JACCARD-Z-SCORE	JACCARD-P-VALUE
+2	PR_00000002	PR_00000001	CSV	    10	True	  10	  0.707	   0.7602499	  3.1623	  0.000	 -0.707	   0.9560989
+--------------------------------------------------------------------------------
+REF -- TAR
+0 --xxx 1 | (w:  1|d:  1|cd:  1|) Bar.bar1a (bar1a)
+0 --xxx 1 | (w:  1|d:  1|cd:  2|) Bar.bar1b (bar1b)
+1 xxx-- 0 | (w:  1|d:  1|cd:  3|) Bar.bar2a (bar2a)
+1 xxx-- 0 | (w:  1|d:  1|cd:  4|) Bar.bar2b (bar2b)
+0 --xxx 1 | (w:  1|d:  1|cd:  5|) Baz.baz1 (baz1)
+1 xxx-- 0 | (w:  1|d:  1|cd:  6|) Baz.baz2 (baz2)
+0 --xxx 1 | (w:  1|d:  1|cd:  7|) Foo.foo1 (foo1)
+1 xxx-- 0 | (w:  1|d:  1|cd:  8|) Foo.foo2 (foo2)
+0 --xxx 1 | (w:  1|d:  1|cd:  9|) id.PR_00000001 (id.PR_00000001)
+1 xxx-- 0 | (w:  1|d:  1|cd: 10|) id.PR_00000002 (id.PR_00000002)
+
