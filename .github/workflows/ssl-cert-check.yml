@@ -1,0 +1,28 @@
+name: ssl-cert-check
+
+on:
+  workflow_dispatch:
+
+# on:
+#   # Triggers the workflow every day at 8.00 UTC minutes
+#   schedule:
+#     - cron:  '0 8 * * *'
+
+env:
+  NODE_VERSION: 12.x
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sslscan
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sslscan
+
+      - name: Verify SSL certificate
+        run: |
+          DOMAIN="pheno-ranker.cnag.eu"
+          PORT="443"
+          sslscan --no-heartbleed --no-compression --no-fallback --no-renegotiation "$DOMAIN:$PORT"

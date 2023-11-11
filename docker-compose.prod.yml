@@ -16,12 +16,21 @@ services:
     ports:
       - 3838:3838
     volumes:
+      # - shiny-data:/opt/data
       - shiny-data:/app/data
       - shiny-config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      UID: ${UID}
-      GID: ${GID}
+    #environment:
+      # API_DB_USER: ${DB_USER}
+      # API_DB_PW: ${DB_PW}
+      # API_DB_HOST: ${DB_HOST}
+      # API_DB_PORT: ${DB_PORT}
+      # API_DB_NAME: ${DB_NAME}
+      # KC_REALM: ${KC_REALM}
+      # UID: ${UID}
+      # GID: ${GID}
+      #PHENO_SIM_BIN: /opt/pheno-ranker/sim/create_random_bff_pxf.pl
+      #PHENO_RANK_BIN: /opt/pheno-ranker/pheno-ranker
 
     restart: unless-stopped
     # healthcheck:

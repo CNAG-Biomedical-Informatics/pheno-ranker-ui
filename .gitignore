@@ -1,3 +1,5 @@
+.vscode/settings.json
+
 # History files
 .Rhistory
 .Rapp.history
@@ -40,10 +42,7 @@ vignettes/*.pdf
 .Renviron
 
 # pkgdown site
-docs/
+phenoRankeR/docs/
 
 # translation temp files
 po/*~
-
-# RStudio Connect folder
-rsconnect/
