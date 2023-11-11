@@ -51,7 +51,7 @@ markdown_extensions:
 
 nav:
   - Introduction:
-      - What is Convert-Pheno-UI?: pheno-ranker-ui.md
+      - What is Pheno-Ranker-UI?: pheno-ranker-ui.md
       - Supported formats: supported-formats.md
   - Use:
       - Playground: playground.md
@@ -99,7 +99,7 @@ extra:
 #    - icon: fontawesome/brands/twitter
 #      link: https://twitter.com/genomebeacons
     - icon: fontawesome/brands/github
-      link: https://github.com/CNAG-Biomedical-Informatics/convert-pheno-ui
+      link: https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui
 
 
 

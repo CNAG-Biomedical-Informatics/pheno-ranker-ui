@@ -1,0 +1,11 @@
+diseases:
+  - id: "HP:0000020"
+    label: "Urinary incontinence"
+  - id: "HP:0000055"
+    label: "Abnormality of female external genitalia"
+  - id: "HP:0000141"
+    label: "Amenorrhea"
+  - id: "HP:0000553"
+    label: "Abnormal uvea morphology"
+  - id: "HP:0000630"
+    label: "Abnormal retinal artery morphology"

@@ -1,4 +1,7 @@
 .vscode/settings.json
+.env
+*.pem
+*.log
 
 # History files
 .Rhistory

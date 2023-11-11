@@ -1,0 +1,77 @@
+server {
+  listen 443 ssl; # For IPv4 addresses
+  listen [::]:443 ssl; # For IPv6 addresses
+  ssl_certificate       /etc/nginx/shinyproxy.cnag.dev.pem;
+  ssl_certificate_key   /etc/nginx/shinyproxy.cnag.dev-key.pem;
+
+  location / {
+    access_log /var/log/nginx/shinyproxy.access.log;
+    error_log /var/log/nginx/shinyproxy.error.log;
+
+    proxy_pass          http://shinyproxy:8080/;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 600s;
+
+    proxy_redirect    off;
+    proxy_set_header  Host              $http_host;
+    proxy_set_header  X-Real-IP         $remote_addr;
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+
+  location /auth/ {
+    access_log /var/log/nginx/kc.access.log;
+    error_log /var/log/nginx/kc.error.log;
+
+    proxy_pass http://keycloak:8080/;
+    include includes/proxy-set-header.conf;
+  }
+
+  location /auth/admin/ {
+    access_log /var/log/nginx/kc.access.log;
+    error_log /var/log/nginx/kc.error.log;
+
+    proxy_pass http://keycloak:8080/admin/;
+    include includes/proxy-set-header.conf;
+  }
+
+  location /auth/js/ {
+    access_log /var/log/nginx/kc_js.access.log;
+    error_log /var/log/nginx/kc_js.error.log;
+
+    proxy_pass http://keycloak:8080/js/;
+    include includes/proxy-set-header.conf;
+  }
+
+  location /auth/resources/ {
+    access_log /var/log/nginx/kc_res.access.log;
+    error_log /var/log/nginx/kc_res.error.log;
+
+    proxy_pass http://keycloak:8080/resources/;
+    include includes/proxy-set-header.conf;
+  }
+
+  location /auth/realms/ {
+    access_log /var/log/nginx/kc_realms.access.log;
+    error_log /var/log/nginx/kc_realms.error.log;
+
+    proxy_pass http://keycloak:8080/realms/;
+    include includes/proxy-set-header.conf;
+
+    # needed for user creation
+    proxy_buffer_size 64k;
+    proxy_buffers 8 64k;
+    proxy_busy_buffers_size 64k;
+  }
+
+  location /auth/health/ {
+    access_log /var/log/nginx/kc_health.access.log;
+    error_log /var/log/nginx/kc_health.error.log;
+
+    proxy_pass http://keycloak:8080/health/;
+    include includes/proxy-set-header.conf;
+  }
+}
