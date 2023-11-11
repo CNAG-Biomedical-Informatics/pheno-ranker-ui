@@ -60,7 +60,7 @@ Rueda, M; Leist, IC et al., (2023). pheno-ranker: A software toolkit for the int
 
 ### AUTHOR
 
-Written by Ivo Christopher Leist, PhD student at CNAG [https://www.cnag.crg.eu](https://www.cnag.crg.eu).
+Written by Ivo Christopher Leist, PhD student at CNAG [https://www.cnag.eu](https://www.cnag.eu).
 
 ### COPYRIGHT AND LICENSE
 
