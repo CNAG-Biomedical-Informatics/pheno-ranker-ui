@@ -164,20 +164,31 @@ app_server <- function(input, output, session) {
   # maybe better to put this in a separate module(?)
   getPastRunResults <- function(mode,runId) {
     # cfg <- fromJSON(readLines("config/cfg.json"))
+    print("inside getPastRunResults")
 
     # TODO
     # maybe better to put this in the simulation module
     # with a flag
     # if history=True then run below
     if (mode == "sim") {
+      print("inside getPastRunResults sim")
       rv_sim$simulationId <- runId
       output$simulationId <- renderText(paste0("RUN ID: ",runId))
+
+      # TODO
+      # add a get_golem_options wrapper to check if the
+      # required option does not rerturn NULL
+
       simulationOutputFolder <- get_golem_options("simulationOutputFolder")
+      print("simulationOutputFolder")
+      print(simulationOutputFolder)
       files <- list.files(
         # cfg$simulationOutputFolder, 
         simulationOutputFolder,
         pattern = paste0(runId,"*.(bff|pxf).json")
       )
+      print("files")
+      print(files)
       if (length(files) == 0) {
         print("no files found")
         return()
@@ -423,9 +434,18 @@ app_server <- function(input, output, session) {
           return()
         }
 
+        
+
         if (!is.na(date_time)) {
           print("id is in the expected format")
+          # !BUG
+          # when running the application with Shinyproxy 
+          # the following error occurs:
+          # "Link clicked with ID: 20231113121900"
+          # [1] "id is in the expected format"
+          # Warning: Error in if: argument is of length zero
           updateNavbarPage(session, "nav", query[["mode"]])
+          print("after updateNavbarPage")
           session$sendCustomMessage(
             type = 'changeURL', 
             message = list(mode=query[["mode"]], id=query[["id"]]

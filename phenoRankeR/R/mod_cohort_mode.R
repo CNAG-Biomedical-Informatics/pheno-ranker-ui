@@ -730,13 +730,17 @@ mod_cohort_mode_server <- function(
         stop("Perl script execution failed.")
       }
 
+      # BUG
+      # The label is not correctly set it is always
+      # "all toplevel terms"
+
       label <- "all toplevel terms"
-      if (length(input$dnd_target_incl) > 0) {
-        label <- paste("included toplevels:",paste(input$dnd_target_incl, collapse = ", "))
+      if (length(dnd_incl) > 0) {
+        label <- paste("included toplevels:",paste(input$dnd_incl, collapse = ", "))
       }
 
-      if (length(input$dnd_target_excl) > 0) {
-        label <- paste("excluded toplevels:",paste(input$dnd_target_excl, collapse = ", "))
+      if (length(dnd_excl) > 0) {
+        label <- paste("excluded toplevels:",paste(input$dnd_excl, collapse = ", "))
       }
 
       print("label")
