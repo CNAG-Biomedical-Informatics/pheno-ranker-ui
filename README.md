@@ -56,7 +56,7 @@ how to prepare your environment and run the services.
 
 The author requests that any published work that utilizes `pheno-ranker-UI` includes a cite to the the following reference:
 
-Rueda, M; Leist, IC et al., (2023). pheno-ranker: A software toolkit for the interconversion of standard data models for phenotypic data \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
+Rueda, M et al., IC et al., (2023). Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond. Submitted. \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
 
 ### AUTHOR
 
@@ -64,6 +64,6 @@ Written by Ivo Christopher Leist, PhD student at CNAG [https://www.cnag.eu](http
 
 ### COPYRIGHT AND LICENSE
 
-Copyright (C) 2022-2023, Ivo Christopher Leist - CNAG.
+Copyright (C) 2023-2024, Ivo Christopher Leist - CNAG.
 
 GPLv3 - GNU General Public License v3.0
