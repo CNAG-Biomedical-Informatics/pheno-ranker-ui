@@ -6,8 +6,7 @@
 </p>
 
 <!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m794601507-a686af3c42ebb3ff3f2673b2)](https://stats.uptimerobot.com/4nrjwuYQPm) -->
-[![Docker build server](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build-server.yml/badge.svg)](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build-server.yml)
-[![Docker build client](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build-client.yml/badge.svg)](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build-client.yml)
+[![Docker build](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build.yml/badge.svg)](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/actions/workflows/docker-build.yml)
 [![codecov](https://codecov.io/gh/CNAG-Biomedical-Informatics/pheno-ranker-ui/branch/main/graph/badge.svg?token=VJB5TM9LQW)](https://codecov.io/gh/CNAG-Biomedical-Informatics/pheno-ranker-ui)
 ![version](https://img.shields.io/badge/version-0.0.0_beta-orange)
 [![License: GPL-3.0](https://img.shields.io/pypi/l/fpvgcc.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
@@ -57,14 +56,14 @@ how to prepare your environment and run the services.
 
 The author requests that any published work that utilizes `pheno-ranker-UI` includes a cite to the the following reference:
 
-Rueda, M; Leist, IC et al., (2023). pheno-ranker: A software toolkit for the interconversion of standard data models for phenotypic data \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
+Rueda, M et al., IC et al., (2023). Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond. Submitted. \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
 
 ### AUTHOR
 
-Written by Ivo Christopher Leist, PhD student at CNAG [https://www.cnag.crg.eu](https://www.cnag.crg.eu).
+Written by Ivo Christopher Leist, PhD student at CNAG [https://www.cnag.eu](https://www.cnag.eu).
 
 ### COPYRIGHT AND LICENSE
 
-Copyright (C) 2022-2023, Ivo Christopher Leist - CNAG.
+Copyright (C) 2023-2024, Ivo Christopher Leist - CNAG.
 
 GPLv3 - GNU General Public License v3.0
