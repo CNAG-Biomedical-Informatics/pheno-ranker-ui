@@ -875,31 +875,7 @@
             ]
           }
         ],
-        "policies": [
-          {
-            "id": "e7af33a2-bf56-4b74-8609-7bc9a9136450",
-            "name": "Default Policy",
-            "description": "A policy that grants access only for users within this realm",
-            "type": "js",
-            "logic": "POSITIVE",
-            "decisionStrategy": "AFFIRMATIVE",
-            "config": {
-              "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
-            }
-          },
-          {
-            "id": "2c076bfa-1082-45d9-81cb-6c6a233ac7dd",
-            "name": "Default Permission",
-            "description": "A permission that applies to the default resource type",
-            "type": "resource",
-            "logic": "POSITIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "defaultResourceType": "urn:cellxgene:resources:default",
-              "applyPolicies": "[\"Default Policy\"]"
-            }
-          }
-        ],
+        "policies": [],
         "scopes": [],
         "decisionStrategy": "UNANIMOUS"
       }
