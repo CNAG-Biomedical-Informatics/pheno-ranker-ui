@@ -6,18 +6,26 @@ proxy:
   heartbeat-timeout: 60000
   port: 8080
   authentication: keycloak
+  # keycloak is deprecated, use authentication: openid instead
+  # authentication: openid
   admin-groups: shiny
   my-apps-mode: InLine
   server:
     forward-headers-strategy: native
   api-security:
     hide-spec-details: false
+  # openid:
+  #   auth-url: http://keycloak:8080/
+  #   token-url: https://www.googleapis.com/oauth2/v4/token
+  #   jwks-url: https://www.googleapis.com/oauth2/v3/certs
+  #   client-id: ***
+  #   client-secret: ***
   keycloak:
     realm: Shinyproxy
     auth-server-url: http://keycloak:8080/
     ssl-required: external
     resource: shinyproxy
-    credentials-secret: GVBBfLDo8RiHSBeSrdoNjRd5SYf97uPz
+    credentials-secret: 4ikrESErZmuG8WELtM4AQIUbbor4vTUi
     admin-groups: shiny
   docker:
     internal-networking: true
@@ -27,8 +35,8 @@ proxy:
       description: Pheno-Ranker
       container-cmd:  ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db" ]
       container-image: phenorankerui:latest
-      access-groups: [shiny]
-      container-network: pheno-ranker_shiny-net
+      access-groups: [shiny] #assign the role "shiny" to all users
+      container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
           pheno-ranker_shiny-data:/app/data,
@@ -39,7 +47,7 @@ proxy:
       description: Application which demonstrates the basics of a Shiny app
       container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
       container-image: openanalytics/shinyproxy-demo
-      container-network: pheno-ranker_shiny-net
+      container-network: pheno-ranker-ui_shiny-net
 logging:
   file:
     name: shinyproxy.log
