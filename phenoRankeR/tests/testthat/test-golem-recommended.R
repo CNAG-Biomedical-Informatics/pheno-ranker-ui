@@ -51,7 +51,7 @@ set_testing_golem_options(
   
     dbDriver = "PostgreSQL",
     # dbServer = "10.10.0.2", # this should not be hardcoded!
-    dbServer = Sys.getenv("DB_SERVER"),
+    dbServer = Sys.getenv("DB_IP"),
     dbPort = 5432,
     dbDatabase = "shiny",
     dbUser = "shiny",
