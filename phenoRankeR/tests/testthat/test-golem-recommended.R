@@ -45,23 +45,17 @@ set_testing_golem_options(
     PHENO_RANK_BIN = "pheno-ranker",
     PHENO_CSV_CONV_BIN = "csv2pheno_ranker",
     # hardcoded for testing purposes it works
-    ODBCSYSINI = "/home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/config/odbc",
-
+    # ODBCSYSINI = "/home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/config/odbc",
+    # ODBCSYSINI = "../../../config/odbc",
+    ODBCSYSINI = Sys.getenv("ODBCSYSINI"),
+  
     dbDriver = "PostgreSQL",
-    dbServer = "10.10.0.2",
+    # dbServer = "10.10.0.2", # this should not be hardcoded!
+    dbServer = Sys.getenv("DB_SERVER"),
     dbPort = 5432,
     dbDatabase = "shiny",
     dbUser = "shiny",
     dbPassword = "shiny"
-
-    # dbSettings = list(
-    #   driver = "PostgreSQL",
-    #   server = "10.10.0.2",
-    #   port = 5432,
-    #   database = "shiny",
-    #   user = "shiny",
-    #   password = "shiny"
-    # )
   )
 )
 

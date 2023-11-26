@@ -1,5 +1,11 @@
 SHELL := /bin/bash
 
+# the env file is needed for testing
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 CURRENT_DATE = $(shell date)
 export IGNORE_CACHE_FROM_HERE:=$(CURRENT_DATE)
 
