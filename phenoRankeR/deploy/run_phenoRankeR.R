@@ -55,15 +55,6 @@ default_golem_opts <- list(
   dbDatabase = "shiny",
   dbUser = "shiny",
   dbPassword = "shiny"
-
-  # dbSettings = list(
-  #   driver = "PostgreSQL",
-  #   server = "10.10.0.2",
-  #   port = 5432,
-  #   database = "shiny",
-  #   user = "shiny",
-  #   password = "shiny"
-  # )
 )
 
 # Get the arguments from the command line

@@ -14,13 +14,13 @@ run_app(
     cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
     weightsUploadFolder = "../data/uploads/weights", extraConfigsUploadFolder =
     "../data/uploads/config", ontologyUploadFolder = "../data/uploads/ontologies/",
-    simulationOutputFolder = "../data/output/simulatedData/", conversionOutputFolder =
+    simulationOutputFolder = "../data/output/simulatedData", conversionOutputFolder =
     "../data/output/convertedData/", patientModeOutputFolder =
     "../data/output/rankedPatients/", 
      cohortModeOutputFolder =
     "../data/output/rankedCohortMatrixes/", tempFolder = "../data/temp/", runWithDocker =
     FALSE, PHENO_SIM_BIN = "bff-pxf-simulator", PHENO_RANK_BIN = "pheno-ranker",
-    PHENO_CSV_CONV_BIN = "csv2pheno_ranker", ODBCSYSINI = "../config/odbc", dbDriver =
+    PHENO_CSV_CONV_BIN = "csv2pheno-ranker", ODBCSYSINI = "../config/odbc", dbDriver =
     "PostgreSQL", dbServer = "10.10.0.2", dbPort = 5432, dbDatabase = "shiny", dbUser =
     "shiny", dbPassword = "shiny"),
   ...

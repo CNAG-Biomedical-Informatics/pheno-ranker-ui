@@ -195,20 +195,28 @@ app_server <- function(input, output, session) {
       }
 
       selectedOutputFormats <- c()
-      for (file in files) {
-        if (grepl(file, "bff")) {
-          rv_sim$simResult_bff <- read_json(
-            paste0(simulationOutputFolder,file)
-            # paste0(cfg$simulationOutputFolder,file)
+      for (file_name in files) {
+        print("file_name")
+        print(file_name)
+        # check if the file is a bff or pxf file
+        
+        file_type <- gsub("\\d+\\.|\\.json", "", file_name)
+        print("file_type")
+        print(file_type)
+
+        rv_sim[[paste0("simResult_", file_type)]] <- read_json(
+          paste0(
+            simulationOutputFolder,
+            "/",
+            file_name
           )
-          selectedOutputFormats <- c(selectedOutputFormats, "BFF")
-        } else if (grepl(file, "pxf")) {
-          rv_sim$simResult_pxf <- read_json(
-            paste0(simulationOutputFolder,file)
-            # paste0(cfg$simulationOutputFolder,file)
-          )
-          selectedOutputFormats <- c(selectedOutputFormats, "PXF")
-        }
+        )
+
+        selectedOutputFormats <- c(
+          selectedOutputFormats, 
+          toupper(file_type)
+        )
+      
         mod_json_viewer_server(
           "sim_mode-json_viewer", 
           selectedOutputFormats,
@@ -227,11 +235,21 @@ app_server <- function(input, output, session) {
       # )
 
       outDir <- get_golem_options("patientModeOutputFolder")
+      print("outDir")
+      print(outDir)
       # outDir <- "data/output/rankedPatients"
       dirs <- list.dirs(outDir)
+      print("dirs")
+      print(dirs)
 
       # check if on of the directories contains the runId
-      dirs <- dirs[grepl(dirs, runId)]
+      dir_bools <- sapply(dirs, function(dir) grepl(runId, dir))
+      print("dir_bools")
+      print(dir_bools)
+      dirs <- dirs[dir_bools]
+      
+      print("dirs2")
+      print(dirs)
       if (length(dirs) != 1) {
         # if it would be more than one directory
         # throw an error
@@ -297,7 +315,8 @@ app_server <- function(input, output, session) {
       print(dirs)
 
       # check if on of the directories contains the runId
-      dirs <- dirs[grepl(dirs, runId)]
+      dirs_bools <- sapply(dirs, function(dir) grepl(runId, dir))
+      dirs <- dirs[dirs_bools]
       if (length(dirs) != 1) {
         # if it would be more than one directory
         # throw an error
@@ -366,7 +385,8 @@ app_server <- function(input, output, session) {
       print(dirs)
 
       # check if on of the directories contains the runId
-      dirs <- dirs[grepl(dirs, runId)]
+      dir_bools <- sapply(dirs, function(dir) grepl(runId, dir))
+      dirs <- dirs[dir_bools]
       if (length(dirs) != 1) {
         # if it would be more than one directory
         # throw an error

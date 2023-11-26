@@ -25,7 +25,7 @@ run_app <- function(
     extraConfigsUploadFolder="../data/uploads/config",
     ontologyUploadFolder="../data/uploads/ontologies/",
 
-    simulationOutputFolder="../data/output/simulatedData/",
+    simulationOutputFolder="../data/output/simulatedData",
     conversionOutputFolder="../data/output/convertedData/",
     patientModeOutputFolder="../data/output/rankedPatients/",
     cohortModeOutputFolder="../data/output/rankedCohortMatrixes/",
@@ -35,7 +35,7 @@ run_app <- function(
     runWithDocker = FALSE,
     PHENO_SIM_BIN = "bff-pxf-simulator",
     PHENO_RANK_BIN = "pheno-ranker",
-    PHENO_CSV_CONV_BIN = "csv2pheno_ranker",
+    PHENO_CSV_CONV_BIN = "csv2pheno-ranker",
     ODBCSYSINI = "../config/odbc",
 
     dbDriver = "PostgreSQL",
@@ -44,15 +44,6 @@ run_app <- function(
     dbDatabase = "shiny",
     dbUser = "shiny",
     dbPassword = "shiny"
-
-    # dbSettings = list(
-    #   driver = "PostgreSQL",
-    #   server = "10.10.0.2",
-    #   port = 5432,
-    #   database = "shiny",
-    #   user = "shiny",
-    #   password = "shiny"
-    # )
   ),
   ...
 ) {

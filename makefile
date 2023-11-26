@@ -18,6 +18,9 @@ db-populate-with-timestamps:
 dev:
 	cd phenoRankeR && Rscript dev/run_dev.R
 
+stop:
+	fuser -k 3839/tcp
+
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 

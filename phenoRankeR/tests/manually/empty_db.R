@@ -2,7 +2,7 @@ library(DBI)
 library(jsonlite)
 library(odbc)
 
-odbc_ini_path <- normalizePath("config/odbc")
+odbc_ini_path <- normalizePath("../config/odbc")
 Sys.setenv(ODBCSYSINI = odbc_ini_path)
 
 print ("ODBCSYSINI:")
@@ -10,16 +10,15 @@ print (Sys.getenv("ODBCSYSINI"))
 
 print(odbcListDrivers())
 
-cfg <- fromJSON(readLines("config/cfg.json"))
-dbSettings <- cfg$dbSettings
-print(dbSettings)
+cfg <- fromJSON(readLines("../config/cfg.json"))
+print(cfg)
 con_string <- paste0(
-    "Driver=", dbSettings$driver,
-    ";Server=", dbSettings$server,
-    ";Port=", dbSettings$port,
-    ";Database=", dbSettings$database,
-    ";Uid=", dbSettings$user,
-    ";Pwd=", dbSettings$password
+    "Driver=", cfg$dbDriver,
+    ";Server=", cfg$dbServer,
+    ";Port=", cfg$dbPort,
+    ";Database=", cfg$dbDatabase,
+    ";Uid=", cfg$dbUser,
+    ";Pwd=", cfg$dbPassword
 )
 print(con_string)
 con <- dbConnect(odbc::odbc(), .connection_string = con_string)

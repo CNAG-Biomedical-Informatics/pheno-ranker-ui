@@ -1,0 +1,17 @@
+
+uploads/rankInput/*.json
+uploads/ontologies/*.yaml
+uploads/weights/*.yaml
+
+output/simulatedData/*.json
+output/tmp/*.json
+
+output/rankedPatients/*
+!output/rankedPatients/README.md
+
+output/rankedCohortMatrixes/*
+!output/rankedCohortMatrixes/README.md
+
+output/convertedData/*
+!output/convertedData/README.md
+
