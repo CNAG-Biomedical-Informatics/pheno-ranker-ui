@@ -8,5 +8,5 @@ FileUsage = 1
 odbcinst.ini on Centos 8
 [PostgreSQL]
 Description = PostgreSQL ODBC driver
-Driver = /usr/lib/psqlodbcw.so
+Driver = /usr/lib64/psqlodbcw.so
 FileUsage = 1
