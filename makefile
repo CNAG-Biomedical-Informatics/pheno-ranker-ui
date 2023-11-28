@@ -27,6 +27,9 @@ dev:
 stop:
 	fuser -k 3839/tcp
 
+test:
+	cd phenoRankeR && Rscript -e "devtools::test()"
+
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 
