@@ -40,7 +40,7 @@ build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 
 build-docker:
-	cd phenoRankeR/deploy && docker build -f Dockerfile_pheno-ranker -t phenorankerui:latest .
+	cd phenoRankeR/deploy && docker build -f Dockerfile -t phenorankerui:latest .
 
 d-run:
 	docker run --rm -it --entrypoint sh phenorankerui:latest
