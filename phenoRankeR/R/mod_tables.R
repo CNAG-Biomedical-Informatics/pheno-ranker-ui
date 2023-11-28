@@ -131,10 +131,26 @@ mod_table_phenoBlast_server <- function(id,
       #     header = TRUE,
       #   )
       blast_data <- as.data.frame(blast_data)
+      print("blast_data")
+      print(str(blast_data))
+
+      print("nrow(blast_data)")
+      print(nrow(blast_data))
 
       # header/first row to a character vector w/o the first column
       headers <- as.character(colnames(blast_data))[-1]
       jsonPaths <- as.character(blast_data[1, ])[-1]
+
+      # if there is no jsonPath
+      if(length(jsonPaths) == 0){
+        print("jsonPaths is empty")
+        # TODO
+        # throw error
+        return()
+      }
+
+      print("jsonPaths")
+      print(jsonPaths)
 
       # map each jsonPath to a header
       jsonPath_to_header <- setNames(headers, jsonPaths)
@@ -148,6 +164,9 @@ mod_table_phenoBlast_server <- function(id,
       topLevels <- unique(
         sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
       )
+
+      print("topLevels")
+      print(topLevels)
 
       # suggestion by Sofia
       # colors for the phenoblast table

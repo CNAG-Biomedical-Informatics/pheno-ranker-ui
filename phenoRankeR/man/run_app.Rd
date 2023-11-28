@@ -14,7 +14,7 @@ run_app(
     cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
     weightsUploadFolder = "../data/uploads/weights", extraConfigsUploadFolder =
     "../data/uploads/config", ontologyUploadFolder = "../data/uploads/ontologies/",
-    simulationOutputFolder = "../data/output/simulatedData", conversionOutputFolder =
+    simulationOutputFolder = "../data/output/simulatedData/", conversionOutputFolder =
     "../data/output/convertedData/", patientModeOutputFolder =
     "../data/output/rankedPatients/", 
      cohortModeOutputFolder =
