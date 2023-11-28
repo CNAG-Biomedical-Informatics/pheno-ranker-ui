@@ -6,7 +6,9 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+phenoRankeR_VERSION := $(shell grep -oP 'Version: \K.*' phenoRankeR/DESCRIPTION)
 CURRENT_DATE = $(shell date)
+
 export IGNORE_CACHE_FROM_HERE:=$(CURRENT_DATE)
 
 db-test:
@@ -29,6 +31,10 @@ stop:
 
 test:
 	cd phenoRankeR && Rscript -e "devtools::test()"
+
+install:
+	R CMD INSTALL phenoRankeR_$(phenoRankeR_VERSION).tar.gz
+	cd phenoRankeR && Rscript -e "library(phenoRankeR); phenoRankeR::run_app()"
 
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
