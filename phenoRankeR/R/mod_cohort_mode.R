@@ -736,11 +736,11 @@ mod_cohort_mode_server <- function(
 
       label <- "all toplevel terms"
       if (length(dnd_incl) > 0) {
-        label <- paste("included toplevels:",paste(input$dnd_incl, collapse = ", "))
+        label <- paste("included toplevels:",paste(dnd_incl, collapse = ", "))
       }
 
       if (length(dnd_excl) > 0) {
-        label <- paste("excluded toplevels:",paste(input$dnd_excl, collapse = ", "))
+        label <- paste("excluded toplevels:",paste(dnd_excl, collapse = ", "))
       }
 
       print("label")
