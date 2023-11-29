@@ -11,3 +11,7 @@ This directory, 'dev_docs', contains the developer documentation for the Pheno-R
 2. [**Deployment with user authentication enabled**](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md): This document explains how deploy the software whith Keycload secured authentication enabled.
 
 Please refer to the individual documents for more detailed information.
+
+
+NOTE:
+if any package install fails then do: Sys.unsetenv("GITHUB_PAT")

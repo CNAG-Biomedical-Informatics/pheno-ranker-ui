@@ -39,11 +39,19 @@ install:
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 
+build_package_builder_image:
+	DB_IP=$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pheno-ranker-db) && \
+	echo $$DB_IP && \
+	docker build -f Dockerfile_package_builder --build-arg DB_IP=$${DB_IP} -t phenorankerui_package_builder:latest .
+
+build_phenoRankeR_with_docker:
+	bash build_phenoRankeR_with_docker.sh
+
 build-docker:
-	cd phenoRankeR/deploy && docker build -f Dockerfile -t phenorankerui:latest .
+	cd phenoRankeR/deploy && docker build -f Dockerfile -t phenorankerui:$(phenoRankeR_VERSION) .
 
 d-run:
-	docker run --rm -it --entrypoint sh phenorankerui:latest
+	docker run --rm phenorankerui:$(phenoRankeR_VERSION)
 
 run:
 	docker compose up

@@ -1,0 +1,38 @@
+FROM r-base:latest
+
+ARG DB_IP=localhost
+ENV PPM=packagemanager.posit.co/cran/__linux__/jammy/latest
+
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \
+    git \
+    gdebi-core \
+    imagemagick \
+    libfribidi-dev \
+    libgit2-dev \
+    libharfbuzz-dev \
+    libmagick++-dev \
+    libssl-dev \
+    libtiff-dev \
+    libxml2-dev \
+    #for PostgreSQL
+    odbc-postgresql \
+    unixodbc-dev 
+
+COPY /phenoRankeR ./phenoRankeR
+
+WORKDIR /phenoRankeR
+
+RUN Rscript -e "renv:::renv_pak_init(force = TRUE)"
+ENV RENV_CONFIG_PAK_ENABLED=TRUE
+RUN Rscript -e "options(repos = c(PPM = 'https://${PPM_URL}')); renv::restore()"
+
+# build package
+ENV RENV_CONFIG_PAK_ENABLED=FALSE
+ENV ODBCSYSINI=/phenoRankeR/config/odbc
+ENV DB_IP=${DB_IP}
+
+ARG IGNORE_CACHE_FROM_HERE=unknown
+RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
+RUN Rscript -e "devtools::test()"
+CMD ["sh"]
+# RUN Rscript dev/03_deploy.R
