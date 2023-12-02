@@ -4,15 +4,12 @@ services:
     container_name: pheno-ranker-shiny
     image: phenorankerui:latest
     # build:
-    #   context: .
-    #   # target: prod
+    #   context: phenoRankeR/deploy
     #   args:
     #     - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
-    #   keycloak:
-    #     condition: service_healthy
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - 3838:3838
     volumes:
@@ -31,8 +28,6 @@ services:
     #   retries: 5
     tty: true
     command: ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db" ]
-    networks:
-      - shiny-net
 
   db:
     image: postgres:13-alpine
@@ -46,99 +41,6 @@ services:
     restart: unless-stopped
     healthcheck:
       test: pg_isready -U postgres
-    networks:
-      - shiny-net
-
-  proxy:
-    container_name: nginx-proxy
-    image: nginx:1.25.1-alpine
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
-      - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
-      - ./nginx_mountpoint/logs:/var/log/nginx
-      - ./nginx_mountpoint/certs/${DOMAIN}.pem:/etc/nginx/${DOMAIN}.pem:ro
-      - ./nginx_mountpoint/certs/${DOMAIN}-key.pem:/etc/nginx/${DOMAIN}-key.pem:ro
-    networks:
-      - shiny-net
-    # tty: true
-    # command: [ "sh" ]
-    
-
-  shinyproxy:
-    image: openanalytics/shinyproxy:3.0.1
-    container_name: shinyproxy
-    user: root
-    ports:
-      - 3830:8080
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml
-      - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log
-    networks:
-      - shiny-net
-
-  keycloak-db:
-    image: postgres:13-alpine
-    container_name: kc-db
-    environment:
-      POSTGRES_DB: ${KC_DB}
-      POSTGRES_USER: ${KC_DB_USER}
-      POSTGRES_PASSWORD: ${KC_DB_PW}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "psql -U $KC_DB_USER -d $KC_DB -c 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 3
-
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:20.0.1
-    depends_on:
-      - keycloak-db
-    environment:
-      DB_VENDOR: postgres
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: ${KC_DB_USER}
-      DB_PASSWORD: ${KC_DB_PW}
-      KEYCLOAK_ADMIN: ${KC_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PW}
-      KC_PROXY: edge
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_PATH: /auth
-      KC_HOSTNAME_URL: https://${DOMAIN}/auth/
-      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
-      KC_HEALTH_ENABLED: true
-    volumes:
-      - type: bind
-        source: ./realm-export.json
-        target: /opt/keycloak/data/import/realm-export.json
-      - type: bind
-        source: ./nginx_mountpoint/certs/${DOMAIN}.pem
-        target: /opt/keycloak/conf/server.crt.pem
-        read_only: true
-      - type: bind
-        source: ./nginx_mountpoint/certs/${DOMAIN}-key.pem
-        target: /opt/keycloak/conf/server.key.pem
-        read_only: true
-    restart: unless-stopped
-    command: ${KC_CMD}
-    healthcheck:
-      test: curl localhost:8080/health | grep -q "UP"
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    networks:
-      - shiny-net
 
 volumes:
   postgres-data:
@@ -154,6 +56,3 @@ volumes:
       type: none
       device: ${PWD}/config
       o: bind
-
-networks:
-  shiny-net:

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Configuration
 IMAGE_NAME="phenorankerui_package_builder"
 CONTAINER_NAME="your-container-name"
 HOST_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" # directory of the script
