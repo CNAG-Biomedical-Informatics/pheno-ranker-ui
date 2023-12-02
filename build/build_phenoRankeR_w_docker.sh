@@ -13,7 +13,7 @@ cd ../
 
 echo Build the docker image...
 DB_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pheno-ranker-db) 
-# docker build -f Dockerfile_package_builder --build-arg DB_IP=$${DB_IP} -t phenorankerui_package_builder:latest .
+docker build -f Dockerfile_package_builder --build-arg DB_IP=$${DB_IP} -t phenorankerui_package_builder:latest .
 
 echo "Starting container..."
 container_id=$(docker run -d $IMAGE_NAME)

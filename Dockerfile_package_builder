@@ -47,9 +47,10 @@ RUN mkdir /opt/build
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
 RUN Rscript -e "devtools::test()" > /opt/build/test.log
-RUN Rscript dev/03_deploy.R > /opt/build/build.log
-
-WORKDIR /
-RUN cp *.tar.gz /opt/build/.
-
 CMD ["sh"]
+# RUN Rscript dev/03_deploy.R > /opt/build/build.log
+
+# WORKDIR /
+# RUN cp *.tar.gz /opt/build/.
+
+# CMD ["sh"]

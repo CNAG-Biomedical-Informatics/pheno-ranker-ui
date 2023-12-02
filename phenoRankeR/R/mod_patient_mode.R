@@ -960,6 +960,8 @@ mod_patient_mode_server <- function(
       }
       settings2 <- settings
       ref_prefixes <- rv_patient$mappingDf$id_prefixes[1:nrow((rv_patient$mappingDf)) - 1]
+      print("ref_prefixes")
+      print(ref_prefixes)
 
       # save rv_patient$mappingDf to a csv file
       if (!is.null(rv_patient$mappingDf) && nrow(rv_patient$mappingDf) > 2) {

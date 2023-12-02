@@ -171,6 +171,7 @@ categorize_runs <- function(db_conn, user_id, mode) {
     add_to_vector_if_not_empty(month_name, month_bucket)
   }
 
+  print("before return")
   return(run_ids_vector_with_labels)
 }
 

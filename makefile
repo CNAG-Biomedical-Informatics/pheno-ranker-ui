@@ -33,8 +33,9 @@ test:
 	cd phenoRankeR && Rscript -e "devtools::test()"
 
 install:
-	R CMD INSTALL phenoRankeR_$(phenoRankeR_VERSION).tar.gz
-	cd phenoRankeR && Rscript -e "library(phenoRankeR); phenoRankeR::run_app()"
+	cd phenoRankeR && \
+	R CMD INSTALL deploy/phenoRankeR_$(phenoRankeR_VERSION).tar.gz && \
+	Rscript -e "library(phenoRankeR);options(shiny.port = 3840);phenoRankeR::run_app()"
 
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R

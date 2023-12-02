@@ -67,9 +67,18 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       label = row.names(merged_data)
     )
     df$prefix <- substr(df$label, 1, regexpr("_", df$label) - 1)
+    # BUG when the from the docker container created files are used
+    # the prefix is not correctly extracted
+    
+    # in the newest version of phenoRanker
+    # the prefix no longer contains the underscore
+    # need to mannually add it
 
     print("renderPlots rv$mappingDf")
     print(rv$mappingDf)
+
+    print("df")
+    print(str(df))
 
     df_merged <- merge(
       df,
@@ -78,6 +87,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       by.y = "id_prefixes",
       all.x = TRUE
     )
+    # print("df_merged")
+    # print(df_merged)
 
     rv$mdsPlot <- ggplot(
       df_merged,

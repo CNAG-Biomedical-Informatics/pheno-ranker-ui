@@ -24,16 +24,6 @@ mod_db_server <- function(id){
     # dbSettings <- get_golem_options("dbSettings")
     print("get_golem_options")
     print(get_golem_options())
-    # print("dbSettings")
-    # print(dbSettings)
-    # con_string <- paste0(
-    #   "Driver=", dbSettings$driver,
-    #   ";Server=", dbSettings$server,
-    #   ";Port=", dbSettings$port,
-    #   ";Database=", dbSettings$database,
-    #   ";Uid=", dbSettings$user,
-    #   ";Pwd=", dbSettings$password
-    # )
 
     con_string <- paste0(
       "Driver=", get_golem_options("dbDriver"),
