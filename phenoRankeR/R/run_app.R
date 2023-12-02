@@ -39,7 +39,7 @@ run_app <- function(
     ODBCSYSINI = "../config/odbc",
 
     dbDriver = "PostgreSQL",
-    dbServer = "10.10.0.2",
+    dbServer = Sys.getenv("DB_IP"),
     dbPort = 5432,
     dbDatabase = "shiny",
     dbUser = "shiny",

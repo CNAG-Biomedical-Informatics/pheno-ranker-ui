@@ -46,9 +46,7 @@ default_golem_opts <- list(
   PHENO_SIM_BIN = "/usr/share/pheno-ranker/utils/bff_pxf_simulator/bff-pxf-simulator",
   PHENO_CSV_CONV_BIN = "/usr/share/pheno-ranker/utils/csv2pheno_ranker/csv2pheno-ranker",
   ODBCSYSINI = "/app/config/odbc",
-
-  # TODO
-  # better have the db settings not in a list
+  
   dbDriver = "PostgreSQL",
   dbServer = "10.10.0.2",
   dbPort = 5432,
