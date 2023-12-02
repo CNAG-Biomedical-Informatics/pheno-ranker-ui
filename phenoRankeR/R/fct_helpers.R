@@ -67,11 +67,6 @@ readTxt <- function(
 
   txtData <- tryCatch(
     {
-      print("sep")
-      print(sep)
-
-      # The package build actually does not fail here
-      # because even commenting out the build fails
       read.table(
         filePath, 
         header = header, 
@@ -80,17 +75,13 @@ readTxt <- function(
       )
     },
     error = function(e) {
-      # maybe it needs to be stronger than a warning
       print("Error reading the file: ")
       cat("Error reading the file: ", e, "\n")
       print(e)
       # throw error
-      # or during build return a default
       return()
     } 
   )
-  print("HERE data")
-  print(str(txtData))
   return(txtData)
 }
 
@@ -307,6 +298,8 @@ create_new_mapping_df <- function() {
 #' @importFrom DBI dbGetQuery
 #' @noRd
 
+# The function below is not doing what it is supposed to do
+
 observeSimulatedDataChange <- function(
   session,
   input,
@@ -522,6 +515,10 @@ observeSimulatedDataChange <- function(
     print(rows_df)
     rv$mappingDf <- rbind(mapping_df, rows_df)
 
+    print("in observeSimulatedDataChange in fct_helpers.R")
+    print("rv$mappingDf")
+    print(rv$mappingDf)
+
     # TODO
     # the function above unfortunately returns the following:
 
@@ -606,7 +603,6 @@ observeConvertedDataChange <- function(
 
   print("observeConvertedDataChange")
   observeEvent(input[[input_id]] , {
-    print ("HEREe")
     
     convertedId <- input[[input_id]]
     rv_conversion$id <- convertedId

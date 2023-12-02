@@ -83,7 +83,6 @@ mod_db_server <- function(id){
         submitted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
       )"
       dbExecute(db_conn, query)
-      print("HERE")
     })
 
     # TODO

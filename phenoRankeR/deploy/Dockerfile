@@ -55,14 +55,15 @@ RUN gdebi -n r-${R_VERSION}_1_amd64.deb
 RUN rm r-${R_VERSION}_1_amd64.deb
 RUN ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R
 RUN ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
+RUN chown -R dockeruser:dockeruser /opt/R
 
+USER dockeruser
 WORKDIR /app
 
 RUN Rscript -e "options(repos = c(PPM = 'https://${PPM_URL}'));install.packages(c('pak','renv'))"
 
 COPY renv.lock .
 RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${PPM_URL}');renv::restore()"
-
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
 # somhow pack gets stuck with Loading metadata database ... done

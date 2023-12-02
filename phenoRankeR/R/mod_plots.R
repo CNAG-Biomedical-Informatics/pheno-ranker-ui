@@ -26,7 +26,6 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
   if (mode == "patient") {
     filePath <- paste0(
       get_golem_options("patientModeOutputFolder"),
-      # "data/output/rankedPatients/",
       runId,
       "/",
       runId,
@@ -41,22 +40,9 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     merged_data <- as.matrix(
       readTxt(
         get_golem_options("patientModeOutputFolder"),
-        # "data/output/rankedPatients", 
         runId = runId,
         row_names = 1
       )
-
-      # read.table(
-      #   paste0(
-      #   "./data/output/rankedPatients/",
-      #   runId,
-      #   "/",
-      #   runId,
-      #   ".txt"
-      #   ),
-      #   header = TRUE,
-      #   row.names = 1
-      # )
     )
 
     print("try to draw patient MDS scatter plot")
@@ -82,7 +68,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     )
     df$prefix <- substr(df$label, 1, regexpr("_", df$label) - 1)
 
-    print("rv$mappingDf")
+    print("renderPlots rv$mappingDf")
     print(rv$mappingDf)
 
     df_merged <- merge(

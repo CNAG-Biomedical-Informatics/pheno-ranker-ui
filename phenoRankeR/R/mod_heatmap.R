@@ -65,45 +65,12 @@ mod_heatmap_server <- function(
         return()
       }
 
-      # TODO
-      # all the read.table calls need
-      # to be wrapped in a function with error handling
-
-      # in order to be able to build the R-Shiny app
-      # data <- tryCatch({
-      #   read.table("your_file_path.csv")
-      #   },
-      #   error = function(e) {
-      #     warning("Error reading the file: ", e)
-
-      #     # TODO
-      #     # throw error
-
-      #     # TODO
-      #     # maybe return default data
-      #     # when the application is being built
-      #     return(data.frame())  # Return default data
-      #   }
-      # )
-
       merged_data <- as.matrix(
         readTxt(
           get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients", 
           runId = runId,
           row_names = 1
         )
-        # read.table(
-        #   paste0(
-        #     "./data/output/rankedPatients/",
-        #     runId,
-        #     "/",
-        #     runId,
-        #     ".txt"
-        #   ),
-        #   header = TRUE,
-        #   row.names = 1
-        # )
       ) 
 
       merged_df <- as.data.frame(merged_data)
@@ -112,11 +79,6 @@ mod_heatmap_server <- function(
         merged_data, 
         c(targetId)
       )
-
-      print("HERE1")
-      print("str(merged_data)")
-      print(str(merged_data))
-      print("HERE1.1")
 
       # TODO
       #!BUG
@@ -135,12 +97,9 @@ mod_heatmap_server <- function(
         labels_col = row_cols_labels,
         labels_row = row_cols_labels,
       )
-      print("HERE2")
-      print(ht)
     } else {
       filePath <- paste0(
         get_golem_options("cohortModeOutputFolder"),
-        # "data/output/rankedCohortMatrixes/",
         runId,
         "/",
         runId,
@@ -157,25 +116,11 @@ mod_heatmap_server <- function(
       data <- as.matrix(
         readTxt(
           get_golem_options("cohortModeOutputFolder"),
-          # "data/output/rankedCohortMatrixes", 
           runId = runId,
           row_names = 1
         )
-        # read.table(
-        #   paste0(
-        #     "./data/output/rankedCohortMatrixes/",
-        #     runId,
-        #     "/",
-        #     runId,
-        #     ".txt"
-        #   ),
-        #   header = TRUE, row.names = 1
-        # )
       )
       cohort_row_names <- rownames(data)
-
-      print("HERE3 data")
-      print(str(data))
       
       #---- heatmap ----
       if (uploaded_files_count == 1) {

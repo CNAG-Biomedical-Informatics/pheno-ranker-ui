@@ -140,8 +140,6 @@ app_server <- function(input, output, session) {
   # cohort mode: coh42553
   # convert mode: conv42554
 
-  # maybe below is better in .Renviron?
-  # cfg <- fromJSON(readLines("config/cfg.json"))
   if(get_golem_options("runWithDocker") == "True") {
     print("running with docker")
     Sys.setenv(LD_LIBRARY_PATH = paste(
@@ -150,15 +148,12 @@ app_server <- function(input, output, session) {
       sep=":"
       )
     )
-    print("new LD_LIBRARY_PATH")
     print(Sys.getenv("LD_LIBRARY_PATH"))
   } else {
     print("running without docker")
   }
 
-  # phenoSimBin <- cfg$PHENO_SIM_BIN
   phenoSimBin <- get_golem_options("phenoSimBin")
-  # phenoRankBin <- cfg$PHENO_RANK_BIN
   phenoRankBin <- get_golem_options("phenoRankBin")
   
   # maybe better to put this in a separate module(?)
