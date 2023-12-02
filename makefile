@@ -45,7 +45,7 @@ build_package_builder_image:
 	docker build -f Dockerfile_package_builder --build-arg DB_IP=$${DB_IP} -t phenorankerui_package_builder:latest .
 
 build_phenoRankeR_with_docker:
-	bash build_phenoRankeR_with_docker.sh
+	bash build/build_phenoRankeR_w_docker.sh
 
 build-docker:
 	cd phenoRankeR/deploy && docker build -f Dockerfile -t phenorankerui:$(phenoRankeR_VERSION) .

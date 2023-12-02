@@ -28,11 +28,28 @@ RUN Rscript -e "options(repos = c(PPM = 'https://${PPM_URL}')); renv::restore()"
 
 # build package
 ENV RENV_CONFIG_PAK_ENABLED=FALSE
-ENV ODBCSYSINI=/phenoRankeR/config/odbc
+
+WORKDIR /opt
+RUN mkdir odbc
+RUN { \
+    echo "[PostgreSQL]"; \
+    echo "Description = PostgreSQL ODBC driver"; \
+    echo "Driver = /usr/lib/x86_64-linux-gnu/odbc/psqlodbcw.so"; \
+    echo "FileUsage = 1"; \
+    } >> /opt/odbc/odbcinst.ini
+
+ENV ODBCSYSINI=/opt/odbc
 ENV DB_IP=${DB_IP}
 
+WORKDIR /phenoRankeR
+
+RUN mkdir /opt/build
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
-RUN Rscript -e "devtools::test()"
+RUN Rscript -e "devtools::test()" > /opt/build/test.log
+RUN Rscript dev/03_deploy.R > /opt/build/build.log
+
+WORKDIR /
+RUN cp *.tar.gz /opt/build/.
+
 CMD ["sh"]
-# RUN Rscript dev/03_deploy.R
