@@ -14,7 +14,7 @@ cfg <- fromJSON(readLines("../config/cfg.json"))
 print(cfg)
 con_string <- paste0(
     "Driver=", cfg$dbDriver,
-    ";Server=", cfg$dbServer,
+    ";Server=", Sys.getenv("DB_IP"),
     ";Port=", cfg$dbPort,
     ";Database=", cfg$dbDatabase,
     ";Uid=", cfg$dbUser,
