@@ -20,6 +20,11 @@ db-empty:
 db-run:
 	docker run -d --name pheno-ranker-db -p 5432:5432 -e POSTGRES_PASSWORD=shiny -e POSTGRES_USER=shiny -e POSTGRES_DB=shiny postgres:13.3-alpine
 
+sqlite-run:
+	@echo "Creating SQLite database..."
+	echo "CREATE TABLE init (id INTEGER PRIMARY KEY);" | sqlite3 shiny.sqlite
+	@echo "Done."
+
 db-populate-with-timestamps:
 	cd phenoRankeR && Rscript "tests/manually/populate_db_with_timestamps.R"
 

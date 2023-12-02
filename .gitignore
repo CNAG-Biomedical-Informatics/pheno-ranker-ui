@@ -1,3 +1,5 @@
+*.sqlite
+
 .vscode/settings.json
 .env
 *.pem
