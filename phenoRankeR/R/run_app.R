@@ -38,12 +38,12 @@ run_app <- function(
     PHENO_CSV_CONV_BIN = "csv2pheno-ranker",
     ODBCSYSINI = "../config/odbc",
 
-    dbDriver = "PostgreSQL",
+    dbDriver = Sys.getenv("DB_DRIVER"),
     dbServer = Sys.getenv("DB_IP"),
     dbPort = 5432,
-    dbDatabase = "shiny",
-    dbUser = "shiny",
-    dbPassword = "shiny"
+    dbDatabase = Sys.getenv("DB_NAME"),
+    dbUser = Sys.getenv("DB_USER"),
+    dbPassword = Sys.getenv("DB_PW")
   ),
   ...
 ) {

@@ -7,8 +7,7 @@ FileUsage = 1
 
 [SQLite]
 Description=SQLite ODBC Driver
-Driver=libsqliteodbc.so
-Setup=libsqliteodbc.so
+Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so
 UsageCount=1
 
 odbcinst.ini on Centos 8

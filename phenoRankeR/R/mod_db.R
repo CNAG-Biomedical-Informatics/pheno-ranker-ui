@@ -25,14 +25,25 @@ mod_db_server <- function(id){
     print("get_golem_options")
     print(get_golem_options())
 
-    con_string <- paste0(
-      "Driver=", get_golem_options("dbDriver"),
-      ";Server=", get_golem_options("dbServer"),
-      ";Port=", get_golem_options("dbPort"),
-      ";Database=", get_golem_options("dbDatabase"),
-      ";Uid=", get_golem_options("dbUser"),
-      ";Pwd=", get_golem_options("dbPassword")
-    )
+    dbDriver <- get_golem_options("dbDriver")
+
+    if (dbDriver == "PostgreSQL") {
+      con_string <- paste0(
+        "Driver=", get_golem_options("dbDriver"),
+        ";Server=", get_golem_options("dbServer"),
+        ";Port=", get_golem_options("dbPort"),
+        ";Database=", get_golem_options("dbDatabase"),
+        ";Uid=", get_golem_options("dbUser"),
+        ";Pwd=", get_golem_options("dbPassword")
+      )
+    } else if (dbDriver == "SQLite") {
+      con_string <- paste0(
+        "Driver=", get_golem_options("dbDriver"),
+        ";Database=", get_golem_options("dbDatabase")
+      )
+    } else {
+      print("dbDriver not supported")
+    }
 
     print("con_string")
     print(con_string)

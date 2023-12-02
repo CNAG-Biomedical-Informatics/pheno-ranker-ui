@@ -21,8 +21,9 @@ run_app(
     "../data/output/rankedCohortMatrixes/", tempFolder = "../data/temp/", runWithDocker =
     FALSE, PHENO_SIM_BIN = "bff-pxf-simulator", PHENO_RANK_BIN = "pheno-ranker",
     PHENO_CSV_CONV_BIN = "csv2pheno-ranker", ODBCSYSINI = "../config/odbc", dbDriver =
-    "PostgreSQL", dbServer = Sys.getenv("DB_IP"), dbPort = 5432, dbDatabase = "shiny",
-    dbUser = "shiny", dbPassword = "shiny"),
+    Sys.getenv("DB_DRIVER"), dbServer = Sys.getenv("DB_IP"), dbPort = 5432, dbDatabase =
+    Sys.getenv("DB_NAME"), dbUser = Sys.getenv("DB_USER"), dbPassword =
+    Sys.getenv("DB_PW")),
   ...
 )
 }
