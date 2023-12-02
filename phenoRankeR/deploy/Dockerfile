@@ -65,6 +65,8 @@ RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${P
 
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
+# somhow pack gets stuck with Loading metadata database ... done
+ENV RENV_CONFIG_PAK_ENABLED=FALSE
 RUN Rscript -e "renv::install('/app/phenoRankeR_${PhenoRankeR_VERSION}.tar.gz')"
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
