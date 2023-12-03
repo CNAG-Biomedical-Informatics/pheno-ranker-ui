@@ -42,7 +42,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
-      - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
+      # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
     group_add:
       - "991" # getent group docker | cut -d: -f3
     networks:

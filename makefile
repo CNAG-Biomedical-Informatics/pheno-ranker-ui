@@ -79,3 +79,8 @@ cert:
 
 prod:
 	docker compose -f docker-compose.prod.yml up
+
+# below is needed so that the user in the docker container
+# can write to the mounted volume data
+change-owner:
+	sudo chown -R ${UID}:${GID} data

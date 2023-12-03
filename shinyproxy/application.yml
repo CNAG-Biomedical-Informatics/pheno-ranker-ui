@@ -39,8 +39,8 @@ proxy:
       container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
-          pheno-ranker_shiny-data:/app/data,
-          pheno-ranker_shiny-config:/app/config,
+          pheno-ranker-ui_shiny-data:/app/data,
+          pheno-ranker-ui_shiny-config:/app/config,
         ]
     - id: 02_hello
       display-name: Hello Application
