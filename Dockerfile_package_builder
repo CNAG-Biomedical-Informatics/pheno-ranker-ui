@@ -1,6 +1,5 @@
 FROM r-base:latest
 
-ARG DB_IP=localhost
 ENV PPM=packagemanager.posit.co/cran/__linux__/jammy/latest
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
@@ -37,6 +36,7 @@ RUN { \
     } >> /opt/odbc/odbcinst.ini
 
 # create a sqlite database
+# use below to replace the for PostgreSQL
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     sqlite3 \
     libsqliteodbc
@@ -52,9 +52,9 @@ RUN mkdir /opt/build
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
 RUN Rscript -e "devtools::test()" > /opt/build/test.log
-# RUN Rscript dev/03_deploy.R > /opt/build/build.log
+RUN Rscript dev/03_deploy.R > /opt/build/build.log
 
-# WORKDIR /
-# RUN cp *.tar.gz /opt/build/.
+WORKDIR /
+RUN cp *.tar.gz /opt/build/.
 
 CMD ["sh"]

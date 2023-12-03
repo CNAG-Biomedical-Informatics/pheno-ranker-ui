@@ -34,7 +34,7 @@ proxy:
       display-name: Pheno-Ranker
       description: Pheno-Ranker
       container-cmd:  ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db" ]
-      container-image: phenorankerui:latest
+      container-image: phenorankerui:0.0.0.9000
       access-groups: [shiny] #assign the role "shiny" to all users
       container-network: pheno-ranker-ui_shiny-net
       container-volumes:

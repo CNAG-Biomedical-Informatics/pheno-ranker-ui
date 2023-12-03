@@ -77,3 +77,5 @@ proxy:
 cert:
 	/usr/local/bin/mkcert -cert-file ./nginx_mountpoint/certs/shinyproxy.cnag.dev.pem -key-file ./nginx_mountpoint/certs/shinyproxy.cnag.dev-key.pem shinyproxy.cnag.dev
 
+prod:
+	docker compose -f docker-compose.prod.yml up
