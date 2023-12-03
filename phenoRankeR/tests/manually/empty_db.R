@@ -10,15 +10,13 @@ print (Sys.getenv("ODBCSYSINI"))
 
 print(odbcListDrivers())
 
-cfg <- fromJSON(readLines("../config/cfg.json"))
-print(cfg)
 con_string <- paste0(
-    "Driver=", cfg$dbDriver,
+    "Driver=", Sys.getenv("DB_DRIVER"),
     ";Server=", Sys.getenv("DB_IP"),
-    ";Port=", cfg$dbPort,
-    ";Database=", cfg$dbDatabase,
-    ";Uid=", cfg$dbUser,
-    ";Pwd=", cfg$dbPassword
+    ";Port=", Sys.getenv("DB_PORT"),
+    ";Database=", Sys.getenv("DB_NAME"),
+    ";Uid=", Sys.getenv("DB_USER"),
+    ";Pwd=", Sys.getenv("DB_PW")
 )
 print(con_string)
 con <- dbConnect(odbc::odbc(), .connection_string = con_string)

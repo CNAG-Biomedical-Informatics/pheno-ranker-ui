@@ -36,13 +36,15 @@ services:
   shinyproxy:
     image: openanalytics/shinyproxy:3.0.1
     container_name: shinyproxy
-    user: dockeruser
+    # user: root
     ports:
       - 3830:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml
-      - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
+      - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
+    group_add:
+      - "991" # getent group docker | cut -d: -f3
     networks:
       - shiny-net
 
