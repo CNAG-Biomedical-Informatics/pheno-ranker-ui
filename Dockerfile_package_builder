@@ -32,25 +32,29 @@ ENV RENV_CONFIG_PAK_ENABLED=FALSE
 WORKDIR /opt
 RUN mkdir odbc
 RUN { \
-    echo "[PostgreSQL]"; \
-    echo "Description = PostgreSQL ODBC driver"; \
-    echo "Driver = /usr/lib/x86_64-linux-gnu/odbc/psqlodbcw.so"; \
-    echo "FileUsage = 1"; \
+    echo "[SQLite]"; \
+    echo "Driver = /usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so";  \   
     } >> /opt/odbc/odbcinst.ini
 
-ENV ODBCSYSINI=/opt/odbc
-ENV DB_IP=${DB_IP}
+# create a sqlite database
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \
+    sqlite3 \
+    libsqliteodbc
+
+RUN echo "CREATE TABLE test (id INTEGER PRIMARY KEY);" | sqlite3 /opt/test.db
 
 WORKDIR /phenoRankeR
+ENV ODBCSYSINI=/opt/odbc
+ENV DB_DRIVER=SQLite
+ENV DB_NAME=/opt/test.db
 
 RUN mkdir /opt/build
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
 RUN Rscript -e "devtools::test()" > /opt/build/test.log
-CMD ["sh"]
 # RUN Rscript dev/03_deploy.R > /opt/build/build.log
 
 # WORKDIR /
 # RUN cp *.tar.gz /opt/build/.
 
-# CMD ["sh"]
+CMD ["sh"]
