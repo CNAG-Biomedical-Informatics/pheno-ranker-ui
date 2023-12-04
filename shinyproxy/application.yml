@@ -21,11 +21,11 @@ proxy:
   #   client-id: ***
   #   client-secret: ***
   keycloak:
-    realm: Shinyproxy
+    realm: "${KC_REALM}"
     auth-server-url: http://keycloak:8080/
     ssl-required: external
-    resource: shinyproxy
-    credentials-secret: 4ikrESErZmuG8WELtM4AQIUbbor4vTUi
+    resource: "${KC_CLIENT_ID}"
+    credentials-secret: "${KC_CLIENT_SECRET}"
     admin-groups: shiny
   docker:
     internal-networking: true
@@ -33,8 +33,8 @@ proxy:
     - id: 01_phenorankerapp
       display-name: Pheno-Ranker
       description: Pheno-Ranker
-      container-cmd:  ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db" ]
-      container-image: phenorankerui:0.0.0.9000
+      container-cmd: ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db"]
+      container-image: "${DOCKER_IMG}"
       access-groups: [shiny] #assign the role "shiny" to all users
       container-network: pheno-ranker-ui_shiny-net
       container-volumes:

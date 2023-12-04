@@ -36,7 +36,12 @@ services:
   shinyproxy:
     image: openanalytics/shinyproxy:3.0.1
     container_name: shinyproxy
-    # user: root
+    environment:
+      DOCKER_IMG: ${DOCKER_IMG}
+      KC_REALM: ${KC_REALM}
+      KC_CLIENT_ID: ${KC_CLIENT_ID}
+      KC_CLIENT_SECRET: ${KC_CLIENT_SECRET}
+
     ports:
       - 3830:8080
     volumes:
