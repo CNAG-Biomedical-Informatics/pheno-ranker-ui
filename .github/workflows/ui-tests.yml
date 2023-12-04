@@ -15,6 +15,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          working-directory: convertPheno_client
+          working-directory: .
           config-file: cypress/cfg.json
           start: pnpm run dev

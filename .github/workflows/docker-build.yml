@@ -22,9 +22,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4.0.0
-        with:
-          context: phenoRankeR
-          push: true
-          tags: leistivo/pheno-ranker-ui:${{ github.sha }}
+      - name: Build the image
+        run: bash ${GITHUB_WORKSPACE}/build/build_phenoRankeR_w_docker.sh
