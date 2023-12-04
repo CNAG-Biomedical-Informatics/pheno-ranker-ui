@@ -49,6 +49,10 @@ with your domain name.
 4. Run `docker-compose up -d`
 5. Open your browser and go to `https://<yourDomain>/auth` to access the Keycloak admin console
 6. Create an admin and a test user in the realm you defined in the .env file
+    > **Important:** 
+    >
+    > all users must have an email otherwise the login will fail
+7. Assign the realm role `admin` to the user admin and `user` to your users
 
 ## Only Pheno-Ranker-UI containerized
 

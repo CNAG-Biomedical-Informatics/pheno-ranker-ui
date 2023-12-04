@@ -38,7 +38,8 @@ services:
     container_name: shinyproxy
     environment:
       DOCKER_IMG: ${DOCKER_IMG}
-      KC_INTERNAL_URL: http://keycloak:8080/
+      DOMAIN: ${DOMAIN}
+      KC_INTERNAL_URL: keycloak:8080
       KC_REALM: ${KC_REALM}
       KC_CLIENT_ID: ${KC_CLIENT_ID}
       KC_CLIENT_SECRET: ${KC_CLIENT_SECRET}

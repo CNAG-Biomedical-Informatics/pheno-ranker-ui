@@ -5,28 +5,23 @@ proxy:
   heartbeat-rate: 10000
   heartbeat-timeout: 60000
   port: 8080
-  authentication: keycloak
-  # keycloak is deprecated, use authentication: openid instead
-  # authentication: openid
-  admin-groups: shiny
+  authentication: openid
   my-apps-mode: InLine
+  admin-groups: [admin]
+  admin-users: [admin]
   server:
     forward-headers-strategy: native
   api-security:
     hide-spec-details: false
-  # openid:
-  #   auth-url: http://keycloak:8080/
-  #   token-url: https://www.googleapis.com/oauth2/v4/token
-  #   jwks-url: https://www.googleapis.com/oauth2/v3/certs
-  #   client-id: ***
-  #   client-secret: ***
-  keycloak:
-    realm: "${KC_REALM}"
-    auth-server-url: "${KC_INTERNAL_URL}"
-    ssl-required: external
-    resource: "${KC_CLIENT_ID}"
-    credentials-secret: "${KC_CLIENT_SECRET}"
-    admin-groups: shiny
+  openid:
+    auth-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
+    logout-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/logout?client_id=shinyproxy&post_logout_redirect_uri=https://${DOMAIN}"
+    token-url: "http://${KC_INTERNAL_URL}/realms/${KC_REALM}/protocol/openid-connect/token"
+    jwks-url: "http://${KC_INTERNAL_URL}/realms/${KC_REALM}/protocol/openid-connect/certs"
+    client-id: "${KC_CLIENT_ID}"
+    Client-secret: "${KC_CLIENT_SECRET}"
+    username-attribute: email
+    roles-claim: realm_roles
   docker:
     internal-networking: true
   specs:
@@ -35,7 +30,7 @@ proxy:
       description: Pheno-Ranker
       container-cmd: ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db"]
       container-image: "${DOCKER_IMG}"
-      access-groups: [shiny] #assign the role "shiny" to all users
+      access-groups: [admin, user] #assign the role "user" to all users
       container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
@@ -47,6 +42,7 @@ proxy:
       description: Application which demonstrates the basics of a Shiny app
       container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
       container-image: openanalytics/shinyproxy-demo
+      access-groups: [admin, user] #assign the role "user" to all users
       container-network: pheno-ranker-ui_shiny-net
 logging:
   file:
