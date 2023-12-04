@@ -64,6 +64,8 @@ RUN Rscript -e "options(repos = c(PPM = 'https://${PPM_URL}'));install.packages(
 
 COPY renv.lock .
 RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${PPM_URL}');renv::restore()"
+# TODO figure out how to do a renv::restore() without installing all the development dependencies
+# interesting Github issue:https://github.com/rstudio/renv/issues/1019
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
 # somhow pack gets stuck with Loading metadata database ... done

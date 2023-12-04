@@ -89,3 +89,8 @@ restart-shinyproxy:
 # can write to the mounted volume data
 change-owner:
 	sudo chown -R ${UID}:${GID} data
+
+# analyze an docker image using dive
+# https://github.com/wagoodman/dive
+dive:
+	dive leistivo/pheno-ranker-ui:$(phenoRankeR_VERSION)
