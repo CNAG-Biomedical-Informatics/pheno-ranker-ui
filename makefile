@@ -54,6 +54,9 @@ build_phenoRankeR_with_docker:
 build-docker:
 	cd phenoRankeR/deploy && docker build -f Dockerfile -t phenorankerui:$(phenoRankeR_VERSION) .
 
+pull-docker:
+	docker pull leistivo/pheno-ranker-ui:$(phenoRankeR_VERSION)
+
 d-run:
 	docker run --rm phenorankerui:$(phenoRankeR_VERSION)
 
