@@ -1,3 +1,6 @@
+server:
+  forward-headers-strategy: native
+
 proxy:
   title: Open Analytics Shiny Proxy
   logo-url: https://www.openanalytics.eu/shinyproxy/logo.png
@@ -7,12 +10,7 @@ proxy:
   port: 8080
   authentication: openid
   my-apps-mode: InLine
-  admin-groups: [admin]
-  admin-users: [admin]
-  server:
-    forward-headers-strategy: native
-  api-security:
-    hide-spec-details: false
+  admin-groups: admin
   openid:
     auth-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
     logout-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/logout?client_id=shinyproxy&post_logout_redirect_uri=https://${DOMAIN}"
@@ -28,7 +26,21 @@ proxy:
     - id: 01_phenorankerapp
       display-name: Pheno-Ranker
       description: Pheno-Ranker
-      container-cmd: ["Rscript", "/app/run_phenoRankeR.R", "dbServer", "db"]
+      container-cmd:
+        [
+          "Rscript",
+          "/app/run_phenoRankeR.R",
+          "dbServer",
+          "db",
+          "dbDatabase",
+          "${PR_DB_NAME}",
+          "dbUser",
+          "${PR_DB_USER}",
+          "dbPassword",
+          "${PR_DB_PW}",
+          "dbPort",
+          "${PR_DB_PORT}",
+        ]
       container-image: "${DOCKER_IMG}"
       access-groups: [admin, user] #assign the role "user" to all users
       container-network: pheno-ranker-ui_shiny-net

@@ -46,13 +46,19 @@ with your domain name.
 1. Install [Docker](https://docs.docker.com/get-docker/) and [Docker compose](https://docs.docker.com/compose/install/)
 2. rename the file [example.env](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/example.env) to .env and fill in the variables
 3. Change the owner of the folder "data": `sudo chown -R 1000:1000 data`
-4. Run `docker-compose up -d`
+4. Run `docker compose -f docker-compose.prod.yml up -d`
 5. Open your browser and go to `https://<yourDomain>/auth` to access the Keycloak admin console
 6. Create an admin and a test user in the realm you defined in the .env file
     > **Important:** 
     >
     > all users must have an email otherwise the login will fail
 7. Assign the realm role `admin` to the user admin and `user` to your users
+8. Get the client secret of the client `shinyproxy` and replace it in the .env file
+9. Restart the shinyproxy container:
+    ```
+    docker compose -f docker-compose.prod.yml down shinyproxy`
+    docker compose -f docker-compose.prod.yml up -d shinyproxy
+    ```
 
 ## Only Pheno-Ranker-UI containerized
 
@@ -63,13 +69,6 @@ with your domain name.
 - Install and configure: 
 	- [Keycloak](https://www.keycloak.org/)
   - [ShinyProxy](https://www.shinyproxy.io/)
-
-### ShinyProxy configuration :
-- Edit the file `shinyproxy/application.yml` and replace the environment variables:
-  - KC_INTERNAL_URL
-  - KC_REALM
-  - KC_CLIENT_ID
-  - KC_CLIENT_SECRET
 
 ### System requirements:
 - Unix based distribution (it is tested on Ubuntu 22.04 LTS and CentOS Linux 8)

@@ -80,6 +80,10 @@ cert:
 prod:
 	docker compose -f docker-compose.prod.yml up
 
+restart-shinyproxy:
+	docker compose -f docker-compose.prod.yml down shinyproxy
+	docker compose -f docker-compose.prod.yml up -d shinyproxy
+
 # below is needed so that the user in the docker container
 # can write to the mounted volume data
 change-owner:
