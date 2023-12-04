@@ -1,8 +1,0 @@
-{
-  "dbDriver": "PostgreSQL",
-  "dbServer": "<DB_IP>",
-  "dbPort": 5432,
-  "dbDatabase": "shiny",
-  "dbUser": "shiny",
-  "dbPassword": "shiny"
-}

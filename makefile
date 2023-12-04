@@ -46,9 +46,7 @@ build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 
 build_package_builder_image:
-	DB_IP=$(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pheno-ranker-db) && \
-	echo $$DB_IP && \
-	docker build -f Dockerfile_package_builder --build-arg DB_IP=$${DB_IP} -t phenorankerui_package_builder:latest .
+	docker build -f Dockerfile_package_builder -t phenorankerui_package_builder:latest .
 
 build_phenoRankeR_with_docker:
 	bash build/build_phenoRankeR_w_docker.sh
