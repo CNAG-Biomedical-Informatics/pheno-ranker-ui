@@ -22,7 +22,7 @@ proxy:
   #   client-secret: ***
   keycloak:
     realm: "${KC_REALM}"
-    auth-server-url: http://keycloak:8080/
+    auth-server-url: "${KC_INTERNAL_URL}"
     ssl-required: external
     resource: "${KC_CLIENT_ID}"
     credentials-secret: "${KC_CLIENT_SECRET}"
