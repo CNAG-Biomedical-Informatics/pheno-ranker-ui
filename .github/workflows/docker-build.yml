@@ -27,6 +27,6 @@ jobs:
 
       - name: push the image
         run: |
-          version=$(ls ${GITHUB_WORKSPACE}/phenoRanker/deploy/*.tar.gz | sed 's/.*_\(.*\)\.tar\.gz/\1/')
+          version=$(ls ${GITHUB_WORKSPACE}/phenoRankeR/deploy/*.tar.gz | sed 's/.*_\(.*\)\.tar\.gz/\1/')
           docker tag phenorankerui:${version} ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui:${version}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui:${version}
