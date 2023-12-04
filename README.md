@@ -24,7 +24,7 @@
 which is a tool designed for performing semantic similarity analysis on phenotypic data structured in JSON format, such as Beacon v2 Models or Phenopackets v2.
 
 
-[![pheno-ranker-UI](docs/ui.gif)](docs/ui.gif)
+<!-- [![pheno-ranker-UI](docs/ui.gif)](docs/ui.gif) -->
 
 # Getting Started
 

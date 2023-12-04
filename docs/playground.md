@@ -1,5 +1,5 @@
 
-If you want to try `Pheno-Ranker-UI` out we are providing a [playground](https://pheno-ranker.cnag.eu/)
+If you want to try `Pheno-Ranker-UI` out we will providing a [playground](https://pheno-ranker.cnag.eu/)
 
 [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m794601507-a686af3c42ebb3ff3f2673b2)](https://stats.uptimerobot.com/4nrjwuYQPm)
 

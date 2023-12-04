@@ -4,9 +4,9 @@ Frequently Asked Questions
 
 ??? faq "What does `Pheno-Ranker-UI` do?"
 
-    This tool facilitates the conversion of clinical data between commonly used formats, such as [GA4GH standards](https://www.ga4gh.org), to enable **secure data sharing** and discovery through **semantic interoperability**.
+    Pheno-ranker-ui is a web-interface for the CPAN's module Pheno::Ranker which is a tool designed for performing semantic similarity analysis on phenotypic data structured in JSON format, such as Beacon v2 Models or Phenopackets v2.
 
-    ##### last change 2023-22-06 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)
+    ##### last change 2023-04-12 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)
 
 ## Installation
 
@@ -16,4 +16,4 @@ Frequently Asked Questions
     of multiple microservices. Make sure that you were following the [instructions](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/dev_docs/how_to_self_host_w_keycloak_login_enabled.md) carefully.
     If you still have troubles, please [open an issue](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/issues/new) and we will try to help you.
 
-    ##### last change 2023-22-06 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)
+    ##### last change 2023-04-12 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)

@@ -1,37 +1,23 @@
 
-=== "Convert clinical data"
-	After being logged in with the user `convert` and password `pheno`
-	you will be redirected to the conversion page.
+=== "Simulate pheno-clinical data"
+	After being logged in with the user `pheno` and password `ranker`
+	you can start your Pheno-Ranker instance.
 
-	A conversion is a 4-step process:
-
-	1. Select the input format
-	2. Upload the necessary input files OR
-	click on the `example` button to use the example files provided by us
-	3. Select one or multiple output formats
-	4. Click on the `RUN` button
+	A pheno-clinical data simulation is a 5-step process:
+	
+	0. Select under Utilities the `Simulate BFF/PXF` option
 
 	!!! Tip "Hint"
-		Mouse over the `i` icon to get more information which files and formats are required for the selected input format.
+		Hover over utilities and the right click on `Simulate BFF/PXF` to open the link in a new tab.
+		Now the url bar will show extra information about which mode is currently selected etc.
 
-	!!! Warning "Use"
-		The playground has only one user so all the files uploaded will be visible to everyone.
-		So please do not upload any sensitive data.
+	1. Select the ouptut formats (bff/pxf)
+	2. Set the number of individuals to be generated
+	3. Either upload an ontologies yaml file or modify the ontologies in the editor below
+	4. Select one or multiple output formats
+	5. Click on the `Simulate` button
 
 	<figure markdown>
-	[![Pheno-Ranker-UI](img/conversion-screen.png)](https://pheno-ranker.cnag.cat/#/conversion/)
+	[![Pheno-Ranker-UI](img/simulate-data.png)]()
 	<figcaption> Use example data selected</figcaption>
-	</figure>
-
-
-=== "Explore the results"
-	After the conversion is finished you will be redirected to the results page. Where you can:
-
-	 - Download the results
-	 - Explore the results in the table (hide the columns you are not interested in)
-	 - Filter the results with the query builder
-
-	<!-- below should be a gif
-	<figure markdown>
-	[![Pheno-Ranker-UI](img/results-screen.png)]()
 	</figure>
