@@ -55,10 +55,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
       # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
+      - shiny-data:/app/data:ro
+      - shiny-config:/app/data:ro
+    
     group_add:
-      - "991" # getent group docker | cut -d: -f3
+      - ${DOCKER_GROUP} # getent group docker | cut -d: -f3
     networks:
-      - shiny-net
+      - shiny-net 
 
   keycloak-db:
     image: postgres:16.1-alpine3.18

@@ -7,8 +7,8 @@ server {
 server {
   listen 443 ssl; # For IPv4 addresses
   listen [::]:443 ssl; # For IPv6 addresses
-  ssl_certificate       /etc/nginx/shinyproxy.cnag.dev.pem;
-  ssl_certificate_key   /etc/nginx/shinyproxy.cnag.dev-key.pem;
+  ssl_certificate       /etc/nginx/localhost.pem;
+  ssl_certificate_key   /etc/nginx/localhost-key.pem;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
   location / {
