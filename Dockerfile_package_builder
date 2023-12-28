@@ -1,4 +1,4 @@
-FROM r-base:latest
+FROM r-base:4.3.0
 
 ENV PPM=packagemanager.posit.co/cran/__linux__/jammy/latest
 
@@ -15,7 +15,9 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     libxml2-dev \
     #for PostgreSQL
     odbc-postgresql \
-    unixodbc-dev 
+    unixodbc-dev \
+    sqlite3 \
+    libsqliteodbc
 
 COPY /phenoRankeR ./phenoRankeR
 
@@ -34,12 +36,6 @@ RUN { \
     echo "[SQLite]"; \
     echo "Driver = /usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so";  \   
     } >> /opt/odbc/odbcinst.ini
-
-# create a sqlite database
-# use below to replace the for PostgreSQL
-RUN apt-get update -qq && apt-get -y --no-install-recommends install \
-    sqlite3 \
-    libsqliteodbc
 
 RUN echo "CREATE TABLE test (id INTEGER PRIMARY KEY);" | sqlite3 /opt/test.db
 

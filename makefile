@@ -42,6 +42,7 @@ install:
 	R CMD INSTALL deploy/phenoRankeR_$(phenoRankeR_VERSION).tar.gz && \
 	Rscript -e "library(phenoRankeR);options(shiny.port = 3840);phenoRankeR::run_app()"
 
+.PHONY: build
 build:
 	cd phenoRankeR && Rscript dev/03_deploy.R
 

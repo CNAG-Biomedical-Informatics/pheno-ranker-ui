@@ -1,6 +1,6 @@
 Package: phenoRankeR
 Title: PKG_TITLE
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Ivo Christopher", "Leist", , "ivo.leist@cnag.eu", role = c("cre", "aut"))
 Description: PKG_DESC.
