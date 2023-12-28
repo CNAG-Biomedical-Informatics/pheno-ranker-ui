@@ -79,7 +79,7 @@ categorize_runs <- function(db_conn, user_id, mode) {
     user_id, mode
   )
 
-  print("query")
+  print("mod_history_sidebar - query")
   print(query)
 
   # categorize each run based on the submit time

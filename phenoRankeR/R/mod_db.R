@@ -69,20 +69,51 @@ mod_db_server <- function(id){
     
     # TODO
     # also create a users table if not exists
-    observe({
-      print("initialize jobs table")
-      print(db_conn)
+
+    #* NOTE
+    # JSONB is only available in sqlite > 3.45.0
+    # planned for 2024-01-31
+
+    query <- "
+      CREATE TABLE IF NOT EXISTS jobs (
+      id SERIAL PRIMARY KEY,
+      run_id numeric NOT NULL,
+      user_id numeric NOT NULL,
+      mode varchar(255) NOT NULL,
+      label varchar(255) NOT NULL,
+      settings JSONB NOT NULL, 
+      status varchar(255) NOT NULL,
+      submitted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )"
+
+    if (dbDriver == "SQLite") {
       query <- "
         CREATE TABLE IF NOT EXISTS jobs (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
         run_id numeric NOT NULL,
         user_id numeric NOT NULL,
         mode varchar(255) NOT NULL,
         label varchar(255) NOT NULL,
-        settings JSONB NOT NULL, 
+        settings varchar NOT NULL, 
         status varchar(255) NOT NULL,
         submitted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
       )"
+    }
+
+    observe({
+      print("initialize jobs table")
+      print(db_conn)
+      # query <- "
+      #   CREATE TABLE IF NOT EXISTS jobs (
+      #   id SERIAL PRIMARY KEY,
+      #   run_id numeric NOT NULL,
+      #   user_id numeric NOT NULL,
+      #   mode varchar(255) NOT NULL,
+      #   label varchar(255) NOT NULL,
+      #   settings JSONB NOT NULL, 
+      #   status varchar(255) NOT NULL,
+      #   submitted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+      # )"
       dbExecute(db_conn, query)
     })
 

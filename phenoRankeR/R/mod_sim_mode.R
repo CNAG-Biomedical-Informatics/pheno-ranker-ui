@@ -293,7 +293,7 @@ simulate_data <- function(outputFormat, simulationId, simSettings) {
   return(read_json(fn))
 }
 
-mod_sim_mode_server <- function(id, session, db_conn, rv_sim){
+mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <-session$ns
@@ -467,15 +467,47 @@ mod_sim_mode_server <- function(id, session, db_conn, rv_sim){
       # it would be good to have the
       # ids more self explanatory
       # simulationId <- paste0("sim",simulationId)
+
+      print("insert into db")
+      print("simulationId")
+      print(simulationId)
+      print("settings")
+      print(settings)
+      print("toJSON(settings)")
+      print(toJSON(settings))
   
       label <- paste0("Simulation ID: ",simulationId)
-      query <- sprintf(
-        "
+      print("label")
+      print(label)
+
+      print ("db_driver")
+      print (db_driver)
+
+      #* NOTE
+      # JSONB is only available in sqlite > 3.45.0
+      # planned for 2024-01-31
+
+      settings_json <- toJSON(settings)
+      print("settings_json")
+      print(settings_json)
+
+      query_string <- "
+        INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+        VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
+      "
+
+      if (db_driver == "SQLite") {
+        query_string <- "
           INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
-          VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
-        ",
-        simulationId, 1,"sim",label,toJSON(settings),"success"
+          VALUES (%s,%s,'%s','%s','%s','%s')
+        "
+      }
+      query <- sprintf(
+        query_string,
+        simulationId, 1,"sim",label,settings_json,"success"
       )
+      print("query")
+      print(query)
       dbExecute(db_conn, query)
       click("SimulateHistorySidebar-btn_show_history")
     })

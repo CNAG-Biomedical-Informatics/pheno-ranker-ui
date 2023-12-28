@@ -46,7 +46,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     )
 
     print("try to draw patient MDS scatter plot")
-    d <- dist(merged_data)
+    #d <- dist(merged_data)
 
     # TODO
     # !BUG cmdscale runs into
@@ -57,7 +57,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     # and as target: patient.json
     # as include-terms: disease
 
-    fit <- cmdscale(d, eig = TRUE, k = 2)
+    fit <- cmdscale(merged_data, eig = TRUE, k = 2)
 
     x <- fit$points[, 1]
     y <- fit$points[, 2]
@@ -157,8 +157,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     )
   
     # ---- multi dimensional scaling results ----
-    d <- dist(data)
-    fit <- cmdscale(d, eig = TRUE, k = 2)
+    # d <- dist(data)
+    fit <- cmdscale(data, eig = TRUE, k = 2)
 
     x <- fit$points[, 1]
     y <- fit$points[, 2]

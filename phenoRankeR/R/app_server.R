@@ -85,11 +85,15 @@ app_server <- function(input, output, session) {
 
   # load modules
   db_conn <- mod_db_server("db")
+  db_driver <- get_golem_options("dbDriver")
+  print("dbDriver")
+  print(db_driver)
 
   mod_sim_mode_server(
     "sim_mode",
     session,
     db_conn,
+    db_driver,
     rv_sim
   )
 
