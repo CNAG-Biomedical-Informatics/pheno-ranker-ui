@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+  mount-volumes:
+    image: alpine
+    volumes:
+     - shiny-data:/app/data
+     - shiny-config:/app/config
+    command:
+      - /bin/sh
+      - -c
+      - |
+        chown -R 1001:1001 /app/config &&
+        chown -R 1001:1001 /app/data &&
+        chmod -R 744 /app/config &&
+        chmod -R 744 /app/data
   db:
     image: postgres:16.1-alpine3.18
     container_name: pheno-ranker-db
@@ -52,13 +65,13 @@ services:
     ports:
       - 3830:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/user/1001/docker.sock:/var/run/docker.sock:ro
       - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
       # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
     group_add:
-      - "991" # getent group docker | cut -d: -f3
+      - ${DOCKER_GROUP} # getent group docker | cut -d: -f3
     networks:
-      - shiny-net
+      - shiny-net 
 
   keycloak-db:
     image: postgres:16.1-alpine3.18
@@ -90,8 +103,8 @@ services:
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_PATH: /auth
-      KC_HOSTNAME_URL: https://${DOMAIN}/auth/
-      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
+      KC_HOSTNAME_URL: https://${DOMAIN}:8444/auth/
+      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}:8444/auth/
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
       KC_HEALTH_ENABLED: true

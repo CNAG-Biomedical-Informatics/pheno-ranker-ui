@@ -1,3 +1,5 @@
+$${\color{red}Below \space requires \space Sysadmin/DevOps \space Skills}$$
+
 ## General pre-requisites for deployment:
 
 Ideally a unix (GNU/Linux, MacOS) based distribution.
@@ -45,6 +47,7 @@ with your domain name.
 
 1. Install [Docker](https://docs.docker.com/get-docker/) and [Docker compose](https://docs.docker.com/compose/install/)
 2. rename the file [example.env](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/blob/main/example.env) to .env and fill in the variables
+TODO # add that you also need to provide the odbcinst.ini file
 3. Change the owner of the folder "data": `sudo chown -R 1000:1000 data`
 4. Run `docker compose -f docker-compose.prod.yml up -d`
 5. Open your browser and go to `https://<yourDomain>/auth` to access the Keycloak admin console

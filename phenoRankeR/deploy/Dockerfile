@@ -17,9 +17,9 @@ RUN git clone https://github.com/CNAG-Biomedical-Informatics/pheno-ranker.git
 WORKDIR /usr/share/pheno-ranker
 RUN cpanm --notest --installdeps .
 
-# Add user "dockeruser"
-ARG UID=1000
-ARG GID=1000
+# Add user "dockeruser" (non-root)
+ARG UID=1001
+ARG GID=1001
 
 RUN groupadd -g "${GID}" dockeruser \
   && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" dockeruser
