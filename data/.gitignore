@@ -2,6 +2,7 @@
 uploads/rankInput/*.json
 uploads/ontologies/*.yaml
 uploads/weights/*.yaml
+uploads/config/*.yaml
 
 output/simulatedData/*.json
 output/tmp/*.json
@@ -14,4 +15,5 @@ output/rankedCohortMatrixes/*
 
 output/convertedData/*
 !output/convertedData/README.md
+
 
