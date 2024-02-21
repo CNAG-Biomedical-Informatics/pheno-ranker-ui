@@ -43,7 +43,7 @@ mod_landing_page_ui <- function(id){
           diseases, phenotypic features and treatments that you would like to be included in the simulated data.
         "),
         actionButton(
-          "navigateButton", 
+          ns("navigateToSimulator"), 
           "Simulate BFF/PXF", 
           style = "width: 100%;"
         ),
@@ -57,7 +57,7 @@ mod_landing_page_ui <- function(id){
           as well as more complex ones with nested fields 
         "),
         actionButton(
-          "navigateButton2", 
+          ns("navigateToConverter"), 
           "ConvertCSVs", 
           style = "width: 100%;"
         ),
@@ -88,7 +88,7 @@ mod_landing_page_ui <- function(id){
           reference cohort according to their similarity to your patient.
         "),
         actionButton(
-          "navigateButton3", 
+          ns("navigateToPatientMode"), 
           "Individual vs Reference Cohort(s)", 
           style = "width: 100%;"
         ),
@@ -120,7 +120,7 @@ mod_landing_page_ui <- function(id){
           )
         ),
         actionButton(
-          "navigateButton4", 
+          ns("navigateToCohortMode"), 
           "Intra-/Inter-cohort comparison", 
           style = "width: 100%;"
         )
@@ -131,6 +131,22 @@ mod_landing_page_ui <- function(id){
 
 mod_landing_page_server <- function(id, session){
   moduleServer(id, function(input, output, session){
-    ns <- session$ns
+    print("Landing Page Server")
+    observeEvent(input$navigateToSimulator, {
+      print("Navigate to simulator")
+      # updateTabsetPanel(session, "mainTabset", "simulator")
+    })
+    observeEvent(input$navigateToConverter, {
+      print("Navigate to converter")
+      # updateTabsetPanel(session, "mainTabset", "converter")
+    })
+    observeEvent(input$navigateToPatientMode, {
+      print("Navigate to patient mode")
+      # updateTabsetPanel(session, "mainTabset", "patient")
+    })
+    observeEvent(input$navigateToCohortMode, {
+      print("Navigate to cohort mode")
+      # updateTabsetPanel(session, "mainTabset", "cohort")
+    })
   })
 }

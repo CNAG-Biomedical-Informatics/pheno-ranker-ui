@@ -89,6 +89,11 @@ app_server <- function(input, output, session) {
   print("dbDriver")
   print(db_driver)
 
+  mod_landing_page_server(
+    "landing_page",
+    session
+  )
+
   mod_sim_mode_server(
     "sim_mode",
     session,
