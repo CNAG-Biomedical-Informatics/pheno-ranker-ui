@@ -120,10 +120,15 @@ validateYAML <- function(yaml_input) {
 outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE) {
   downloadHandler(
     filename = function() {
+      ext <- ".json"
+      if (grepl("conversionConfig", file_names)) {
+        ext <- ".yaml"
+      }
+
       if (zip_download) {
         "phenoRankerSim.zip"
       } else {
-        paste0(file_names, ".json")
+        paste0(file_names, ext)
       }
     },
     content = function(file) {
@@ -145,7 +150,17 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
         )
         unlink(temp_dir, recursive = TRUE)
       } else {
-        writeLines(as.character(toJSON(data_sources)), file)
+        if (grepl("conversionConfig", file_names)) {
+          print("data_sources")
+          print(data_sources)
+
+          print("file")
+          print(file)
+
+          writeLines(data_sources, file)
+        } else {
+          writeLines(as.character(toJSON(data_sources)), file)
+        }
       }
     }
   )
