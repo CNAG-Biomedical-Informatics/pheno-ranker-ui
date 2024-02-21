@@ -121,7 +121,7 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
   downloadHandler(
     filename = function() {
       ext <- ".json"
-      if (grepl("conversionConfig", file_names)) {
+      if (length(file_names) == 1 && grepl("conversionConfig", file_names)) {
         ext <- ".yaml"
       }
 
@@ -140,13 +140,39 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
         # Need to set wd otherwise the files will be inside nested folders
         setwd(temp_dir)
 
+        # Initialize a vector to hold the full filenames with extensions
+        full_file_names <- c()
+
         for (i in seq_along(data_sources)) {
-          content_file <- file.path(paste0(file_names[i], ".json"))
-          writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+          
+          # check if the file is a yaml file
+          fn <- file_names[[i]]
+          print("fn")
+          print(fn)
+          if (fn == "conversionConfig") {
+            print("inside conversionConfig")
+            content_file <- file.path(paste0(fn, ".yaml"))
+            print("content_file")
+            print(content_file)
+            writeLines(data_sources[[i]], content_file)
+
+            # Add the yaml file to the vector
+            full_file_names <- c(full_file_names, paste0(fn, ".yaml"))
+
+          } else {
+            content_file <- file.path(paste0(file_names[i], ".json"))
+            writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+
+            # Add the json file to the vector
+            full_file_names <- c(full_file_names, paste0(file_names[i], ".json"))
+          }
+          # content_file <- file.path(paste0(file_names[i], ".json"))
+          # writeLines(as.character(toJSON(data_sources[[i]])), content_file)
         }
         zip(
           file,
-          files = paste0(file_names, ".json")
+          # files = paste0(file_names, ".json")
+          files = full_file_names
         )
         unlink(temp_dir, recursive = TRUE)
       } else {
