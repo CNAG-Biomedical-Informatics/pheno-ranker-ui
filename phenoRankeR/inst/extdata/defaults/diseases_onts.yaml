@@ -1,11 +1,11 @@
 diseases:
-  - id: "HP:0000020"
-    label: "Urinary incontinence"
-  - id: "HP:0000055"
-    label: "Abnormality of female external genitalia"
-  - id: "HP:0000141"
-    label: "Amenorrhea"
-  - id: "HP:0000553"
-    label: "Abnormal uvea morphology"
-  - id: "HP:0000630"
-    label: "Abnormal retinal artery morphology"
+- id: OMIM:101000
+  label: Neurofibromatosis, type 2
+- id: OMIM:102578
+  label: Leukemia, acute promyelocytic, somatic
+- id: OMIM:103050
+  label: Adenylosuccinase deficiency
+- id: OMIM:103900
+  label: Aldosteronism, glucocorticoid-remediable
+- id: OMIM:104200
+  label: Alport syndrome, autosomal dominant

@@ -1,0 +1,11 @@
+exposures:
+- id: NCIT:C194
+  label: 4-Nitroquinoline-1-Oxide
+- id: NCIT:C196
+  label: Benzo(a)pyrene-7,8-diol 9,10-Epoxide
+- id: NCIT:C197
+  label: Dimethylbenzanthracene
+- id: NCIT:C213
+  label: Aflatoxin
+- id: NCIT:C251
+  label: Anthracene
