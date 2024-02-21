@@ -31,9 +31,6 @@ services:
   proxy:
     container_name: nginx-proxy
     image: nginx:1.25.3-alpine
-    depends_on:
-      keycloak:
-        condition: service_healthy
     ports:
       - 80:80
       - 443:443
@@ -43,11 +40,15 @@ services:
       - ./nginx_mountpoint/logs:/var/log/nginx
       - ./nginx_mountpoint/certs/${DOMAIN}.pem:/etc/nginx/${DOMAIN}.pem:ro
       - ./nginx_mountpoint/certs/${DOMAIN}-key.pem:/etc/nginx/${DOMAIN}-key.pem:ro
+      - ./nginx_mountpoint/html/chromium_based_browsers_not_yet_supported.html:/usr/share/nginx/chromium_based_browsers_not_yet_supported.html:ro
     networks:
       - shiny-net
 
   shinyproxy:
     image: openanalytics/shinyproxy:3.0.2
+    depends_on:
+      keycloak:
+        condition: service_healthy
     container_name: shinyproxy
     environment:
       DOCKER_IMG: ${DOCKER_IMG}
