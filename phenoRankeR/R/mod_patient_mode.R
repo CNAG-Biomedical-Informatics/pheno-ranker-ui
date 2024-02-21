@@ -874,6 +874,9 @@ mod_patient_mode_server <- function(
           paste0(timestamp,"_config.yaml")
         )
 
+        print("input$yamlEditor_config")
+        print(input$yamlEditor_config)
+
         writeLines(
           input$yamlEditor_config,
           extra_config_file_path

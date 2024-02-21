@@ -142,8 +142,6 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
     print("cfg_out")
     print(cfg_out)
 
-    # data arives here but there is nothing rendered
-
     output$conv_output_viewer <- renderUI({
       fluidRow(
         generateJsonView(conv_out, "JSON output", 6),
