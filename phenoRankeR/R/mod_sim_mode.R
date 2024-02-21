@@ -108,10 +108,30 @@ mod_sim_mode_ui <- function(id){
                   )
                 ),
                 tabPanel(
+                  title = "exposures",
+                  aceEditor(
+                    ns("yamlEditor_expos"),
+                    value = onts_defaults_phenos,
+                    mode = "yaml",
+                    theme = "github",
+                    height = "200px"
+                  )
+                ),
+                tabPanel(
                   title = "phenotypicFeatures",
                   aceEditor(
                     ns("yamlEditor_phenos"),
                     value = onts_defaults_phenos,
+                    mode = "yaml",
+                    theme = "github",
+                    height = "200px"
+                  )
+                ),
+                tabPanel(
+                  title = "procedures",
+                  aceEditor(
+                    ns("yamlEditor_procedures"),
+                    value = onts_defaults_procedures,
                     mode = "yaml",
                     theme = "github",
                     height = "200px"
@@ -212,10 +232,29 @@ onts_defaults_treatments <- loadOntologyDefaults(
   "treatments"
 )
 
-writeYAMLDataToFile <- function(yaml_diseases, yaml_phenos, yaml_treatments) {
+onts_defaults_procedures <- loadOntologyDefaults(
+  "inst/extdata/defaults/procedures_onts.yaml",
+  "procedures"
+)
+
+onts_defaults_exposures <- loadOntologyDefaults(
+  "inst/extdata/defaults/exposures_onts.yaml",
+  "exposures"
+)
+
+writeYAMLDataToFile <- function(
+  yaml_diseases,
+  yaml_expos, 
+  yaml_phenos, 
+  yaml_procedures,
+  yaml_treatments
+  ) {
+  
   yaml_data <- list()
   yaml_data$diseases <- yaml.load(yaml_diseases)
+  yaml_data$exposures <- yaml.load(yaml_expos)
   yaml_data$phenotypicFeatures <- yaml.load(yaml_phenos)
+  yaml_data$procedures <- yaml.load(yaml_procedures)
   yaml_data$treatments <- yaml.load(yaml_treatments)
 
   timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
@@ -245,19 +284,32 @@ simulate_data <- function(outputFormat, simulationId, simSettings) {
     ".json"
   )
 
+  print("simSettings")
+  print(simSettings)
+
   settings_diseases <- paste0(
     "-diseases ", simSettings[1],
     " -max-diseases-pool ", simSettings[2]
   )
 
+  settings_exposures <- paste0(
+    "-exposures ", simSettings[3],
+    " -max-exposures-pool ", simSettings[4]
+  )
+
   settings_phenos <- paste0(
-    "-phenotypicFeatures ", simSettings[3],
-    " -max-phenotypicFeatures-pool ", simSettings[4]
+    "-phenotypicFeatures ", simSettings[5],
+    " -max-phenotypicFeatures-pool ", simSettings[6]
+  )
+
+  settings_procedures <- paste0(
+    "-procedures ", simSettings[7],
+    " -max-procedures-pool ", simSettings[8]
   )
 
   settings_treatments <- paste0(
-    "-treatments ", simSettings[5],
-    " -max-treatments-pool ", simSettings[6]
+    "-treatments ", simSettings[9],
+    " -max-treatments-pool ", simSettings[10]
   )
 
   #normalizePath probably not needed
@@ -271,11 +323,15 @@ simulate_data <- function(outputFormat, simulationId, simSettings) {
     )),
     settings_diseases,
     " ",
+    settings_exposures,
+    " ",
     settings_phenos,
+    " ",
+    settings_procedures,
     " ",
     settings_treatments,
     " -n ",
-    simSettings[7],
+    simSettings[11],
     " -f ", outputFormat,
     " -o ", fn
   )
@@ -310,9 +366,15 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
     iv$enable()
 
     data <- data.frame(
-      ontologies = c("diseases", "phenotypicFeatures", "treatments"),
-      count = c(3, 3, 3),
-      max_pool_size = c(5, 5, 5)
+      ontologies = c(
+        "diseases",
+        "exposures",
+        "phenotypicFeatures",
+        "procedures",
+        "treatments"
+      ),
+      count = c(3, 3, 3, 3, 3),
+      max_pool_size = c(5, 5, 5, 5, 5)
     )
 
     # Render the DataTable with input fields for count and max_pool_size
@@ -367,6 +429,8 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         updateAceEditor(session, "yamlEditor_diseases", value = "")
         updateAceEditor(session, "yamlEditor_phenos", value = "")
         updateAceEditor(session, "yamlEditor_treatments", value = "")
+        updateAceEditor(session, "yamlEditor_procedures", value = "")
+        updateAceEditor(session, "yamlEditor_expos", value = "")
         return()
       }
       output$errorOutput <- renderText(yamlValid)
@@ -390,12 +454,26 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         "yamlEditor_treatments",
         value = as.yaml(yaml_data$treatments)
       )
+
+      updateAceEditor(
+        session,
+        "yamlEditor_procedures",
+        value = as.yaml(yaml_data$procedures)
+      )
+
+      updateAceEditor(
+        session,
+        "yamlEditor_expos",
+        value = as.yaml(yaml_data$exposures)
+      )
     })
 
     editors <- c(
       "yamlEditor_diseases",
       "yamlEditor_phenos",
-      "yamlEditor_treatments"
+      "yamlEditor_treatments",
+      "yamlEditor_procedures",
+      "yamlEditor_expos"
     )
 
     # TODO
@@ -425,7 +503,9 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
 
       simulationId <- writeYAMLDataToFile(
         input$yamlEditor_diseases,
+        input$yamlEditor_expos,
         input$yamlEditor_phenos,
+        input$yamlEditor_procedures,
         input$yamlEditor_treatments
       )
 

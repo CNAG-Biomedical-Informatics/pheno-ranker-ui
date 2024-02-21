@@ -1,0 +1,11 @@
+procedures:
+- id: NCIT:C1447
+  label: Barium Enema Injection
+- id: NCIT:C15189
+  label: Biopsy
+- id: NCIT:C15190
+  label: Needle Biopsy
+- id: NCIT:C15193
+  label: Bone Marrow Biopsy
+- id: NCIT:C15220
+  label: Diagnosis
