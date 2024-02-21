@@ -9,6 +9,7 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
+#' @importFrom shinyjs runjs
 
 mod_landing_page_ui <- function(id){
   ns <- NS(id)
@@ -134,19 +135,19 @@ mod_landing_page_server <- function(id, session){
     print("Landing Page Server")
     observeEvent(input$navigateToSimulator, {
       print("Navigate to simulator")
-      # updateTabsetPanel(session, "mainTabset", "simulator")
+      runjs("window.history.pushState(null, '', '/?mode=sim')")
     })
     observeEvent(input$navigateToConverter, {
       print("Navigate to converter")
-      # updateTabsetPanel(session, "mainTabset", "converter")
+      runjs("window.history.pushState(null, '', '/?mode=conv')")
     })
     observeEvent(input$navigateToPatientMode, {
       print("Navigate to patient mode")
-      # updateTabsetPanel(session, "mainTabset", "patient")
+      runjs("window.history.pushState(null, '', '/?mode=patient')")
     })
     observeEvent(input$navigateToCohortMode, {
       print("Navigate to cohort mode")
-      # updateTabsetPanel(session, "mainTabset", "cohort")
+      runjs("window.history.pushState(null, '', '/?mode=cohort')")
     })
   })
 }
