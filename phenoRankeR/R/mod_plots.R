@@ -49,6 +49,11 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     #d <- dist(merged_data)
 
     # TODO
+    # !BUG cmdscale runs into 
+    # Error in cmdscale: 'k' must be in {1, 2, ..  n - 1}
+    # when running it with converted patient data (the example data from pheno-ranker) 
+
+    # TODO
     # !BUG cmdscale runs into
     # only 0 of the first 2 eigenvalues are > 0
     # Warning: Error in [: subscript out of bounds
