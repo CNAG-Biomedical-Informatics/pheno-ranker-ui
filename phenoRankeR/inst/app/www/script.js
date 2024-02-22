@@ -36,4 +36,3 @@ function returnNumberInputField(data, type) {
   return data;
 }
 
-
