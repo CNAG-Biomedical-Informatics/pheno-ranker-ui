@@ -1,3 +1,19 @@
+// Function to wait for an element with specific text content
+function waitForElementWithText(selector, text, callback) {
+  const interval = 100; // Interval in milliseconds to check for the element
+
+  const intervalId = setInterval(function () {
+    const elements = document.querySelectorAll(selector);
+    Array.from(elements).forEach(function (element) {
+      if (element.textContent.trim() === text) {
+        clearInterval(intervalId);
+        callback(element);
+      }
+    });
+  }, interval);
+}
+
+
 $(document).ready(function () {
   console.log("handlers.js loaded");
   Shiny.addCustomMessageHandler('changeURL', function (message) {
@@ -20,4 +36,14 @@ $(document).ready(function () {
     Shiny.onInputChange("sim_mode-inputs", inputs);
     Shiny.setInputValue("sim_mode-simulateBtnClicked", Math.random());
   };
+
+  Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
+    // Example usage of waitForElement to perform an action when <span id="root"> is found
+    console.log("Waiting for:", message.text, "in element:", message.element);
+    waitForElementWithText(message.element, message.text, function (element) {
+      Shiny.setInputValue("sim_mode-elementFound", Math.random());
+      // Actions to perform after the element is found, e.g., initializing a component or updating the UI
+      console.log("Found element with text content:", element);
+    });
+  })
 });

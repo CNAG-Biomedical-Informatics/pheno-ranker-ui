@@ -11,6 +11,8 @@
 #' @importFrom shinyvalidate InputValidator sv_between
 #' @importFrom jsonlite read_json fromJSON
 #' @importFrom jsonlite toJSON
+#' @importFrom shinycssloaders withSpinner 
+#' @importFrom spsComps addLoader
 #' @import reactR
 #' @noRd
 
@@ -23,9 +25,7 @@ mode_sim_layout <- c(
 
 mod_json_viewer_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(
-    ns("json_viewer")
-  )
+  uiOutput(ns("json_viewer"))
 }
 
 mod_sim_mode_ui <- function(id){
@@ -37,7 +37,7 @@ mod_sim_mode_ui <- function(id){
       area = "btn",
       actionButton(
         ns("simulateCohort"), 
-        "Simulate", 
+        " Simulate", 
         class = "btn btn-primary"
       )
     ),
@@ -189,7 +189,7 @@ mod_sim_mode_ui <- function(id){
     ),
     grid_card(
       area = "simRes",
-      card_header("Simulation Results"),
+      card_header(id="simRest","Simulation Results"),
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("simulationId"),
@@ -354,6 +354,13 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
   # namespace defined here
   ns <-session$ns
   moduleServer(id,function(input, output, session){
+    loader_inline <- addLoader$new(
+      target_selector = "simulateCohort",
+      color = "white",
+      type = "ring",
+      method = "inline"
+    )
+
     mod_show_history_button_server(
       "SimulateHistorySidebar",
       "sim",
@@ -489,7 +496,13 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
     
     observeEvent(input$simulateCohort, {
       print("observeEvent(input$simulateCohort")
+      loader_inline$show()
       js$getInputs()
+    })
+
+    observeEvent(input$elementFound, {
+      print("observeEvent(input$elementFound")
+      loader_inline$hide()
     })
 
     observeEvent(input$inputs, {
@@ -510,6 +523,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       )
 
       session$sendCustomMessage(type = "changeURL", message = list(mode="sim",id=simulationId))
+      session$sendCustomMessage(type = "triggerWaitForElement", message = list(element = "span", text = "root"))
       output$simulationId <- renderText(paste0("RUN ID: ",simulationId))
       
       selectedOutputFormats <- input$checkboxes
@@ -641,6 +655,6 @@ mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out) {
           generateJsonView(pxf_out, "PXF")
         )
       }
-    })
+    }) 
   })
 }
