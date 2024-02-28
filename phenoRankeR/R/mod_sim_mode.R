@@ -11,7 +11,6 @@
 #' @importFrom shinyvalidate InputValidator sv_between
 #' @importFrom jsonlite read_json fromJSON
 #' @importFrom jsonlite toJSON
-#' @importFrom shinycssloaders withSpinner 
 #' @importFrom spsComps addLoader
 #' @import reactR
 #' @noRd
