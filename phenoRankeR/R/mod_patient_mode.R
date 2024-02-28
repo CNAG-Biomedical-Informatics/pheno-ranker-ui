@@ -493,17 +493,31 @@ mod_patient_mode_server <- function(
         stringsAsFactors = FALSE
       )
 
+      total_individual_counts <- 0
       for (i in 1:nrow(input$referenceFiles)) {
-        file <- input$referenceFiles[i, ]
-        # file_ext <- file_ext(file$name)
+        uploaded_file <- input$referenceFiles[i, ]
 
-        if (!(get_file_ext(file$name) %in% allowed_types)) {
+        file_con <- file(uploaded_file$datapath, "r")   
+        individual_counts <- as.numeric(jq(file_con, "length"))
+        close(file_con)
+
+        total_individual_counts <- total_individual_counts + individual_counts
+        if (total_individual_counts > 1000) {
+          showNotification(
+            "The maximum number of individuals is 1000",
+            type = "error"
+          )
+          reset("referenceFiles")
+          return()
+        }
+
+        if (!(get_file_ext(uploaded_file$name) %in% allowed_types)) {
           showNotification("Invalid file type!", type = "error")
           reset("referenceFiles")
           return()
         }
 
-        json_data <- fromJSON(readLines(file$datapath))
+        json_data <- fromJSON(readLines(uploaded_file$datapath))
         rv_patient$inputFormat <- "bff"
         if ("subject" %in% names(json_data)) {
           rv_patient$inputFormat <- "pxf"
@@ -521,7 +535,7 @@ mod_patient_mode_server <- function(
 
         str_references <- paste0(
           str_references,
-          file$name,
+          uploaded_file$name,
           ":C",
           i,
           "\n"
@@ -544,12 +558,12 @@ mod_patient_mode_server <- function(
         )
 
         file.copy(
-          file$datapath,
+          uploaded_file$datapath,
           file_path
         )
 
         row <- data.frame(
-          original_fn = file$name,
+          original_fn = uploaded_file$name,
           new_fn = normalizePath(paste0(rank_input_dir, "/", fn)),
           id_prefixes = paste0("C", i),
           simulatedData = FALSE,
