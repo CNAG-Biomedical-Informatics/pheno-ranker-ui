@@ -1217,6 +1217,18 @@
       ],
       "Hash": "8954069286b4b2b0d023d1b288dce978"
     },
+    "jqr": {
+      "Package": "jqr",
+      "Version": "1.3.3",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "lazyeval",
+        "magrittr"
+      ],
+      "Hash": "e2e89e8ac52df0b9227e53dc6f9a36f2"
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -2110,6 +2122,16 @@
       ],
       "Hash": "802e4786b353a4bb27116957558548d5"
     },
+    "shinytoastr": {
+      "Package": "shinytoastr",
+      "Version": "2.2.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "shiny"
+      ],
+      "Hash": "02b8ff3893fc0c2bbc3a6093c1e4e44d"
+    },
     "shinyvalidate": {
       "Package": "shinyvalidate",
       "Version": "0.1.3",
@@ -2163,6 +2185,32 @@
         "xml2"
       ],
       "Hash": "8ed9f010f7caeb8586523088b7f23dcd"
+    },
+    "spsComps": {
+      "Package": "spsComps",
+      "Version": "0.3.3.99",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "spsComps",
+      "RemoteUsername": "lz100",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e42770b17a99e3d931c4e8d45f26d25ecc8fcb4c",
+      "Requirements": [
+        "R",
+        "R6",
+        "assertthat",
+        "crayon",
+        "glue",
+        "htmltools",
+        "magrittr",
+        "shiny",
+        "shinyAce",
+        "shinytoastr",
+        "stringr",
+        "utils"
+      ],
+      "Hash": "16851d30c147e55b25fec807091dcaff"
     },
     "stringi": {
       "Package": "stringi",
