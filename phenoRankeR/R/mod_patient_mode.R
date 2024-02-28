@@ -8,7 +8,7 @@
 #'
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom shiny NS actionButton
-#' @importFrom shinyjs click
+#' @importFrom shinyjs click reset
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom jsonlite toJSON
 #' @importFrom jqr jq

@@ -5,7 +5,7 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom shiny NS actionButton
 #' @importFrom DT renderDT dataTableOutput JS
-#' @importFrom shinyjs useShinyjs extendShinyjs click js
+#' @importFrom shinyjs useShinyjs extendShinyjs click js reset
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom listviewer renderReactjson reactjson
 #' @importFrom shinyvalidate InputValidator sv_between
