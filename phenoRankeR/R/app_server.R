@@ -221,6 +221,11 @@ app_server <- function(input, output, session) {
           toupper(file_type)
         )
       
+        # TODO
+        # get the arraySizeInput from the database
+        # and pass it to the mod_json_viewer_server
+        # because at the moment the history is failing
+
         mod_json_viewer_server(
           "sim_mode-json_viewer", 
           selectedOutputFormats,
