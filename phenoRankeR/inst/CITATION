@@ -1,0 +1,16 @@
+citHeader("The usage of Pheno-Ranker-UI can be cited as:")
+
+citEntry(
+   entry = "article",
+   title = "Pheno-Ranker:Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond",
+   author = "Ivo C. Leist, Ivo G.Gut and Manuel Rueda",
+   journal = "Bioinformatics",
+   year = 2024,
+   doi = "manuscript in preparation",
+   textVersion = "Leist, Ivo et. al (2024) Pheno-Ranker:Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond."
+)
+
+citFooter("This free open-source software implements academic
+research by the authors and co-workers. If you use it,
+please support the project by citing the appropriate
+journal articles.")

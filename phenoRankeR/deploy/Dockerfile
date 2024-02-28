@@ -41,6 +41,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   gdebi-core \
   libfribidi-dev \
   libharfbuzz-dev \
+  libjq-dev \
   libssl-dev \
   libxml2-dev \
   #for PostgreSQL
