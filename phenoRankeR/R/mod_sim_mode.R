@@ -189,7 +189,7 @@ mod_sim_mode_ui <- function(id){
     ),
     grid_card(
       area = "simRes",
-      card_header(id="simRest","Simulation Results"),
+      card_header("Simulation Results"),
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("simulationId"),
@@ -497,12 +497,20 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
     observeEvent(input$simulateCohort, {
       print("observeEvent(input$simulateCohort")
       loader_inline$show()
+      showModal(
+        modalDialog(
+          title = "Simulation in progress",
+          "Please wait while the simulation is running...",
+          footer = NULL
+        )
+      )
       js$getInputs()
     })
 
     observeEvent(input$elementFound, {
       print("observeEvent(input$elementFound")
       loader_inline$hide()
+      removeModal()
     })
 
     observeEvent(input$inputs, {
