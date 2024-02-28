@@ -531,7 +531,26 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       )
 
       session$sendCustomMessage(type = "changeURL", message = list(mode="sim",id=simulationId))
-      session$sendCustomMessage(type = "triggerWaitForElement", message = list(element = "span", text = "root"))
+
+      if (input$arraySizeInput < 1000) {
+        session$sendCustomMessage(
+          type = "triggerWaitForElement", 
+          message = list(
+            element = "span", 
+            text = "root"
+          )
+        )
+      }
+      else {
+        session$sendCustomMessage(
+          type = "triggerWaitForElement", 
+          message = list(
+            element = "span", 
+            text = "No preview available for more than 1000 individuals."
+          )
+        )
+      }
+
       output$simulationId <- renderText(paste0("RUN ID: ",simulationId))
       
       selectedOutputFormats <- input$checkboxes
@@ -552,11 +571,14 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         }
       })
 
+      print("input$arraySizeInput")
+      print(input$arraySizeInput)
       mod_json_viewer_server(
         ns("json_viewer"), 
         selectedOutputFormats,
         rv_sim$simResult_bff,
-        rv_sim$simResult_pxf
+        rv_sim$simResult_pxf,
+        input$arraySizeInput
       )
 
       rv_sim$simulationId <- simulationId
@@ -646,23 +668,38 @@ generateJsonView <- function(jsonOutput, title, width=12) {
   )
 }
 
-mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out) {
+mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
   moduleServer(id, function(input, output, session) {
-    output$json_viewer <- renderUI({
-      if (length(checkboxes) > 1) {
+    if (arraySizeInput <= 1000) {
+      output$json_viewer <- renderUI({
+        if (length(checkboxes) > 1) {
+          fluidRow(
+            generateJsonView(bff_out, "BFF", 6),
+            generateJsonView(pxf_out, "PXF", 6)
+          )
+        } else if (checkboxes == "BFF") {
+          fluidRow(
+            generateJsonView(bff_out, "BFF")
+          )
+        } else if (checkboxes == "PXF") {
+          fluidRow(
+            generateJsonView(pxf_out, "PXF")
+          )
+        }
+      }) 
+    } else {
+      print("The data is too large to be displayed here. ")
+      output$json_viewer <- renderUI({
         fluidRow(
-          generateJsonView(bff_out, "BFF", 6),
-          generateJsonView(pxf_out, "PXF", 6)
+          column(
+            width = 12,
+            height = "85vh",
+            span(
+              "No preview available for more than 1000 individuals."
+            ) 
+          )
         )
-      } else if (checkboxes == "BFF") {
-        fluidRow(
-          generateJsonView(bff_out, "BFF")
-        )
-      } else if (checkboxes == "PXF") {
-        fluidRow(
-          generateJsonView(pxf_out, "PXF")
-        )
-      }
-    }) 
+      })
+    }
   })
 }
