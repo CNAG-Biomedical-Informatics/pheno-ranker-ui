@@ -18,13 +18,6 @@ conv_mode_layout = c(
   "180px      download    convRes  btn_show_conv_history"
 )
 
-conv_mode_explanation = tagList(
-  tags$p(
-  "This utility is designed to handle both simple CSV files 
-  without nested fields in columns, 
-  as well as more complex ones with nested fields"
-))
-
 conv_mode_note = tagList(
   tags$p("Note:"),
   tags$p("if your csv file is coming from RedCap, 
@@ -63,7 +56,6 @@ mod_conv_mode_ui <- function(id){
       area = "opts",
       card_header("Options"),
       card_body(
-        conv_mode_explanation,
         fileInput(
           ns("csv"), 
           "Upload a csv file",
@@ -72,6 +64,7 @@ mod_conv_mode_ui <- function(id){
             ".csv"
           )
         ),
+        downloadButton(ns("downloadExampleBtn"), "Download Example CSV"),
         textInput(ns("primaryKey"), "primary-key", value = "id"),
         textInput(ns("delimiter"), "delimiter", value = ";"),
         conv_mode_note,
@@ -175,6 +168,16 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       "conv",
       "ConvertHistorySidebar",
       db_conn
+    )
+
+    output$downloadExampleBtn <- downloadHandler(
+      filename = "example.csv",
+      content = function(file) {
+        file.copy(
+          "inst/extdata/examples/example.csv",
+          file
+        )
+      }
     )
 
     output$output <- outputDownloadHandler(
