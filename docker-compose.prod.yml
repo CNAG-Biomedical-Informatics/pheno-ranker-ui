@@ -104,8 +104,8 @@ services:
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_PATH: /auth
-      KC_HOSTNAME_URL: https://${DOMAIN}:8444/auth/
-      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}:8444/auth/
+      KC_HOSTNAME_URL: https://${DOMAIN}/auth/
+      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
       KC_HEALTH_ENABLED: true
