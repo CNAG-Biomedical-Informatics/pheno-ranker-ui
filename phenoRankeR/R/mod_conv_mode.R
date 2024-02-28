@@ -170,6 +170,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       db_conn
     )
 
+    # below is not working when running inside the docker container
     output$downloadExampleBtn <- downloadHandler(
       filename = "example.csv",
       content = function(file) {
