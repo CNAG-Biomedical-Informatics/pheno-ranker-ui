@@ -11,6 +11,7 @@
 #' @importFrom shinyjs click
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom jsonlite toJSON
+#' @importFrom jqr jq
 
 mod_patient_mode_layout <- c(
   "         550px   1fr           40px",
