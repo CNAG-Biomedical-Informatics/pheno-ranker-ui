@@ -56,7 +56,7 @@ how to prepare your environment and run the services.
 
 The author requests that any published work that utilizes `pheno-ranker-UI` includes a cite to the the following reference:
 
-Rueda, M et al., IC et al., (2023). Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond. Submitted. \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
+Ivo C. et al., (2024). Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond. Submitted. \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
 
 ### AUTHOR
 
