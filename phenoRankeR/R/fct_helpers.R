@@ -370,7 +370,6 @@ observeSimulatedDataChange <- function(
       mapping_df <- rv$mappingDf
     }
 
-    file_info <- ""
     file_info <- "Cohort"
     if (grepl("reference", input_id)) {
       id_prefix <- "R"
