@@ -7,6 +7,7 @@
 #' @importFrom DBI dbGetQuery dbExecute
 #' @importFrom shinyjs showElement hideElement click
 #' @importFrom lubridate ymd_hms ymd as_datetime days weeks month year
+#' @importFrom stringr str_remove
 #' @noRd
 
 # TODO
