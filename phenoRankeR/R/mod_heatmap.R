@@ -5,6 +5,7 @@
 #' @importFrom InteractiveComplexHeatmap InteractiveComplexHeatmapWidget
 #' @importFrom ComplexHeatmap pheatmap draw
 #' @importFrom shiny NS htmlOutput moduleServer
+#' @importFrom utils tail
 #' @noRd
 
 # The heatmap_ui below is not working

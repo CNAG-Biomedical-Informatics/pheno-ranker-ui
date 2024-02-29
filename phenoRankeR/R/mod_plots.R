@@ -84,7 +84,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     print(rv$mappingDf)
 
     print("df")
-    print(str(df))
+    # print(str(df))
 
     df_merged <- merge(
       df,

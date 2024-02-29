@@ -122,7 +122,7 @@ mod_table_phenoBlast_server <- function(id,
       )
       blast_data <- as.data.frame(blast_data)
       print("blast_data")
-      print(str(blast_data))
+      # print(str(blast_data))
 
       print("nrow(blast_data)")
       print(nrow(blast_data))
@@ -343,7 +343,7 @@ mod_table_phenoRanking_server <- function(
         )
       )
       print("Finished reading ranking table")
-      str(data)
+      # str(data)
 
       # df <- as_tibble(data)
       df <- as.data.frame(data, stringsAsFactors = FALSE)
@@ -488,8 +488,8 @@ mod_table_phenoHeadsUp_server <- function(
           )
         )
         
-        print("alignment_data")
-        print(str(alignment_data))
+        # print("alignment_data")
+        # print(str(alignment_data))
 
         alignment_df <- as.data.frame(alignment_data)
         filtered_df <- alignment_df[alignment_df[, 1] == rv_patient$id, ]
@@ -525,8 +525,8 @@ mod_table_phenoHeadsUp_server <- function(
         jaccard_index <- values$JacIdx
         filtered_df <- values$df
 
-        print("filtered_df")
-        print(str(filtered_df))
+        # print("filtered_df")
+        # print(str(filtered_df))
         
         # print("ns(phenoHeadsUpTable-phenoHeadsUpTableHeader)")
         # ns("phenoHeadsUpTable-phenoHeadsUpTableHeader")

@@ -11,6 +11,7 @@
 #' @importFrom shinyjs click reset
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom jqr jq
+#' @importFrom utils write.csv
 
 cohort_layout = c(
   "           500px   1fr         40px                    ",

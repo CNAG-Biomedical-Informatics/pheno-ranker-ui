@@ -12,6 +12,7 @@
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom jsonlite toJSON
 #' @importFrom jqr jq
+#' @importFrom utils write.csv
 
 mod_patient_mode_layout <- c(
   "         550px   1fr           40px",
