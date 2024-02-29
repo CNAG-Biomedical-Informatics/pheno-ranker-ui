@@ -8,6 +8,8 @@
 #'
 #' @importFrom shiny NS
 #' @importFrom DT datatable renderDT formatStyle DTOutput
+#' @importFrom grDevices hcl.colors
+#' @importFrom stats setNames
 
 
 # TODO
@@ -114,22 +116,10 @@ mod_table_phenoBlast_server <- function(id,
 
       blast_data <- readTxt(
         get_golem_options("patientModeOutputFolder"),
-        # "data/output/rankedPatients",
         fileName_suffix = "_alignment.csv", 
         runId = runId,
         sep = ";"
       )
-      # blast_data <- read.table(
-      #     paste0(
-      #       "./data/output/rankedPatients/",
-      #       runId,
-      #       "/",
-      #       runId,
-      #       "_alignment.csv"
-      #     ),
-      #     sep = ";",
-      #     header = TRUE,
-      #   )
       blast_data <- as.data.frame(blast_data)
       print("blast_data")
       print(str(blast_data))
@@ -351,16 +341,6 @@ mod_table_phenoRanking_server <- function(
           fileName_suffix = "_alignment.stdout", 
           row_names = 1,
         )
-        # read.table(
-        #   paste0(
-        #     "./data/output/rankedPatients/",
-        #     runId,
-        #     "/",
-        #     runId,
-        #     "_alignment.stdout"
-        #   ),
-        #   header = TRUE, row.names = 1
-        # )
       )
       print("Finished reading ranking table")
       str(data)
@@ -502,16 +482,10 @@ mod_table_phenoHeadsUp_server <- function(
         alignment_data <- as.matrix(
           readTxt(
             get_golem_options("patientModeOutputFolder"),
-            # "data/output/rankedPatients", 
             runId = runId, 
             fileName_suffix = "_alignment.target.csv",
             sep = ";"
           )
-          # read.table(
-          #   alignment_file_path,
-          #   header = TRUE,
-          #   sep = ";"
-          # )
         )
         
         print("alignment_data")

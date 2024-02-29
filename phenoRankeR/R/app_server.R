@@ -7,6 +7,7 @@
 #' @importFrom jsonlite read_json fromJSON
 #' @importFrom lubridate ymd_hms
 #' @import yaml
+#' @importFrom utils URLdecode read.csv
 #' @noRd
 
 # good to know:

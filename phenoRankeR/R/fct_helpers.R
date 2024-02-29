@@ -19,6 +19,7 @@ get_file_ext <- function(filepath) {
 }
 
 #' Read Tabular data
+#' @importFrom utils read.table
 #' @noRd
 
 readTxt <- function(

@@ -10,6 +10,7 @@
 #' @importFrom plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom ggplot2 ggplot aes geom_point labs theme element_text scale_color_discrete
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom stats cmdscale
 
 mod_plot_mds_ui <- function(id){
   ns <- NS(id)
@@ -145,20 +146,9 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     data <- as.matrix(
       readTxt(
         get_golem_options("cohortModeOutputFolder"),
-        # "data/output/rankedCohortMatrixes",
         runId = runId,
         row_names = 1
       )
-      # read.table(
-      #   paste0(
-      #     "./data/output/rankedCohortMatrixes/",
-      #     runId,
-      #     "/",
-      #     runId,
-      #     ".txt"
-      #   ),
-      #   header = TRUE, row.names = 1
-      # )
     )
   
     # ---- multi dimensional scaling results ----
