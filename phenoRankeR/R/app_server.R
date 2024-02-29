@@ -167,7 +167,6 @@ app_server <- function(input, output, session) {
   
   # maybe better to put this in a separate module(?)
   getPastRunResults <- function(mode,runId) {
-    # cfg <- fromJSON(readLines("config/cfg.json"))
     print("inside getPastRunResults")
 
     # TODO
@@ -178,6 +177,21 @@ app_server <- function(input, output, session) {
       print("inside getPastRunResults sim")
       rv_sim$simulationId <- runId
       output$simulationId <- renderText(paste0("RUN ID: ",runId))
+
+      # query the database 
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'sim'",
+        runId
+      )
+      
+      res <- dbGetQuery(db_conn, query)
+      settings <- fromJSON(res$settings)
+      print("settings")
+      print(settings)
+
+      number_of_individuals <- as.numeric(settings$numberOfIndividuals)
+      print("number_of_individuals")
+      print(number_of_individuals)
 
       # TODO
       # add a get_golem_options wrapper to check if the
@@ -230,7 +244,8 @@ app_server <- function(input, output, session) {
           "sim_mode-json_viewer", 
           selectedOutputFormats,
           rv_sim$simResult_bff,
-          rv_sim$simResult_pxf
+          rv_sim$simResult_pxf,
+          number_of_individuals
         )
       }
     }
