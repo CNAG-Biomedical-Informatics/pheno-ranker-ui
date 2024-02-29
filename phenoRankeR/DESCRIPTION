@@ -29,6 +29,7 @@ Imports:
     shinyvalidate,
     sortable,
     spsComps,
+    stringr,
     yaml,
     zip
 Suggests: 
