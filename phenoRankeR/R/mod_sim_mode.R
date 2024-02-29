@@ -266,13 +266,9 @@ writeYAMLDataToFile <- function(
   return(timestamp)
 }
 
-simulate_data <- function(outputFormat, simulationId, simSettings) {
-  # cfg <- fromJSON(readLines("config/cfg.json"))
-  # phenoSimBin <- cfg$PHENO_SIM_BIN
+simulate_data <- function(outputFormat, simulationId, ext_onts_settings_string, number_of_individuals) {
   phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
-  # ouputFolder <- cfg$simulationOutputFolder
   ouputFolder <- get_golem_options("simulationOutputFolder")
-  # ontologyUploadFolder <- cfg$ontologyUploadFolder
   ontologyUploadFolder <- get_golem_options("ontologyUploadFolder") 
 
   fn <- paste0(
@@ -283,59 +279,68 @@ simulate_data <- function(outputFormat, simulationId, simSettings) {
     ".json"
   )
 
-  print("simSettings")
-  print(simSettings)
+  settings <- "-external-ontologies "
 
-  settings_diseases <- paste0(
-    "-diseases ", simSettings[1],
-    " -max-diseases-pool ", simSettings[2]
-  )
+  ontology_path <- paste0(ontologyUploadFolder, paste0(simulationId, "_ontologies.yaml "))
+  settings <- paste0(settings, ontology_path)
+  settings <- paste0(settings, ext_onts_settings_string)
 
-  settings_exposures <- paste0(
-    "-exposures ", simSettings[3],
-    " -max-exposures-pool ", simSettings[4]
-  )
+  print("settings")
+  print(settings)
 
-  settings_phenos <- paste0(
-    "-phenotypicFeatures ", simSettings[5],
-    " -max-phenotypicFeatures-pool ", simSettings[6]
-  )
+  # # maybe better get it from a config file
+  # flags <- c(
+  #   "diseases", 
+  #   "exposures", 
+  #   "phenotypicFeatures", 
+  #   "procedures", 
+  #   "treatments"
+  # )
 
-  settings_procedures <- paste0(
-    "-procedures ", simSettings[7],
-    " -max-procedures-pool ", simSettings[8]
-  )
+  # external_ontologies_settings <- unlist(
+  #   lapply(
+  #     flags, 
+  #     function(flag) 
+  #     c(
+  #       paste0("-", flag), 
+  #       paste0("-max-", flag, "-pool")
+  #     )
+  #   )
+  # )
 
-  settings_treatments <- paste0(
-    "-treatments ", simSettings[9],
-    " -max-treatments-pool ", simSettings[10]
-  )
+  # indices <- seq(1, length(external_ontologies_settings))
 
-  #normalizePath probably not needed
+  # # Loop through the settings and add them
+  # settings_mapping <- list()
+  # for (i in seq(1, length(indices), by = 2)) {
+  #   ontology <- external_ontologies_settings[i]
+  #   max_pool <- external_ontologies_settings[i + 1]
+
+  #   ontology_count <- simSettings[indices[i]]
+  #   max_pool_size <- simSettings[indices[i + 1]]
+
+  #   settings <- paste0(
+  #     settings, ontology, " ", ontology_count, " ",
+  #     max_pool, " ", max_pool_size, " ")
+
+  #   settings_mapping[[ontology]] <- ontology_count
+  #   settings_mapping[[max_pool]] <- max_pool_size
+  # }
+
+  # number_of_individuals <- simSettings[11]
+  # settings_mapping[["-n"]] <- number_of_individuals
+
+  # print("settings_mapping")
+  # print(settings_mapping)
 
   settings <- paste0(
-    " -external-ontologies ",
-    normalizePath(paste0(
-      ontologyUploadFolder,
-      simulationId,
-      "_ontologies.yaml "
-    )),
-    settings_diseases,
-    " ",
-    settings_exposures,
-    " ",
-    settings_phenos,
-    " ",
-    settings_procedures,
-    " ",
-    settings_treatments,
-    " -n ",
-    simSettings[11],
+    settings,
+    " -n ", number_of_individuals,
     " -f ", outputFormat,
     " -o ", fn
   )
 
-  cmd <- paste0(
+  cmd <- paste(
     phenoSimBin,
     settings
   )
@@ -554,18 +559,72 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       
       selectedOutputFormats <- input$checkboxes
 
+      
+      # create the external ontology setting string
+
+      # maybe better get it from a config file
+      flags <- c(
+        "diseases", 
+        "exposures", 
+        "phenotypicFeatures", 
+        "procedures", 
+        "treatments"
+      )
+
+      external_ontologies_settings <- unlist(
+        lapply(
+          flags, 
+          function(flag) 
+          c(
+            paste0("-", flag), 
+            paste0("-max-", flag, "-pool")
+          )
+        )
+      )
+
+      indices <- seq(1, length(external_ontologies_settings))
+
+      # Loop through the settings and add them
+      ext_onts_settings_mapping <- list()
+      ext_onts_settings_string <- ""
+      for (i in seq(1, length(indices), by = 2)) {
+        ontology <- external_ontologies_settings[i]
+        max_pool <- external_ontologies_settings[i + 1]
+
+        ontology_count <- simSettings[indices[i]]
+        max_pool_size <- simSettings[indices[i + 1]]
+
+        settings <- paste0(
+          ext_onts_settings_string, ontology, " ", ontology_count, " ",
+          max_pool, " ", max_pool_size, " ")
+
+        ext_onts_settings_mapping[[ontology]] <- ontology_count
+        ext_onts_settings_mapping[[max_pool]] <- max_pool_size
+      }
+
+      number_of_individuals <- simSettings[11]
+      # settings_mapping[["-n"]] <- number_of_individuals
+
+      # print("settings_mapping")
+      # print(settings_mapping)
+
+      print("ext_onts_settings_string")
+      print(ext_onts_settings_string)
+
       lapply(selectedOutputFormats, function(option) {
         if (option == "BFF") {
           rv_sim$simResult_bff <- simulate_data(
             "bff", 
             simulationId, 
-            simSettings
+            ext_onts_settings_string,
+            number_of_individuals
           )
         } else if (option == "PXF") {
           rv_sim$simResult_pxf <- simulate_data(
             "pxf", 
             simulationId, 
-            simSettings
+            ext_onts_settings_string,
+            number_of_individuals
           )
         }
       })
@@ -583,7 +642,9 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       rv_sim$simulationId <- simulationId
 
       settings <- list(
-        outputFormats = tolower(selectedOutputFormats)
+        outputFormats = tolower(selectedOutputFormats),
+        externalOntologies = ext_onts_settings_mapping,
+        numberOfIndividuals = number_of_individuals
       )
 
       # TODO
