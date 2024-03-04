@@ -1,0 +1,26 @@
+General_Health;Checkup;Exercise;Heart_Disease;Skin_Cancer;Other_Cancer;Depression;Diabetes;Arthritis;Sex;Age_Category
+Poor;Within the past 2 years;No;No;No;No;No;No;Yes;Female;70-74
+Very Good;Within the past year;No;Yes;No;No;No;Yes;No;Female;70-74
+Very Good;Within the past year;Yes;No;No;No;No;Yes;No;Female;60-64
+Poor;Within the past year;Yes;Yes;No;No;No;Yes;No;Male;75-79
+Good;Within the past year;No;No;No;No;No;No;No;Male;80+
+Good;Within the past year;No;No;No;No;Yes;No;Yes;Male;60-64
+Fair;Within the past year;Yes;Yes;No;No;No;No;Yes;Male;60-64
+Good;Within the past year;Yes;No;No;No;No;No;Yes;Female;65-69
+Fair;Within the past year;No;No;No;No;Yes;No;No;Female;65-69
+Fair;Within the past year;No;No;No;No;No;Yes;Yes;Female;70-74
+Fair;Within the past year;Yes;Yes;No;No;No;No;Yes;Female;75-79
+Fair;Within the past year;No;Yes;Yes;No;No;Yes;No;Male;75-79
+Very Good;Within the past year;No;No;No;No;Yes;No;No;Female;50-54
+Fair;Within the past year;No;No;Yes;No;No;No;No;Male;65-69
+Excellent;Within the past 2 years;Yes;No;No;No;No;No;No;Female;70-74
+Fair;Within the past year;No;No;No;No;No;Yes;Yes;Female;70-74
+Good;Within the past year;No;No;No;No;No;No;No;Male;80+
+Very Good;Within the past year;Yes;No;No;No;No;No;Yes;Male;80+
+Fair;Within the past year;Yes;No;No;No;No;Yes;No;Male;45-49
+Good;Within the past year;No;No;Yes;Yes;No;Yes;Yes;Female;70-74
+Very Good;Within the past 2 years;Yes;No;No;No;Yes;No;No;Female;18-24
+Fair;Within the past year;No;No;No;Yes;No;Yes;Yes;Male;80+
+Very Good;5 or more years ago;Yes;No;No;No;No;No;No;Female;30-34
+Good;Within the past 2 years;No;No;No;No;No;Yes;No;Female;55-59
+Good;Within the past year;No;No;Yes;Yes;No;No;Yes;Female;80+

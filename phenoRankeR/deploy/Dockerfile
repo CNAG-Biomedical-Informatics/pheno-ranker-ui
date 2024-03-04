@@ -33,7 +33,7 @@ WORKDIR /usr/share/pheno-ranker
 FROM base as builder
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.3.0
-ENV PhenoRankeR_VERSION=0.0.0.9002
+ENV PhenoRankeR_VERSION=0.0.0.9003
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
 # COPY ./shiny-app/renv.lock /app/
@@ -46,9 +46,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   libxml2-dev \
   #for PostgreSQL
   unixodbc-dev \
-  odbc-postgresql
-
-RUN apt-get clean
+  odbc-postgresql && \
+  apt-get clean
 
 WORKDIR /opt
 RUN curl -O https://cdn.rstudio.com/r/debian-11/pkgs/r-${R_VERSION}_1_amd64.deb
@@ -75,6 +74,7 @@ RUN Rscript -e "renv::install('/app/phenoRankeR_${PhenoRankeR_VERSION}.tar.gz')"
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
 COPY run_phenoRankeR.R . 
+COPY data/examples/example.csv inst/extdata/examples/example.csv
 
 FROM builder as deploy
 EXPOSE 3838
