@@ -28,4 +28,4 @@ jobs:
       - name: push the image
         run: |
           docker tag phenorankerui-package-builder:latest ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui-r-package-builder:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui-r-package-builder:latest
