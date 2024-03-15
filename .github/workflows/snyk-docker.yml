@@ -11,12 +11,12 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Scan client docker image
+      - uses: actions/checkout@v4
+      - name: Scan phenoRankeR docker image
         uses: snyk/actions/docker@master
         continue-on-error: true
         with:
-          image: leistivo/pheno-ranker-ui:0.0.0.9003
+          image: leistivo/pheno-ranker-ui:0.0.0.9004
           args: --file=phenoRankeR/deploy/Dockerfile
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -25,6 +25,6 @@ jobs:
         run: ls -l ${{ github.workspace }}
 
       - name: Upload SARIF to Snyk
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}
