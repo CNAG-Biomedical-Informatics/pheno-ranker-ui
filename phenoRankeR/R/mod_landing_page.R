@@ -136,6 +136,7 @@ mod_landing_page_server <- function(id, session){
     observeEvent(input$navigateToSimulator, {
       print("Navigate to simulator")
       runjs("window.history.pushState(null, '', '/?mode=sim')")
+      # updateNavbarPage(session, "nav", "sim")
     })
     observeEvent(input$navigateToConverter, {
       print("Navigate to converter")

@@ -253,16 +253,10 @@ app_server <- function(input, output, session) {
     else if (mode == "patient") {
       rv_patient$runId <- runId
       output$phenoBlastRunId <- renderText(paste0("RUN ID: ",runId))
-
-      # outDir <- paste0(
-      #   # dirname(getwd()),
-      #   "./data/output/rankedPatients"
-      # )
-
+      
       outDir <- get_golem_options("patientModeOutputFolder")
       print("outDir")
       print(outDir)
-      # outDir <- "data/output/rankedPatients"
       dirs <- list.dirs(outDir)
       print("dirs")
       print(dirs)
@@ -309,7 +303,6 @@ app_server <- function(input, output, session) {
       rv_patient$mappingDf <- read.csv(
         paste0(
           get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients/",
           runId,
           "/",
           runId,
@@ -329,12 +322,7 @@ app_server <- function(input, output, session) {
       rv_cohort$runId <- runId
       output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ",runId))
 
-      # outDir <- paste0(
-      #   "./data/output/rankedCohortMatrixes"
-      # )
-
       outDir <- get_golem_options("cohortModeOutputFolder")
-      # outDir <- "data/output/rankedCohortMatrixes"
       dirs <- list.dirs(outDir)
       print("dirs")
       print(dirs)
@@ -370,7 +358,6 @@ app_server <- function(input, output, session) {
       rv_cohort$mappingDf <- read.csv(
         paste0(
           get_golem_options("cohortModeOutputFolder"),
-          # "data/output/rankedCohortMatrixes/",
           runId,
           "/",
           runId,
@@ -401,7 +388,6 @@ app_server <- function(input, output, session) {
       output$conversionId <- renderText(paste0("RUN ID: ",runId))
 
       outDir <- paste0(
-        # cfg$conversionOutputFolder
         get_golem_options("conversionOutputFolder")
       )
 
@@ -460,7 +446,6 @@ app_server <- function(input, output, session) {
 
     # TODO
     # try to get rid of the lubridate package
-
     if ("mode" %in% names(query)) {
       if ( "id" %in% names(query)) {
         date_time <- ymd_hms(query[["id"]], quiet = TRUE)
@@ -479,8 +464,6 @@ app_server <- function(input, output, session) {
           return()
         }
 
-        
-
         if (!is.na(date_time)) {
           print("id is in the expected format")
           # !BUG
@@ -491,13 +474,16 @@ app_server <- function(input, output, session) {
           # Warning: Error in if: argument is of length zero
           updateNavbarPage(session, "nav", query[["mode"]])
           print("after updateNavbarPage")
+          print(query[["mode"]])
           session$sendCustomMessage(
             type = 'changeURL', 
             message = list(mode=query[["mode"]], id=query[["id"]]
           ))
           getPastRunResults(query[["mode"]],query[["id"]])
         } else {
-          # update the run ID field with information that the ID is not valid
+          # TODO
+          # update the run ID field with information 
+          # that the ID is not valid
         }
       }
       else {
