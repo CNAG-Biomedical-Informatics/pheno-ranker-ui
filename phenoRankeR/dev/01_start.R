@@ -20,13 +20,13 @@
 ##
 golem::fill_desc(
   pkg_name = "phenoRankeR", # The Name of the package containing the App
-  pkg_title = "PKG_TITLE", # The Title of the package containing the App
-  pkg_description = "PKG_DESC.", # The Description of the package containing the App
+  pkg_title = "Pheno-Ranker-UI", # The Title of the package containing the App
+  pkg_description = "Pheno-Ranker-UI is a web-interface for the CPAN's module Pheno::Ranker which is a tool designed for performing semantic similarity analysis in PXF/BFF data structures and beyond (JSON|YAML)", # The Description of the package containing the App
   author_first_name = "Ivo Christopher", # Your First Name
   author_last_name = "Leist", # Your Last Name
   author_email = "ivo.leist@cnag.eu", # Your Email
-  repo_url = NULL, # The URL of the GitHub Repo (optional),
-  pkg_version = "0.0.0.9003" # The Version of the package containing the App
+  repo_url = "https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui", # The URL of the GitHub Repo (optional),
+  pkg_version = "0.0.0.9004" # The Version of the package containing the App
 )
 
 ## Set {golem} options ----

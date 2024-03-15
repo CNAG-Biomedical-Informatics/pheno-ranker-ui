@@ -33,7 +33,7 @@ WORKDIR /usr/share/pheno-ranker
 FROM base as builder
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.3.0
-ENV PhenoRankeR_VERSION=0.0.0.9003
+ENV PhenoRankeR_VERSION=0.0.0.9004
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
 # COPY ./shiny-app/renv.lock /app/
