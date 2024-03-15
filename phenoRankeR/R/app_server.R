@@ -427,7 +427,7 @@ app_server <- function(input, output, session) {
         ),
         collapse = "\n"
       )
-      # for what is that neeeded?
+      # for what is that needed?
       rv_conversion$outputJson <- jsonData
       rv_conversion$configYaml <- as.yaml(yaml.load(configVal))
  
@@ -475,10 +475,6 @@ app_server <- function(input, output, session) {
           updateNavbarPage(session, "nav", query[["mode"]])
           print("after updateNavbarPage")
           print(query[["mode"]])
-          session$sendCustomMessage(
-            type = 'changeURL', 
-            message = list(mode=query[["mode"]], id=query[["id"]]
-          ))
           getPastRunResults(query[["mode"]],query[["id"]])
         } else {
           # TODO
@@ -506,11 +502,12 @@ app_server <- function(input, output, session) {
     if (is.null(id)) {
       runId <- ""
     }
-    msg <- list(mode=input$nav, id=runId)
     session$sendCustomMessage(
       type = 'changeURL', 
-      message = list(mode=input$nav, id=runId
-    ))
+      message = list(
+        mode=input$nav, 
+        id=runId)
+      )
   })
 
   observeEvent(rv_patient$ht, {
