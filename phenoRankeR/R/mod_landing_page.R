@@ -9,7 +9,10 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
-#' @importFrom shinyjs runjs
+
+#* Note: the landing page module is coming without a server function
+# because it was not possible to run updateNavbarPage from this module
+# the function is called from the app_server.R file
 
 mod_landing_page_ui <- function(id){
   ns <- NS(id)
@@ -128,27 +131,4 @@ mod_landing_page_ui <- function(id){
       )
     )
   )
-}
-
-mod_landing_page_server <- function(id, session){
-  moduleServer(id, function(input, output, session){
-    print("Landing Page Server")
-    observeEvent(input$navigateToSimulator, {
-      print("Navigate to simulator")
-      runjs("window.history.pushState(null, '', '/?mode=sim')")
-      # updateNavbarPage(session, "nav", "sim")
-    })
-    observeEvent(input$navigateToConverter, {
-      print("Navigate to converter")
-      runjs("window.history.pushState(null, '', '/?mode=conv')")
-    })
-    observeEvent(input$navigateToPatientMode, {
-      print("Navigate to patient mode")
-      runjs("window.history.pushState(null, '', '/?mode=patient')")
-    })
-    observeEvent(input$navigateToCohortMode, {
-      print("Navigate to cohort mode")
-      runjs("window.history.pushState(null, '', '/?mode=cohort')")
-    })
-  })
 }

@@ -31,9 +31,6 @@ app_ui <- function(request) {
       theme = bs_theme(version = 5, bootswatch = "default"),
       # theme = bs_theme(version = 5, bootswatch = "darkly"),
 
-      # TODO
-      # the titl
-
       # the title works as placeholder otherwise the logo 
       # will overlay the navbar elements
       title = "placeholder",

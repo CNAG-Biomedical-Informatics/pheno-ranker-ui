@@ -90,11 +90,6 @@ app_server <- function(input, output, session) {
   print("dbDriver")
   print(db_driver)
 
-  mod_landing_page_server(
-    "landing_page",
-    session
-  )
-
   mod_sim_mode_server(
     "sim_mode",
     session,
@@ -508,6 +503,30 @@ app_server <- function(input, output, session) {
         id=runId)
       )
   })
+
+  #*  Note: the  redirection from the landing page buttons
+  # is done here because it was not possible to run updateNavbarPage
+  # from the landing page module
+  observeEvent(input[["landing_page-navigateToSimulator"]], {
+    print("Navigate to simulator")
+    updateNavbarPage(session, "nav", "sim")
+  })
+
+  observeEvent(input[["landing_page-navigateToConverter"]], {
+    print("Navigate to converter")
+    updateNavbarPage(session, "nav", "conv")
+  })
+
+  observeEvent(input[["landing_page-navigateToPatientMode"]], {
+    print("Navigate to patient mode")
+    updateNavbarPage(session, "nav", "patient")
+  })
+
+  observeEvent(input[["landing_page-navigateToCohortMode"]], {
+    print("Navigate to cohort mode")
+    updateNavbarPage(session, "nav", "cohort")
+  })
+
 
   observeEvent(rv_patient$ht, {
     print("before rendering the heatmap")
