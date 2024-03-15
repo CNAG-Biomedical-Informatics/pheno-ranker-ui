@@ -196,13 +196,12 @@ app_server <- function(input, output, session) {
 
       # TODO
       # add a get_golem_options wrapper to check if the
-      # required option does not rerturn NULL
+      # required option does not return NULL
 
       simulationOutputFolder <- get_golem_options("simulationOutputFolder")
       print("simulationOutputFolder")
       print(simulationOutputFolder)
       files <- list.files(
-        # cfg$simulationOutputFolder, 
         simulationOutputFolder,
         pattern = paste0(runId,"*.(bff|pxf).json")
       )
