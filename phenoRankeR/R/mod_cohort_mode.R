@@ -576,7 +576,6 @@ mod_cohort_mode_server <- function(
         )
         weights_file_path <- file.path(
           get_golem_options("weightsUploadFolder"),
-          # "./data/uploads/weights",
           fn
         )
         writeLines(

@@ -152,7 +152,6 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     )
   
     # ---- multi dimensional scaling results ----
-    # d <- dist(data)
     fit <- cmdscale(data, eig = TRUE, k = 2)
 
     x <- fit$points[, 1]

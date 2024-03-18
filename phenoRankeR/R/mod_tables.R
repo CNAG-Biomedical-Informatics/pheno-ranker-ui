@@ -318,7 +318,6 @@ mod_table_phenoRanking_server <- function(
 
       file_path <- paste0(
         get_golem_options("patientModeOutputFolder"),
-        # "data/output/rankedPatients/",
         runId,
         "/",
         runId,
@@ -336,31 +335,30 @@ mod_table_phenoRanking_server <- function(
       data <- as.matrix(
         readTxt(
           get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients",
           runId=runId,
           fileName_suffix = "_alignment.stdout", 
           row_names = 1,
         )
       )
       print("Finished reading ranking table")
-      # str(data)
 
-      # df <- as_tibble(data)
       df <- as.data.frame(data, stringsAsFactors = FALSE)
       ref_vs_target_targetId <- df[1, "TARGET.ID."]
-      # ref_vs_target_targetId <- df[["TARGET.ID."]][1]
 
-      # remove TARGET(ID), FORMAT and WEIGHTED column
       cols_to_remove <- c("TARGET.ID.", "FORMAT", "WEIGHTED")
       df <- df[, !(names(df) %in% cols_to_remove)]
-      # cols_to_remove <- c(2, 3, 5)
-      # df <- df[, -cols_to_remove]
 
-      # get the values from the weights yaml
-      # weights <- yaml.load_file("./data/weights.yaml")
 
-      # TODO 
-      # Weighted True: should not be hard coded!
+      weights_file_path <- file.path(
+        get_golem_options("weightsUploadFolder"),
+        paste0(runId,".yaml")
+      )
+
+      weighted <- "no"
+      if (file.exists(weights_file_path)) {
+        weighted <- "yes"
+      }
+
       output$phenoRankingTableHeader <- renderUI({
         p(
           paste0(
@@ -369,7 +367,7 @@ mod_table_phenoRanking_server <- function(
             " |> Target ID: ",
             ref_vs_target_targetId,
             " |> Weighted: ",
-            "True"
+            weighted
           )
         )
       })
