@@ -129,8 +129,8 @@ mod_conv_output_viewer_ui <- function(id) {
 mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
   moduleServer(id, function(input, output, session) {
 
-    print ("conv_out")
-    print (conv_out)
+    #print ("conv_out")
+    #print (conv_out)
 
     print("cfg_out")
     print(cfg_out)
@@ -226,21 +226,15 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       dir.create(file.path(outputFolder, timestamp))
 
       # copy the uploaded file to the conversion output folder
+      new_path <- file.path(
+        outputFolder, 
+        timestamp, 
+        paste0(timestamp,".csv")
+      )
       file.copy(
         input$csv$datapath,
-        file.path(
-          outputFolder, 
-          timestamp, 
-          paste0(timestamp,".csv")
-        )
+        new_path
       )
-
-      # run the conversion script
-
-      print("primary key:")
-      print(input$primaryKey)
-      print("delimiter:")
-      print(input$delimiter)
 
       cmd <- paste(
         csvConvBin,
@@ -249,8 +243,32 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
           outputFolder, 
           timestamp, 
           paste0(timestamp,".csv")
-        ),
-        "--set-primary-key",
+        )
+      )
+
+      print("primary key:")
+      print(input$primaryKey)
+      print("delimiter:")
+      print(input$delimiter)
+
+      # read the first line of the csv file
+      # to get the column names
+      firstLine <- readLines(
+        new_path,
+        n = 1
+      )
+
+      line_split <- strsplit(firstLine, input$delimiter)
+      if(!(input$primaryKey %in% line_split[[1]])){
+        print("primary key not in data")
+        cmd <- paste(
+          cmd,
+          "--set-primary-key"
+        )
+      }
+
+      cmd <- paste(
+        cmd,
         "--primary-key",
         input$primaryKey,
         "--separator",
@@ -260,7 +278,6 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
           "'"
         )
       )
-      print(cmd)
 
       script_status <- system(cmd, intern = TRUE)
       if(length(script_status) > 0) {
@@ -291,7 +308,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         )
       )
 
-      print(jsonData)
+      #print(jsonData)
 
       # value <- paste(
       #   readLines(
