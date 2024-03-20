@@ -25,7 +25,7 @@ mod_about_page_ui <- function(id){
         h4("Please cite:"),
         p(
           'Ivo C. Leist et al., 
-          "Pheno-Ranker: A software toolkit for the interconversion of standard data models for phenotypic data". 
+          "Pheno-Ranker: Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond". 
           Manuscript in preparation.'
         ),
         h4("Developed by:"),
