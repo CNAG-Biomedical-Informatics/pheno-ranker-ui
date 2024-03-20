@@ -44,7 +44,7 @@ sudo apt-get install qpdf
 
 How to do a local package install
 ```r
-devtools::install_local("phenoRankeR_0.0.0.9005.tar.gz")
+devtools::install_local("phenoRankeR_0.0.0.9006.tar.gz")
 ```
 
 How to run the app

@@ -286,6 +286,10 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       }
 
       label <- paste0("file: ",input$csv$name)
+
+      # TODO
+      # it would be nice to have the used primary key in the label
+
       settings <- list()
       query <- sprintf(
         "
