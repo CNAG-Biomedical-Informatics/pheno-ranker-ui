@@ -7,9 +7,6 @@ jobs:
   release-phenoRankeR:
     runs-on: ubuntu-latest
 
-    env:
-      RENV_CONFIG_PAK_ENABLED: true
-
     steps:
       - uses: actions/checkout@v4
 
