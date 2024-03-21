@@ -31,6 +31,10 @@ jobs:
           cache-version: 1
           working-directory: phenoRankeR
 
+      - name: Install devtools
+        run: |
+          Rscript -e 'renv::install("devtools")'
+
       - name: Check package before building
         run: |
           Rscript -e 'devtools::check(error_on ="error")'
