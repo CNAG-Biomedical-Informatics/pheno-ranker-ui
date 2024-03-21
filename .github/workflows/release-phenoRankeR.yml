@@ -28,8 +28,6 @@ jobs:
         with:
           cache-version: 1
           working-directory: phenoRankeR
-          exra-packages: |
-            any::rcmdcheck
 
       - name: Check package before building
         uses: r-lib/actions/check-r-package@v2
