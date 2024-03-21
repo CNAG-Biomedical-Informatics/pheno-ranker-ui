@@ -1,4 +1,5 @@
-FROM r-base:4.3.3
+FROM r-base:4.3.2
+# r-base:4.3.3 fails
 
 ENV PPM=packagemanager.posit.co/cran/__linux__/jammy/latest
 
