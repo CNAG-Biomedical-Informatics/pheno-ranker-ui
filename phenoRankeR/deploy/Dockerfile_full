@@ -1,5 +1,33 @@
-FROM manuelrueda/pheno-ranker:0.05 as base
+FROM perl:5.36.1-bullseye as base
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
+  cpanminus \ 
+  gcc \
+  git \ 
+  libperl-dev \
+  make \ 
+  perl-doc \ 
+  sudo \ 
+  unzip
 
+# Download Pheno-Ranker
+WORKDIR /usr/share/
+RUN git clone https://github.com/CNAG-Biomedical-Informatics/pheno-ranker.git
+
+# Install Perl modules
+WORKDIR /usr/share/pheno-ranker
+RUN cpanm --notest --installdeps .
+
+# Add user "dockeruser" (non-root)
+ARG UID=1001
+ARG GID=1001
+
+RUN groupadd -g "${GID}" dockeruser \
+  && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" dockeruser
+
+# To change default user from root -> dockeruser
+#USER dockeruser
+
+# Get back to entry dir
 WORKDIR /usr/share/pheno-ranker
 
 FROM base as builder

@@ -35,6 +35,10 @@ parseQueryString <- function(s) {
 }
 
 app_server <- function(input, output, session) {
+
+  # unsetting the LD_LIBRARY_PATH resolves
+  # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
+  Sys.unsetenv("LD_LIBRARY_PATH")
   
   # TODO
   # reactlog should be conditionally enabled
