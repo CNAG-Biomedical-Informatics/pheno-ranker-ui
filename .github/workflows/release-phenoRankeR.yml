@@ -6,6 +6,7 @@ on:
 jobs:
   release-phenoRankeR:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       
@@ -13,14 +14,12 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.2.3'
-      
+
       - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
           working-directory: phenoRankeR
-          extra-packages: |
-            any::pak
       
       - name: Check package before building
         uses: r-lib/actions/check-r-package@v2
