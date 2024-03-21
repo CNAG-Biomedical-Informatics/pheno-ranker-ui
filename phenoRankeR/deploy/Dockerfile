@@ -1,4 +1,4 @@
-FROM perl:5.36.1-bullseye as base
+FROM perl:5.39.8-bullseye as base
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
   cpanminus \ 
   gcc \
