@@ -16,7 +16,7 @@ jobs:
         uses: snyk/actions/docker@master
         continue-on-error: true
         with:
-          image: leistivo/pheno-ranker-ui:0.0.0.9006
+          image: leistivo/pheno-ranker-ui:0.0.0.9007
           args: --file=phenoRankeR/deploy/Dockerfile
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
