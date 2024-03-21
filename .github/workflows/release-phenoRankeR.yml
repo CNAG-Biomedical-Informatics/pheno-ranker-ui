@@ -7,6 +7,9 @@ jobs:
   release-phenoRankeR:
     runs-on: ubuntu-latest
 
+    env:
+      RENV_CONFIG_PAK_ENABLED: true
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,12 +24,10 @@ jobs:
           r-version: "4.3.3"
 
       - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
           working-directory: phenoRankeR
-          extra-packages: |
-            any::rcmdcheck
 
       - name: Check package before building
         uses: r-lib/actions/check-r-package@v2
