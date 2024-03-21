@@ -1,8 +1,20 @@
+FROM leistivo/pheno-ranker-ui-r-package-builder:latest AS rpackages
 FROM manuelrueda/pheno-ranker:0.05 as base
+
+# copy all the R packages into base
+COPY --from=rpackages /opt/*.tar.gz /opt/
+
+
+
 
 WORKDIR /usr/share/pheno-ranker
 
-FROM base as builder
+FROM base as phenoranker
+
+
+# TODO
+# it would be good to get all the dependencies from the 
+
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.3.2
 ENV PhenoRankeR_VERSION=0.0.0.9007

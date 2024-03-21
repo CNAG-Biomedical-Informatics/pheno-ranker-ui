@@ -27,8 +27,8 @@ The goal of phenoRankeR is to ...
 You can install the development version of phenoRankeR from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("bag-cnag/pheno-ranker")
+install.packages("devtools")
+devtools::install_github("CNAG-Biomedical-Informatics/pheno-ranker-ui")
 ``
 
 # NOTE:
@@ -44,7 +44,8 @@ sudo apt-get install qpdf
 
 How to do a local package install
 ```r
-devtools::install_local("phenoRankeR_0.0.0.9007.tar.gz")
+library(pak)
+pak::local_install("phenoRankeR_0.0.0.9007.tar.gz")
 ```
 
 How to run the app

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-IMAGE_NAME="phenorankerui_package_builder"
-CONTAINER_NAME="your-container-name"
+IMAGE_NAME="leistivo/pheno-ranker-ui-r-package-builder:latest"
 HOST_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" # directory of the script
 CONTAINER_PATH="/opt/build"
 
@@ -11,13 +10,13 @@ echo "Current directory: $HOST_PATH"
 echo "Go to the root directory of the project"
 cd ../
 
-echo Build the docker image...
-docker build -f Dockerfile_package_builder -t phenorankerui_package_builder:latest .
+echo get the pheno-rankerui-package builder docker image...
+#docker build -f Dockerfile_package_builder -t phenorankerui_package_builder:latest .
+docker pull $IMAGE_NAME
 
 echo "Starting container..."
 container_id=$(docker run -d $IMAGE_NAME)
 
-# create a new directory based on the current date and time
 new_dir=$(date +%Y%m%d_%H%M%S)
 mkdir $HOST_PATH/$new_dir
 
