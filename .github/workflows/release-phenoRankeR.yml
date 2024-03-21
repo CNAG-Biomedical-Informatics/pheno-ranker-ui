@@ -36,7 +36,8 @@ jobs:
           Rscript -e 'devtools::check(error_on ="error")'
 
       - name: Build package
-        run: R CMD build phenoRankeR
+        run: |
+          Rscript -e 'devtools::build()'
 
       - name: Release package
         uses: softprops/action-gh-release@v2
