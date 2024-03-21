@@ -6,7 +6,7 @@ FROM base as builder
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.3.3
-ENV PhenoRankeR_VERSION=0.0.0.9007
+ENV PhenoRankeR_VERSION=0.0.0.9008
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
 # COPY ./shiny-app/renv.lock /app/
