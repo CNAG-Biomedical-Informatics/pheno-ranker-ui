@@ -24,10 +24,12 @@ jobs:
           r-version: "4.3.2"
 
       - name: Install dependencies
-        uses: r-lib/actions/setup-renv@v2
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 1
           working-directory: phenoRankeR
+          extra-packages: |
+            any::rcmdcheck
 
       - name: Check package before building
         uses: r-lib/actions/check-r-package@v2
