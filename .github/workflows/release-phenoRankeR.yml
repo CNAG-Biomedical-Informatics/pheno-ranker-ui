@@ -7,8 +7,10 @@ jobs:
   release-phenoRankeR:
     runs-on: ubuntu-latest
 
-    env:
-      RENV_CONFIG_PAK_ENABLED: true
+    # env:
+    #   RENV_CONFIG_PAK_ENABLED: true
+    # with above uncommented, the workflow fails with the following error:
+    # Error in remote(function(...) get("pkg_install_make_plan", asNamespace("pak"))(...),
 
     steps:
       - uses: actions/checkout@v4
