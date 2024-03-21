@@ -32,7 +32,8 @@ jobs:
           working-directory: phenoRankeR
 
       - name: Check package before building
-        uses: r-lib/actions/check-r-package@v2
+        run: |
+          Rscript -e 'devtools::check(error_on ="error")'
 
       - name: Build package
         run: R CMD build phenoRankeR
