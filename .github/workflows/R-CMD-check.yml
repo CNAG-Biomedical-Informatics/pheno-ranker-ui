@@ -39,6 +39,11 @@ jobs:
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
 
+      - name: obdbcListDrivers
+        run: |
+          cd phenoRankeR
+          R -e 'odbc::odbcListDrivers()'
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
