@@ -1,6 +1,6 @@
-FROM r-base:4.3.3
+FROM rocker/r-ver:4.3.3
 
-ENV PPM=packagemanager.posit.co/cran/__linux__/jammy/latest
+ENV PPM_URL=packagemanager.posit.co/cran/__linux__/jammy/latest
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     git \
