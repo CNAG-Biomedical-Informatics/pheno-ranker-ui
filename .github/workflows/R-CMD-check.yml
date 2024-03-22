@@ -22,20 +22,18 @@ jobs:
 
       - name: Verify SQLite ODBC Driver installation
         run: |
-          sudo find / -name libsqliteodbc.so
-          
-      - name: Update odbcinst.ini for SQLite
-        run: |
-          echo "[SQLite]" | sudo tee -a /etc/odbcinst.ini
-          echo "Description=SQLite ODBC Driver" | sudo tee -a /etc/odbcinst.ini
-          echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqliteodbc.so" | sudo tee -a /etc/odbcinst.ini
-          echo "Setup=/usr/lib/x86_64-linux-gnu/odbc/libsqliteodbc.so" | sudo tee -a /etc/odbcinst.ini
-          echo "UsageCount=1" | sudo tee -a /etc/odbcinst.ini
+          sudo find / -name libsqlite3odbc.so
       
-      - name: "Check if SQLite ODBC driver are now correctly is registered"
+      - name: "Check if SQLite ODBC driver are registered"
         run: |
           odbcinst -j
           odbcinst -q -d -n SQLite
+
+      - name: Create custom odbcinst.ini in a user-accessible directory
+        run: |
+          mkdir -p $HOME/odbc
+          echo "[SQLite]" >> $HOME/odbc/odbcinst.ini
+          echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so" >> $HOME/odbc/odbcinst.ini
 
       - name: Install R
         uses: r-lib/actions/setup-r@v2
@@ -54,14 +52,17 @@ jobs:
       - name: obdbcListDrivers
         run: |
           cd phenoRankeR
+          R -e 'Sys.getenv("ODBCSYSINI")'
           R -e 'odbc::odbcListDrivers()'
+        env:
+          ODBCSYSINI: /home/runner/odbc
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           working-directory: phenoRankeR
         env:
-          ODBCSYSINI: /etc
+          ODBCSYSINI: /home/runner/odbc
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
 
