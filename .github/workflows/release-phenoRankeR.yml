@@ -33,6 +33,7 @@ jobs:
           working-directory: phenoRankeR
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
+          RENV_CONFIG_PAK_ENABLED: true          
 
       - uses: r-lib/actions/check-r-package@v2
         with:
