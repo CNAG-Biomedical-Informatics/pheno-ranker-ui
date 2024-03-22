@@ -34,6 +34,9 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+        env:
+          DB_DRIVER: SQLite
+          DB_NAME: ":memory:"
 
       - name: Build package
         run: R CMD build phenoRankeR
