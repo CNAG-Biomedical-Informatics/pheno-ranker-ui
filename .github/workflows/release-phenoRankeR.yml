@@ -37,9 +37,8 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-        env:
-          RENV_VERSION: 1.0.5
-
+          working-directory: phenoRankeR
+      
       - name: Build package
         run: R CMD build phenoRankeR
 
