@@ -582,31 +582,6 @@
       ],
       "Hash": "0cbf0435830e767ba9b292b313592362"
     },
-    "covrpage": {
-      "Package": "covrpage",
-      "Version": "0.2",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "covrpage",
-      "RemoteUsername": "yonicd",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "bafeb195d1999b8c3a48186e26f59cafcdfa3670",
-      "Requirements": [
-        "R",
-        "covr",
-        "curl",
-        "git2r",
-        "remotes",
-        "rmarkdown",
-        "stats",
-        "testthat",
-        "utils",
-        "whisker",
-        "withr"
-      ],
-      "Hash": "163a20ecce2c3936f2039a5ab8b496ee"
-    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.4.7",
@@ -973,18 +948,6 @@
         "rlang"
       ],
       "Hash": "03533b1c875028233598f848fda44c4c"
-    },
-    "git2r": {
-      "Package": "git2r",
-      "Version": "0.33.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "graphics",
-        "utils"
-      ],
-      "Hash": "cdec9964efeda730d1b2cd3d5dd27747"
     },
     "gitcreds": {
       "Package": "gitcreds",
