@@ -33,7 +33,7 @@ jobs:
 
       - name: Install devtools
         run: |
-          Rscript -e 'renv::install("devtools")'
+          Rscript -e 'install.packages("devtools")'
 
       - name: Check package before building
         run: |
