@@ -18,7 +18,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgit2-dev libsqliteodbc pandoc
+          sudo apt-get install -y libgit2-dev pandoc
 
       - name: "Check if SQLite ODBC driver is registered"
         run: |
@@ -44,6 +44,7 @@ jobs:
           upload-snapshots: true
           working-directory: phenoRankeR
         env:
+          DBCSYSINI: /etc/odbcinst.ini
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
 
