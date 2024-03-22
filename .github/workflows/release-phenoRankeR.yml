@@ -31,17 +31,12 @@ jobs:
           cache-version: 1
           working-directory: phenoRankeR
 
-      - name: Install devtools
-        run: |
-          Rscript -e 'install.packages("devtools")'
-
-      - name: Check package before building
-        run: |
-          Rscript -e 'devtools::check(error_on ="error")'
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
 
       - name: Build package
-        run: |
-          Rscript -e 'devtools::build()'
+        run: R CMD build phenoRankeR
 
       - name: Release package
         uses: softprops/action-gh-release@v2
