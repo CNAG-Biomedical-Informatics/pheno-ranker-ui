@@ -20,20 +20,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgit2-dev libsqliteodbc pandoc
 
-      - name: Verify SQLite ODBC Driver installation
-        run: |
-          sudo find / -name libsqlite3odbc.so
-      
-      - name: "Check if SQLite ODBC driver are registered"
-        run: |
-          odbcinst -j
-          odbcinst -q -d -n SQLite
-
       - name: Create custom odbcinst.ini in a user-accessible directory
         run: |
-          mkdir -p $HOME/odbc
-          echo "[SQLite]" >> $HOME/odbc/odbcinst.ini
-          echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so" >> $HOME/odbc/odbcinst.ini
+          echo "[SQLite]" >> $HOME/odbcinst.ini
+          echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so" >> $HOME/odbcinst.ini
 
       - name: Install R
         uses: r-lib/actions/setup-r@v2
@@ -49,20 +39,13 @@ jobs:
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
 
-      - name: obdbcListDrivers
-        run: |
-          cd phenoRankeR
-          R -e 'Sys.getenv("ODBCSYSINI")'
-          R -e 'odbc::odbcListDrivers()'
-        env:
-          ODBCSYSINI: /home/runner/odbc
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           working-directory: phenoRankeR
+          error-on: error
         env:
-          ODBCSYSINI: /home/runner/odbc
+          ODBCSYSINI: /home/runner
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
 
