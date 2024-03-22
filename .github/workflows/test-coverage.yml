@@ -12,6 +12,10 @@ jobs:
     # with above uncommented, the workflow fails with the following error:
     # Error in remote(function(...) get("pkg_install_make_plan", asNamespace("pak"))(...),
 
+    defaults:
+      run:
+        working-directory: phenoRankeR
+
     steps:
       - uses: actions/checkout@v4
 
