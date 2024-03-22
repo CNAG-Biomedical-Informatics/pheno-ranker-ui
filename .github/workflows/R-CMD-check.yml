@@ -19,12 +19,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgit2-dev libsqliteodbc pandoc
-
-      - name: "Check if SQLite ODBC driver is registered"
-        run: |
-          odbcinst -j
-          odbcinst -q -d -n SQLite
-
+          
       - name: Update odbcinst.ini for SQLite
         run: |
           echo "[SQLite]" | sudo tee -a /etc/odbcinst.ini
@@ -32,6 +27,11 @@ jobs:
           echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqliteodbc.so" | sudo tee -a /etc/odbcinst.ini
           echo "Setup=/usr/lib/x86_64-linux-gnu/odbc/libsqliteodbc.so" | sudo tee -a /etc/odbcinst.ini
           echo "UsageCount=1" | sudo tee -a /etc/odbcinst.ini
+      
+      - name: "Check if SQLite ODBC driver are now correctly is registered"
+        run: |
+          odbcinst -j
+          odbcinst -q -d -n SQLite
 
       - name: Install R
         uses: r-lib/actions/setup-r@v2
