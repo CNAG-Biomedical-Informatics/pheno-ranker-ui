@@ -49,7 +49,7 @@ jobs:
           upload-snapshots: true
           working-directory: phenoRankeR
         env:
-          ODBCSYSINI: /etc/odbcinst.ini
+          ODBCSYSINI: /etc
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
 
