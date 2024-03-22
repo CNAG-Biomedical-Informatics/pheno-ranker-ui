@@ -20,6 +20,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgit2-dev libsqliteodbc pandoc
 
+      - name: Locate libsqliteodbc.so
+        run: find /usr -name libsqliteodbc.so
+
       - name: "Check if SQLite ODBC driver is registered"
         run: |
           odbcinst -j
