@@ -27,17 +27,18 @@ jobs:
           use-public-rspm: true
 
       - name: Install dependencies
-        uses: r-lib/actions/setup-renv@v2-branch
+        uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
           working-directory: phenoRankeR
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
-          RENV_CONFIG_PAK_ENABLED: true
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+        env:
+          RENV_VERSION: 1.0.5
 
       - name: Build package
         run: R CMD build phenoRankeR
