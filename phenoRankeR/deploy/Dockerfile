@@ -5,11 +5,10 @@ WORKDIR /usr/share/pheno-ranker
 FROM base as builder
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
-ENV R_VERSION=4.3.2
+ENV R_VERSION=4.3.3
 ENV PhenoRankeR_VERSION=0.0.0.9009
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
-# COPY ./shiny-app/renv.lock /app/
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
   gdebi-core \
   libfribidi-dev \
@@ -41,7 +40,7 @@ RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${P
 # interesting Github issue:https://github.com/rstudio/renv/issues/1019
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
-# somhow pack gets stuck with Loading metadata database ... done
+# somhow pak gets stuck with Loading metadata database ... done
 ENV RENV_CONFIG_PAK_ENABLED=FALSE
 RUN Rscript -e "renv::install('/app/phenoRankeR_${PhenoRankeR_VERSION}.tar.gz')"
 ARG IGNORE_CACHE_FROM_HERE=unknown

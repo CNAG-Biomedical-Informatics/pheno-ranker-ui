@@ -65,7 +65,8 @@ usethis::use_vignette("phenoRankeR")
 usethis::use_coverage()
 
 # Create a summary readme for the testthat subdirectory
-covrpage::covrpage()
+# covrpage::covrpage()
+covr::report()
 
 ## CI ----
 ## Use this part of the script if you need to set up a CI

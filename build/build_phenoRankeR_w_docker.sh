@@ -1,6 +1,8 @@
 #!/bin/bash
 
-IMAGE_NAME="leistivo/pheno-ranker-ui-r-package-builder:latest"
+# IMAGE_NAME="leistivo/pheno-ranker-ui-r-package-builder:latest"
+IMAGE_NAME="phenorankerui_package_builder:latest"
+
 HOST_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" # directory of the script
 CONTAINER_PATH="/opt/build"
 

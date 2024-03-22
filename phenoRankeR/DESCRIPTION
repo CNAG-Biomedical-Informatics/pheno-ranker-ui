@@ -23,7 +23,7 @@ Imports:
     odbc,
     plotly,
     reactR,
-    shiny (< 1.7.5),
+    shiny (== 1.7.4.1),
     shinyAce,
     shinyjs,
     shinyvalidate,
