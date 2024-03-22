@@ -22,6 +22,7 @@ jobs:
 
       - name: "Check if SQLite ODBC driver is registered"
         run: |
+          odbcinst -j
           odbcinst -q -d -n SQLite
 
       - name: Install R
