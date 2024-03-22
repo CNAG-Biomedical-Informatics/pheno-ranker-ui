@@ -1,44 +1,29 @@
-name: License check
+---
+name: License Compliance Check
 
 on:
   workflow_dispatch:
-
+   
 jobs:
-  #   license_check_server:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - name: Checkout the code
-  #         uses: actions/checkout@v3
-  #         with:
-  #           fetch-depth: 0
-  #       - name: Setup Python
-  #         uses: actions/setup-python@v2
-  #         with:
-  #           python-version: "3.10.6"
-  #       - name: Get explicit and transitive dependencies
-  #         run: |
-  #           pip install -r convertPheno_server/requirements.txt
-  #           pip freeze > requirements-all.txt
-  #       - name: Check python
-  #         id: license_check_report
-  #         uses: pilosus/action-pip-license-checker@v2
-  #         with:
-  #           requirements: "requirements-all.txt"
-  #           fail: "Copyleft"
-  #           exclude: "(?i)^(pylint|aio[-_]*).*"
-  #       - name: Print report
-  #         if: ${{ always() }}
-  #         run: echo "${{ steps.license_check_report.outputs.report }}"
-  licenses:
+  license-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate License Report
+        uses: insightsengineering/r-license-report@v1
         with:
-          node-version: "16"
-      - run: cd convertPheno_client && npm install --legacy-peer-deps
-      - name: Check licenses
-        uses: hearthsim/action-npm-permissive-license-checker@v2
+          path: "phenoRankeR"
+          #flag non-compliant licenses
+          regex: "^AGPL.*"
+          # Fail the action if 1 or more matching non-compliant licenses are found
+          fail: true
+          bioc_release: "3.18"
+          as_html: true
+
+      - name: Upload PDF Report
+        uses: actions/upload-artifact@v4
         with:
-          production-only: true
-          exclude-private-packages: true
+          name: license-report.pdf
+          path: license-report.pdf
