@@ -43,14 +43,15 @@ jobs:
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
 
-      - name: Test coverage and upload reports to Codecov
+      - name: Test coverage
         shell: Rscript {0}
         run: |
-          covr::codecov(
-            quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package"),
-            token = "${{ secrets.CODECOV_TOKEN }}"
+          covr::to_cobertura(
+            covr::codecov(
+              quiet = FALSE,
+              clean = FALSE,
+              install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package"),
+            )
           )
         env:
           ODBCSYSINI: /home/runner

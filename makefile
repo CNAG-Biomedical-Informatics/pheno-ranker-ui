@@ -104,3 +104,9 @@ rcmdcheck:
 
 cov:
 	Rscript -e "covr::codecov(path='phenoRankeR', quiet = FALSE,clean = FALSE,token = Sys.getenv('CODECOV_TOKEN'))"
+
+cobertura:
+	cd phenoRankeR && Rscript -e "covr::to_cobertura(covr::package_coverage(), file='tests/reports/cobertura.xml')"
+
+upload-cobertura:
+	/usr/local/bin/codecov do-upload -f test/reports/cobertura.xml
