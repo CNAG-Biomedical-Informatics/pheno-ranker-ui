@@ -56,7 +56,7 @@ jobs:
           ODBCSYSINI: /home/runner
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
-          CODECOV_TOKEN: ${{ secrets.CODECOV }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Show testthat output
         if: always()
