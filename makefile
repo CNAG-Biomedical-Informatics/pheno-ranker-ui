@@ -103,4 +103,4 @@ rcmdcheck:
 	cd phenoRankeR && Rscript -e "rcmdcheck::rcmdcheck()"
 
 cov:
-	cd phenoRankeR && Rscript -e "covr::package_coverage()"
+	cd phenoRankeR && Rscript -e "covr::codecov(quiet = FALSE,clean = FALSE,token = Sys.getenv('CODECOV_TOKEN'))"
