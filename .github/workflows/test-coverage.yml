@@ -57,6 +57,12 @@ jobs:
           ODBCSYSINI: /home/runner
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ${{ runner.temp }}/package/cobertura.xml
         
       - name: Show testthat output
         if: always()
