@@ -25,5 +25,5 @@ jobs:
       - name: Upload PDF Report
         uses: actions/upload-artifact@v4
         with:
-          name: license-report.pdf
-          path: license-report.pdf
+          name: license-report.html
+          path: license-report.html

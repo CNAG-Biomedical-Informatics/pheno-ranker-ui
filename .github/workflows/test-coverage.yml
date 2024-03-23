@@ -42,19 +42,21 @@ jobs:
           working-directory: phenoRankeR
         env:
           RENV_CONFIG_REPOS_OVERRIDE: ${{ env.RSPM }}
-      
-      - name: Test coverage
+
+      - name: Test coverage and upload reports to Codecov
         shell: Rscript {0}
         run: |
           covr::codecov(
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
+            token = Sys.getenv("CODECOV_TOKEN")
           )
         env:
           ODBCSYSINI: /home/runner
           DB_DRIVER: SQLite
           DB_NAME: ":memory:"
+          CODECOV_TOKEN: ${{ secrets.CODECOV }}
 
       - name: Show testthat output
         if: always()
