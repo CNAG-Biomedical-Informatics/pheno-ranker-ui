@@ -29,7 +29,7 @@ conv_mode_note = tagList(
 convert_pheno_icon = tags$div(
   icon("github"),
   tags$a(
-    "Convert-pheno, A software toolkit for the interconversion of standard data models for phenotypic data",
+    "Convert-Pheno: A software toolkit for the interconversion of standard data models for phenotypic data",
     href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
   )
 )

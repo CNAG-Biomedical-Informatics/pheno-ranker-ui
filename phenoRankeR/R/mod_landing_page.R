@@ -73,7 +73,7 @@ mod_landing_page_ui <- function(id){
         div(
           icon("github"),
           a(
-            "Convert-pheno, A software toolkit for the interconversion of standard data models for phenotypic data",
+            "Convert-Pheno: A software toolkit for the interconversion of standard data models for phenotypic data",
             href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
           )
         )
