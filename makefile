@@ -95,3 +95,12 @@ change-owner:
 # https://github.com/wagoodman/dive
 dive:
 	dive leistivo/pheno-ranker-ui:$(phenoRankeR_VERSION)
+
+test:
+	cd phenoRankeR && Rscript -e "devtools::test()"
+
+rcmdcheck:
+	cd phenoRankeR && Rscript -e "rcmdcheck::rcmdcheck()"
+
+cov:
+	cd phenoRankeR && Rscript -e "covr::package_coverage()"
