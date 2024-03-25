@@ -47,8 +47,8 @@ default_golem_opts <- list(
   PHENO_CSV_CONV_BIN = "/usr/share/pheno-ranker/utils/csv2pheno_ranker/csv2pheno-ranker",
   ODBCSYSINI = "/app/config/odbc",
   
-  dbDriver = "PostgreSQL",
-  dbServer = "10.10.0.2",
+  dbDriver = "SQLite",
+  dbServer = ":memory:",
   dbPort = 5432,
   dbDatabase = "shiny",
   dbUser = "shiny",

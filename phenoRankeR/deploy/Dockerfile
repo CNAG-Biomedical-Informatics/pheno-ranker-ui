@@ -16,9 +16,9 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   libjq-dev \
   libssl-dev \
   libxml2-dev \
-  #for PostgreSQL
-  unixodbc-dev \
-  odbc-postgresql && \
+  odbc-postgresql \
+  unixodbc-dev  \
+  libsqliteodbc && \
   apt-get clean
 
 WORKDIR /opt
@@ -40,12 +40,15 @@ RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${P
 # interesting Github issue:https://github.com/rstudio/renv/issues/1019
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
+COPY config/odbc/odbcinst.ini /app/config/odbc/odbcinst.ini
+COPY --chown=dockeruser:dockeruser data/ /app/data
+
 # somhow pak gets stuck with Loading metadata database ... done
 ENV RENV_CONFIG_PAK_ENABLED=FALSE
 RUN Rscript -e "renv::install('/app/phenoRankeR_${PhenoRankeR_VERSION}.tar.gz')"
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
-COPY run_phenoRankeR.R . 
+COPY run_phenoRankeR.R .
 COPY data/examples/example.csv inst/extdata/examples/example.csv
 
 FROM builder as deploy
