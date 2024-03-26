@@ -26,6 +26,6 @@ jobs:
 
       - name: push the image
         run: |
-          version=$(grep -oP 'Version: \K.*' ${GITHHUB_WORKSPACE}/phenoRankeR/DESCRIPTION)
+          version=$(grep -oP 'Version: \K.*' ${GITHUB_WORKSPACE}/phenoRankeR/DESCRIPTION)
           docker tag phenorankerui:${version} ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui:${version}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/pheno-ranker-ui:${version}
