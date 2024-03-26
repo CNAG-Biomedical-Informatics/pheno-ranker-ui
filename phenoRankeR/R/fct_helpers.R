@@ -186,7 +186,15 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
 
           writeLines(data_sources, file)
         } else {
-          writeLines(as.character(toJSON(data_sources)), file)
+          # TODO
+          # Do not write the file but just copy it 
+
+          print("want to download the following data_sources")
+          print("data_sources")
+          print(data_sources)
+
+          file.copy(data_sources, file)
+          # writeLines(as.character(toJSON(data_sources)), file)
         }
       }
     }

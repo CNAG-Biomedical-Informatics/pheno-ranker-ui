@@ -34,9 +34,6 @@ dev:
 stop:
 	fuser -k 3839/tcp
 
-test:
-	cd phenoRankeR && Rscript -e "devtools::test()"
-
 install:
 	cd phenoRankeR && \
 	R CMD INSTALL deploy/phenoRankeR_$(phenoRankeR_VERSION).tar.gz && \

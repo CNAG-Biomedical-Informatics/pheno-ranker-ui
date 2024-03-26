@@ -407,19 +407,31 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       )
     )
 
-    output$bffDl <- outputDownloadHandler(rv_sim$simResult_bff, "phenoRankerSim.bff")
-    output$pxfDl <- outputDownloadHandler(rv_sim$simResult_pxf, "phenoRankerSim.pxf")
-    output$allDl <- outputDownloadHandler(
-      list(rv_sim$simResult_bff, rv_sim$simResult_pxf), 
-      list("phenoRankerSim.bff", "phenoRankerSim.pxf"), 
-      zip_download = TRUE
-    )
+    simulationOutputFolder <- get_golem_options("simulationOutputFolder")
+
+    observe({
+      req(rv_sim$simulationId)
+
+      path <- paste0(simulationOutputFolder, rv_sim$simulationId)
+      bffOutputFn <- paste0(path, ".bff.json")
+      pxfOutputFn <- paste0(path, ".pxf.json")
+
+      print("bffOutputFn")
+      print(bffOutputFn)
+    
+      output$bffDl <- outputDownloadHandler(bffOutputFn, "phenoRankerSim.bff")
+      output$pxfDl <- outputDownloadHandler(pxfOutputFn, "phenoRankerSim.pxf")
+      output$allDl <- outputDownloadHandler(
+        list(bffOutputFn, pxfOutputFn), 
+        list("phenoRankerSim.bff", "phenoRankerSim.pxf"), 
+        zip_download = TRUE
+      )
+    })
 
     observeEvent(input$ontologiesFile, {
       req(input$ontologiesFile)
 
       allowed_types <- c("yaml", "yml")
-      # file_ext <- tools::file_ext(input$ontologiesFile$name)
       if (!(get_file_ext(input$ontologiesFile$name) %in% allowed_types)) {
         showNotification("Invalid file type!", type = "error")
         reset("ontologiesFile")
