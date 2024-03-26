@@ -30,7 +30,7 @@ default_golem_opts <- list(
   cohortRankInputFolder="/app/data/uploads/rankInput/cohortMode/cohorts",
   
   weightsUploadFolder="/app/data/uploads/weights",
-  extraConfigsUploadFolder="app/data/uploads/config",
+  extraConfigsUploadFolder="/app/data/uploads/config",
   ontologyUploadFolder="/app/data/uploads/ontologies/",
 
   simulationOutputFolder="/app/data/output/simulatedData/",

@@ -1,0 +1,17 @@
+{
+  "simulationOutputFolder": "/app/data/output/simulatedData/",
+  "ontologyUploadFolder": "/app/data/uploads/ontologies/",
+  "runWithDocker": "True",
+  "LD_LIB_PATH":"/usr/local/lib/perl5/5.36.1/x86_64-linux-gnu/CORE",
+  "PHENO_SIM_BIN": "/opt/pheno-ranker/sim/create_random_bff_pxf.pl",
+  "PHENO_RANK_BIN": "/opt/pheno-ranker/pheno-ranker",
+  "ODBCSYSINI": "/app/config/odbc",
+  "dbSettings": {
+    "driver": "PostgreSQL",
+    "server": "pheno-ranker-db",
+    "port": 5432,
+    "database": "shiny",
+    "user": "shiny",
+    "password": "shiny"
+  }
+}

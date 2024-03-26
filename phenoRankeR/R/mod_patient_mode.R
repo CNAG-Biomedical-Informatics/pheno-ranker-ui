@@ -694,7 +694,6 @@ mod_patient_mode_server <- function(
 
       simDataPath <- paste0(
         get_golem_options("simulationOutputFolder"),
-        # "./data/output/simulatedData/",
         rv_sim$simulationId,
         ".",
         rv$inputFormat,
@@ -703,7 +702,6 @@ mod_patient_mode_server <- function(
 
       convDataPath <- paste0(
         get_golem_options("conversionOutputFolder"),
-        # "./data/output/convertedData/",
         paste0(rv_conversion$id,"/"),
         rv_conversion$id,
         ".json"
@@ -711,7 +709,6 @@ mod_patient_mode_server <- function(
 
       upload_dir <- paste0(
         get_golem_options("rankInputFolder"),
-        # "./data/uploads/rankInput/",
         mode,
         "/"
       )
@@ -827,13 +824,9 @@ mod_patient_mode_server <- function(
         
       output$phenoBlastRunId <- renderText(runId)
 
-      # cfg <- fromJSON(readLines("config/cfg.json"))
       outDir <- paste0(
-        # dirname(getwd()),
         paste0(
           get_golem_options("patientModeOutputFolder"),
-          # cfg$patientModeOutputFolder,
-          # "/data/output/rankedPatients/",
           timestamp,
           "/"
         )
@@ -848,8 +841,6 @@ mod_patient_mode_server <- function(
         rv_patient$mappingDf,
         file = paste0(
           get_golem_options("patientModeOutputFolder"),
-          # cfg$patientModeOutputFolder,
-          # "./data/output/rankedPatients/",
           rv_patient$runId,
           "/",
           rv_patient$runId,
@@ -858,12 +849,6 @@ mod_patient_mode_server <- function(
         row.names = FALSE
       )
 
-      # TODO
-      # add a reactive value depending if the weights
-      # are used or not
-
-      # it should be set to NULL if the weights editor is empty
-      # or if every yaml value is set to 1
       weights_file_path <- NULL
       if (input$yamlEditor_weights != "") {
         fn <- paste0(
@@ -872,7 +857,6 @@ mod_patient_mode_server <- function(
         )
         weights_file_path <- file.path(
           get_golem_options("weightsUploadFolder"),
-          # "./data/uploads/weights",
           fn
         )
 
@@ -884,15 +868,18 @@ mod_patient_mode_server <- function(
 
       extra_config_file_path <- NULL
       if (input$yamlEditor_config != "") {
+
         extra_config_file_path <- file.path(
           get_golem_options("extraConfigsUploadFolder"),
-          # "./data/uploads/config",
           paste0(timestamp,"_config.yaml")
         )
 
+        print("extra_config_file_path")
+        print(extra_config_file_path)
+
         print("input$yamlEditor_config")
         print(input$yamlEditor_config)
-
+        
         writeLines(
           input$yamlEditor_config,
           extra_config_file_path
@@ -991,8 +978,6 @@ mod_patient_mode_server <- function(
         )
       }
 
-      # cfg <- fromJSON(readLines("config/cfg.json"))
-      # phenoRankBin <- cfg$PHENO_RANK_BIN 
       phenoRankBin <- get_golem_options("PHENO_RANK_BIN") 
 
       cmd <- paste0(
