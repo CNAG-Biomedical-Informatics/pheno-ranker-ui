@@ -1,5 +1,7 @@
 
-uploads/rankInput/*.json
+uploads/rankInput/patientMode/references/*.json
+uploads/rankInput/patientMode/targets/*.json
+
 uploads/ontologies/*.yaml
 uploads/weights/*.yaml
 uploads/config/*.yaml
