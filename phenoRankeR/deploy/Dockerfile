@@ -21,15 +21,22 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   libsqliteodbc && \
   apt-get clean
 
+# Add user "phenoranker" (non-root)
+ARG UID=1001
+ARG GID=1001
+
+RUN groupadd -g "${GID}" phenoranker \
+  && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" phenoranker
+
 WORKDIR /opt
 RUN curl -O https://cdn.rstudio.com/r/debian-11/pkgs/r-${R_VERSION}_1_amd64.deb
 RUN gdebi -n r-${R_VERSION}_1_amd64.deb
 RUN rm r-${R_VERSION}_1_amd64.deb
 RUN ln -s /opt/R/${R_VERSION}/bin/R /usr/local/bin/R
 RUN ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/local/bin/Rscript
-RUN chown -R dockeruser:dockeruser /opt/R
+RUN chown -R phenoranker:phenoranker /opt/R
 
-USER dockeruser
+USER phenoranker
 WORKDIR /app
 
 RUN Rscript -e "options(repos = c(PPM = 'https://${PPM_URL}'));install.packages(c('pak','renv'))"
@@ -41,7 +48,7 @@ RUN Rscript -e "renv::init(bare=TRUE);options(renv.config.ppm.url = 'https://${P
 
 COPY phenoRankeR_${PhenoRankeR_VERSION}.tar.gz .
 COPY config/odbc/odbcinst.ini /app/config/odbc/odbcinst.ini
-COPY --chown=dockeruser:dockeruser data/ /app/data
+COPY --chown=phenoranker:phenoranker data/ /app/data
 
 # somhow pak gets stuck with Loading metadata database ... done
 ENV RENV_CONFIG_PAK_ENABLED=FALSE
