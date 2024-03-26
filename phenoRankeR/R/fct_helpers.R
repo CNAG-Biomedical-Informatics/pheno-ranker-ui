@@ -134,16 +134,12 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
     },
     content = function(file) {
       if (zip_download) {
-        temp_dir <- file.path(".", get_golem_options("tempFolder"))
-        # temp_dir <- file.path(".", "./data/output/tmp")
-        dir.create(temp_dir)
-
-        # Need to set wd otherwise the files will be inside nested folders
-        setwd(temp_dir)
+        temp_dir <- tempdir()
+        print("temp_dir")
+        print(temp_dir)
 
         # Initialize a vector to hold the full filenames with extensions
         full_file_names <- c()
-
         for (i in seq_along(data_sources)) {
           
           # check if the file is a yaml file
@@ -159,42 +155,47 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
 
             # Add the yaml file to the vector
             full_file_names <- c(full_file_names, paste0(fn, ".yaml"))
-
           } else {
-            content_file <- file.path(paste0(file_names[i], ".json"))
-            writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+            # content_file <- file.path(paste0(file_names[i], ".json"))
+            # writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+            print("data_sources[[i]]")
+            print(data_sources[[i]])
+
+            print("normalizePath(data_sources[[i]])")
+            print(normalizePath(data_sources[[i]]))
+
+            print("file.path(temp_dir, file_names[i])")
+            print(file.path(temp_dir, file_names[i]))
+            
+            new_file_name <- paste0(file_names[i], ".json")
+            temp_file <- file.path(temp_dir, new_file_name)
+            file.copy(
+              normalizePath(data_sources[[i]]), 
+              temp_file
+            )
 
             # Add the json file to the vector
-            full_file_names <- c(full_file_names, paste0(file_names[i], ".json"))
+            full_file_names <- c(full_file_names, new_file_name)
+            print("full_file_names")
+            print(full_file_names)
           }
-          # content_file <- file.path(paste0(file_names[i], ".json"))
-          # writeLines(as.character(toJSON(data_sources[[i]])), content_file)
         }
+        setwd(temp_dir)
         zip(
           file,
-          # files = paste0(file_names, ".json")
           files = full_file_names
         )
-        unlink(temp_dir, recursive = TRUE)
+        on.exit(unlink(temp_dir))
       } else {
         if (grepl("conversionConfig", file_names)) {
-          print("data_sources")
-          print(data_sources)
-
-          print("file")
-          print(file)
-
           writeLines(data_sources, file)
         } else {
-          # TODO
-          # Do not write the file but just copy it 
-
-          print("want to download the following data_sources")
           print("data_sources")
           print(data_sources)
-
-          file.copy(data_sources, file)
-          # writeLines(as.character(toJSON(data_sources)), file)
+          file_path <- normalizePath(data_sources)
+          print("file_path")
+          print(file_path)
+          file.copy(file_path, file)
         }
       }
     }
