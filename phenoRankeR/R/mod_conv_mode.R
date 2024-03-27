@@ -181,6 +181,55 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       }
     )
 
+    conversionOutputFolder <- get_golem_options("conversionOutputFolder")
+
+    # TODO
+    # put in a more general function
+    # because it is used in mod_sim_mode as well
+    observe({
+      req(rv_conversion$id)
+      print("rv_conversion$id")
+      print(rv_conversion$id)
+
+      path <- paste0(
+        conversionOutputFolder,
+        rv_conversion$id
+      )
+
+      conv_output_fn <- file.path(
+        path,
+        paste0(rv_conversion$id,".json")
+      )
+
+      config_fn <- file.path(
+        path,
+        paste0(rv_conversion$id,"_config.yaml")
+      )
+
+      print("conv_output_fn")
+      print(conv_output_fn)
+
+      print("config_fn")
+      print(config_fn)
+
+      output$output <- outputDownloadHandler(
+        conv_output_fn, 
+        "conversionOutput"
+      )
+
+      output$cfg <- outputDownloadHandler(
+        config_fn, 
+        "conversionConfig"
+      )
+
+      output$both <- outputDownloadHandler(
+        list(conv_output_fn, config_fn), 
+        list("conversionConfig", "conversionOutput"),
+        output_name = "phenoRankerConv.zip",
+        zip_download = TRUE
+      )
+    })
+
     output$output <- outputDownloadHandler(
       rv_conversion$outputJson, 
       "conversionOutput"
@@ -215,11 +264,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         message = list(mode="conv",id=timestamp)
       )
 
-      # cfg <- fromJSON(readLines("config/cfg.json"))
-
-      # csvConvBin <- cfg$PHENO_CSV_CONV_BIN
       csvConvBin <- get_golem_options("PHENO_CSV_CONV_BIN")
-      # outputFolder <- cfg$conversionOutputFolder
       outputFolder <-get_golem_options("conversionOutputFolder")
 
       # create folder for the conversion output

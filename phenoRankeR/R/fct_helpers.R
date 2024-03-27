@@ -118,16 +118,19 @@ validateYAML <- function(yaml_input) {
 #' @import zip
 #' @noRd
 
-outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE) {
+outputDownloadHandler <- function(
+  data_sources, file_names, mode, output_name = "", zip_download = FALSE) {
+  
   downloadHandler(
     filename = function() {
       ext <- ".json"
+
       if (length(file_names) == 1 && grepl("conversionConfig", file_names)) {
         ext <- ".yaml"
       }
 
       if (zip_download) {
-        "phenoRankerSim.zip"
+        paste0(output_name)
       } else {
         paste0(file_names, ext)
       }
@@ -146,39 +149,57 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
           fn <- file_names[[i]]
           print("fn")
           print(fn)
+
+          ext <- ".json"
           if (fn == "conversionConfig") {
-            print("inside conversionConfig")
-            content_file <- file.path(paste0(fn, ".yaml"))
-            print("content_file")
-            print(content_file)
-            writeLines(data_sources[[i]], content_file)
-
-            # Add the yaml file to the vector
-            full_file_names <- c(full_file_names, paste0(fn, ".yaml"))
-          } else {
-            # content_file <- file.path(paste0(file_names[i], ".json"))
-            # writeLines(as.character(toJSON(data_sources[[i]])), content_file)
-            print("data_sources[[i]]")
-            print(data_sources[[i]])
-
-            print("normalizePath(data_sources[[i]])")
-            print(normalizePath(data_sources[[i]]))
-
-            print("file.path(temp_dir, file_names[i])")
-            print(file.path(temp_dir, file_names[i]))
-            
-            new_file_name <- paste0(file_names[i], ".json")
-            temp_file <- file.path(temp_dir, new_file_name)
-            file.copy(
-              normalizePath(data_sources[[i]]), 
-              temp_file
-            )
-
-            # Add the json file to the vector
-            full_file_names <- c(full_file_names, new_file_name)
-            print("full_file_names")
-            print(full_file_names)
+            ext <- ".yaml"
           }
+
+          new_file_name <- paste0(file_names[i], ".json")
+          temp_file <- file.path(temp_dir, new_file_name)
+          file.copy(
+            normalizePath(data_sources[[i]]), 
+            temp_file
+          )
+
+          # Add the json file to the vector
+          full_file_names <- c(full_file_names, new_file_name)
+          print("full_file_names")
+          print(full_file_names)
+
+          # if (fn == "conversionConfig") {
+          #   print("inside conversionConfig")
+          #   content_file <- file.path(paste0(fn, ".yaml"))
+          #   print("content_file")
+          #   print(content_file)
+          #   writeLines(data_sources[[i]], content_file)
+
+          #   # Add the yaml file to the vector
+          #   full_file_names <- c(full_file_names, paste0(fn, ".yaml"))
+          # } else {
+          #   # content_file <- file.path(paste0(file_names[i], ".json"))
+          #   # writeLines(as.character(toJSON(data_sources[[i]])), content_file)
+          #   print("data_sources[[i]]")
+          #   print(data_sources[[i]])
+
+          #   print("normalizePath(data_sources[[i]])")
+          #   print(normalizePath(data_sources[[i]]))
+
+          #   print("file.path(temp_dir, file_names[i])")
+          #   print(file.path(temp_dir, file_names[i]))
+            
+          #   new_file_name <- paste0(file_names[i], ".json")
+          #   temp_file <- file.path(temp_dir, new_file_name)
+          #   file.copy(
+          #     normalizePath(data_sources[[i]]), 
+          #     temp_file
+          #   )
+
+          #   # Add the json file to the vector
+          #   full_file_names <- c(full_file_names, new_file_name)
+          #   print("full_file_names")
+          #   print(full_file_names)
+          # }
         }
         setwd(temp_dir)
         zip(
@@ -187,16 +208,22 @@ outputDownloadHandler <- function(data_sources, file_names, zip_download = FALSE
         )
         on.exit(unlink(temp_dir))
       } else {
-        if (grepl("conversionConfig", file_names)) {
-          writeLines(data_sources, file)
-        } else {
-          print("data_sources")
-          print(data_sources)
-          file_path <- normalizePath(data_sources)
-          print("file_path")
-          print(file_path)
-          file.copy(file_path, file)
-        }
+        file_path <- normalizePath(data_sources)
+        file.copy(file_path, file)
+
+        # if (grepl("conversionConfig", file_names)) {
+        #   # writeLines(data_sources, file)
+        #   file_path <- normalizePath(data_sources)
+        #   print("file_path")
+        #   file.copy(file_path, file)
+        # } else {
+        #   print("data_sources")
+        #   print(data_sources)
+        #   file_path <- normalizePath(data_sources)
+        #   print("file_path")
+        #   print(file_path)
+        #   file.copy(file_path, file)
+        # }
       }
     }
   )

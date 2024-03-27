@@ -423,7 +423,8 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       output$pxfDl <- outputDownloadHandler(pxfOutputFn, "phenoRankerSim.pxf")
       output$allDl <- outputDownloadHandler(
         list(bffOutputFn, pxfOutputFn), 
-        list("phenoRankerSim.bff", "phenoRankerSim.pxf"), 
+        list("phenoRankerSim.bff", "phenoRankerSim.pxf"),
+        output_name = "phenoRankerSim.zip",
         zip_download = TRUE
       )
     })
