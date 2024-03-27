@@ -846,6 +846,39 @@ mod_cohort_mode_server <- function(
       output$weightsYamlCohortsErrorOutput <- renderText(result)
     })
 
+    observeEvent(input$extraConfigCohortFile, {
+      req(input$extraConfigCohortFile)
+
+      allowed_types <- c("yaml")
+      if (!(get_file_ext(input$extraConfigCohortFile$name) %in% allowed_types)) {
+        showNotification("Invalid file type!", type = "error")
+        reset("extraConfigCohortFile")
+        return()
+      }
+
+      file_data <- paste(
+        readLines(
+          input$extraConfigCohortFile$datapath
+        ),
+        collapse = "\n"
+      )
+
+      yamlValid <- validateYAML(file_data)
+      if (yamlValid != "YAML is valid") {
+        showNotification(yamlValid, type = "error")
+        output$configYamlCohortsErrorOutput <- renderText(yamlValid)
+        updateAceEditor(session, "yamlCohortEditor_config", value = "")
+        return()
+      }
+      output$configYamlCohortsErrorOutput <- renderText(yamlValid)
+
+      updateAceEditor(
+        session,
+        "yamlCohortEditor_config",
+        value = as.yaml(yaml.load(file_data))
+      )
+    })
+
     observeEvent(input$simulatedCohortInputFormatRadio, {
       req(rv_cohort$inputFormat)
       req(rv_cohort$mappingDf)
