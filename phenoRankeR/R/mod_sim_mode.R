@@ -615,7 +615,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         ontology_count <- simSettings[indices[i]]
         max_pool_size <- simSettings[indices[i + 1]]
 
-        settings <- paste0(
+        ext_onts_settings_string <- paste0(
           ext_onts_settings_string, ontology, " ", ontology_count, " ",
           max_pool, " ", max_pool_size, " ")
 
@@ -624,21 +624,9 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       }
 
       number_of_individuals <- simSettings[11]
-      # settings_mapping[["-n"]] <- number_of_individuals
-
-      # print("settings_mapping")
-      # print(settings_mapping)
-
-      print("ext_onts_settings_mapping")
-      print(ext_onts_settings_mapping)
 
       print("ext_onts_settings_string")
       print(ext_onts_settings_string)
-
-      
-
-      # BUG
-      # the ext_onts_settins_string is empty
 
       lapply(selectedOutputFormats, function(option) {
         if (option == "BFF") {
