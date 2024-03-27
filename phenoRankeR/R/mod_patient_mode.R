@@ -1269,7 +1269,6 @@ mod_patient_mode_server <- function(
 
       targetFilePath <- paste0(
         get_golem_options("conversionOutputFolder"),
-        # normalizePath("./data/output/convertedData"),
         "/",
         paste0(rv_conversion$id, "/"),
         rv_conversion$id,

@@ -155,7 +155,7 @@ outputDownloadHandler <- function(
             ext <- ".yaml"
           }
 
-          new_file_name <- paste0(file_names[i], ".json")
+          new_file_name <- paste0(file_names[i], ext)
           temp_file <- file.path(temp_dir, new_file_name)
           file.copy(
             normalizePath(data_sources[[i]]), 
@@ -719,8 +719,9 @@ observeConvertedDataChange <- function(
       mapping_df <- create_new_mapping_df()
     }
     
-    # convertedDataInputDir <- "./data/output/convertedData/"
     convertedDataInputDir <- get_golem_options("conversionOutputFolder")
+    print("convertedDataInputDir")
+    print(convertedDataInputDir)
 
     row <- data.frame(
       file_info = file_info,
