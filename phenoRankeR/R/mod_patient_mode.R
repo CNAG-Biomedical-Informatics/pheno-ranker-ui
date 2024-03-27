@@ -830,6 +830,13 @@ mod_patient_mode_server <- function(
       # it s not working when using simulated data
       # for the reference and real data for the target
 
+      # TODO
+      # it should fail when the user tries to rank
+      # while include/exclude are both filled
+      
+      # Explain to the user that include/exclude 
+      # are mutually exclusive
+
       paths <- set_input_paths(
         rv_patient,
         rv_sim,
