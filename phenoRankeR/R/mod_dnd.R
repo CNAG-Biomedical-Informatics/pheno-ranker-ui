@@ -29,13 +29,20 @@ incl_excl_criteria <- fromJSON(
   )
 )
 
-render_dnd <- function(ns,inputFormat=NULL) {
-
+render_dnd <- function(ns,inputFormat=NULL, configFile=NULL) {
   print("render_dnd")
   labels = c ("")
   if (!is.null(inputFormat)){
     labels = incl_excl_criteria[[inputFormat]]
-  }  
+  }
+
+  if (!is.null(configFile)){
+    # load the configFile and extract the allowed terms
+    # from the file
+
+    print("configFile")
+    print(configFile)
+  }
   print("labels")
   print(labels)
 
@@ -64,15 +71,29 @@ render_dnd <- function(ns,inputFormat=NULL) {
   })
 }
 
-mod_dnd_server <- function(id, rv_patient){
+mod_dnd_server <- function(id, rv){
   moduleServer(id,function(input, output, session){
     ns <- session$ns
     print("mod_dnd_server")
     output$incl_excl_list <- render_dnd(ns)
 
-    observeEvent(rv_patient$inputFormat,{
-      print("rv_patient$inputFormat changed")
-      output$incl_excl_list <- render_dnd(ns,rv_patient$inputFormat)
+    observeEvent(rv$inputFormat,{
+      print("rv$inputFormat changed")
+      output$incl_excl_list <- render_dnd(
+        ns,
+        inputFormat=rv$inputFormat      
+      )
+      print("output$incl_excl_list")
+    })
+
+    # if the user uploads a config file
+    # the labels should be extracted from the file
+    observeEvent(rv$extraConfigFilePath,{
+      print("rv$uploadedFile changed")
+      output$incl_excl_list <- render_dnd(
+        ns,
+        configFile=rv$extraConfigFilePath
+      )
       print("output$incl_excl_list")
     })
 

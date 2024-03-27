@@ -94,7 +94,7 @@ mod_landing_page_ui <- function(id){
         "),
         actionButton(
           ns("navigateToPatientMode"), 
-          "Individual vs Reference Cohort(s)", 
+          "Patient vs Reference Cohort(s)", 
           style = "width: 100%;"
         ),
         hr(),

@@ -694,6 +694,41 @@ mod_patient_mode_server <- function(
       output$weightsYamlErrorOutput <- renderText(result)
     })
 
+    # it is exactly the same as the weights file upload
+    # so it should be put in a general function
+    observeEvent(input$configFile, {
+      req(input$configFile)
+
+      allowed_types <- c("yaml")
+      if (!(get_file_ext(input$configFile$name) %in% allowed_types)) {
+        showNotification("Invalid file type!", type = "error")
+        reset("configFile")
+        return()
+      }
+
+      file_data <- paste(
+        readLines(
+          input$configFile$datapath
+        ),
+        collapse = "\n"
+      )
+
+      yamlValid <- validateYAML(file_data)
+      if (yamlValid != "YAML is valid") {
+        showNotification(yamlValid, type = "error")
+        output$configYamlErrorOutput <- renderText(yamlValid)
+        updateAceEditor(session, "yamlEditor_config", value = "")
+        return()
+      }
+      output$configYamlErrorOutput <- renderText(yamlValid)
+
+      updateAceEditor(
+        session,
+        "yamlEditor_config",
+        value = as.yaml(yaml.load(file_data))
+      )
+    })
+
     set_input_paths <- function(rv, rv_sim, rv_conversion, mode) {
       print("set_input_paths")
 
