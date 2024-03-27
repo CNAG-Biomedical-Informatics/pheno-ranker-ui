@@ -31,10 +31,11 @@ mod_about_page_ui <- function(id){
         h4("Developed by:"),
         grid_container(
           layout = c(
-            "       1fr       1fr       1fr   ",
-            "100px  Manuel    Ivo       Sofia ",
-            "100px  divider   divider   divider",
-            "200px  logo1     logo2     logo3"
+            "       1fr       1fr       1fr     ",
+            "100px  Manuel    Ivo       Sofia   ",
+            "100px  divider   divider   divider ",
+            "200px  logo1     logo2     logo3   ",
+            "1px   version   version   version  "
           ),
           grid_card(
             area = "Manuel",
@@ -94,6 +95,13 @@ mod_about_page_ui <- function(id){
                 src = "https://cnag-biomedical-informatics.github.io/pheno-ranker/img/3tr-funding.png",
                 height = "80px"
               )
+            )
+          ),
+          grid_place(
+            area = "version",
+            card_body(
+              style = "text-align: right;", 
+              p("Version 0.0.0.9012")
             )
           )
         )

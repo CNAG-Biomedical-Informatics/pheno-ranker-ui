@@ -16,10 +16,11 @@
 #' @noRd
 
 mode_sim_layout <- c(
-  "         500px       1fr    40px                ",
-  "30px     btn         simRes btn_show_sim_history",
-  "800px    table       simRes btn_show_sim_history",
-  "70px     download    simRes btn_show_sim_history"
+  "         500px       1fr     40px                ",
+  "30px     btn         simRes  btn_show_sim_history",
+  "800px    table       simRes  btn_show_sim_history",
+  "70px     download    simRes  btn_show_sim_history",
+  "1px      version     version version             "
 )
 
 mod_json_viewer_ui <- function(id) {
@@ -199,6 +200,13 @@ mod_sim_mode_ui <- function(id){
     grid_place(
       area = "btn_show_sim_history",
       mod_show_history_button_ui(ns("SimulateHistorySidebar"))
+    ),
+    grid_place(
+      area = "version",
+      card_body(
+        style = "text-align: right;", 
+        p("Version 0.0.0.9012")
+      )
     )
   )
 }

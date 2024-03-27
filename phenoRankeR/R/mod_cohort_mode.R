@@ -14,9 +14,10 @@
 #' @importFrom utils write.csv
 
 cohort_layout = c(
-  "           500px   1fr         40px                    ",
-  "35px       btn     tabbedView  btn_show_cohort_history",
-  "1100px     opts    tabbedView  btn_show_cohort_history"
+  "           500px     1fr           40px                    ",
+  "35px       btn       tabbedView    btn_show_cohort_history ",
+  "1100px     opts      tabbedView    btn_show_cohort_history ",
+  "1px        version   version       version                 "
 )
 
 cohort_opts_layout = c(
@@ -213,6 +214,13 @@ mod_cohort_mode_ui <- function(id){
     grid_place(
       area = "btn_show_cohort_history",
       mod_show_history_button_ui(ns("CohortHistorySidebar"))
+    ),
+    grid_place(
+      area = "version",
+      card_body(
+        style = "text-align: right;", 
+        p("Version 0.0.0.9012")
+      )
     )
   )
 }
@@ -611,7 +619,6 @@ mod_cohort_mode_server <- function(
       if (input$yamlCohortEditor_config != "") {
         extra_config_file_path <- file.path(
           get_golem_options("extraConfigsUploadFolder"),
-          # "./data/uploads/config",
           paste0(timestamp,"_config.yaml")
         )
 
@@ -637,7 +644,6 @@ mod_cohort_mode_server <- function(
         rv_cohort$mappingDf,
         file = paste0(
           get_golem_options("cohortModeOutputFolder"),
-          # "data/output/rankedCohortMatrixes/",
           timestamp,
           "/",
           timestamp,
@@ -669,7 +675,6 @@ mod_cohort_mode_server <- function(
 
       # TODO
       # create the settings string from the settings list
-
       settings <- ""
       if (!is.null(weights_file_path)) {
         settings <- paste0(
@@ -753,8 +758,6 @@ mod_cohort_mode_server <- function(
       # writing to log file is missing
 
       
-      # cfg <- fromJSON(readLines("config/cfg.json"))
-      # phenoRankBin <- cfg$PHENO_RANK_BIN
       phenoRankBin <- get_golem_options("PHENO_RANK_BIN")
       # run the perl script
       cmd <- paste0(
@@ -767,10 +770,6 @@ mod_cohort_mode_server <- function(
       if (length(script_status) > 0 && script_status != 0) {
         stop("Perl script execution failed.")
       }
-
-      # BUG
-      # The label is not correctly set it is always
-      # "all toplevel terms"
 
       label <- "all toplevel terms"
       if (length(dnd_incl) > 0) {
@@ -789,10 +788,6 @@ mod_cohort_mode_server <- function(
       store_job_in_db(timestamp,userId,"cohort",label, settingsMapping, db_conn)
 
       click("CohortHistorySidebar-btn_show_history")
-
-      # TODO
-      # When adding a new simulated cohort the prefix is set to "C"
-      # eventhough it should been C1, C2, C3, ...
 
       # TabHeader: Hamming Distances Heatmap
       mod_heatmap_server(
@@ -817,8 +812,6 @@ mod_cohort_mode_server <- function(
       req(input$weightsCohortFile)
 
       allowed_types <- c("yaml")
-      # file_ext <- file_ext(input$weightsCohortFile$name)
-
       if (!(get_file_ext(input$weightsCohortFile$name) %in% allowed_types)) {
         showNotification("Invalid file type!", type = "error")
         reset("weightsCohortFile")
@@ -863,7 +856,6 @@ mod_cohort_mode_server <- function(
       print("observeEvent input$simulatedCohortInputFormatRadio")
       rv_cohort$inputFormat <- input$simulatedCohortInputFormatRadio
       
-      # simulatedData_input_dir <- "./data/output/simulatedData/"
       simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
       row <- data.frame(
         file_info = "Cohort",

@@ -18,7 +18,8 @@ mod_patient_mode_layout <- c(
   "         550px   1fr           40px",
   "35px     btn     phenoBlast    btn_show_patient_history",
   "320px    opts    phenoBlast    btn_show_patient_history",
-  "1fr      opts    phenoHeadsUp  btn_show_patient_history"
+  "1fr      opts    phenoHeadsUp  btn_show_patient_history",
+  "1px      version version       version                 "
 )
 
 patient_opts_layout = c(
@@ -280,6 +281,13 @@ mod_patient_mode_ui <- function(id){
     grid_place(
       area = "btn_show_patient_history",
       mod_show_history_button_ui(ns("PatientHistorySidebar"))
+    ),
+    grid_place(
+      area = "version",
+      card_body(
+        style = "text-align: right;", 
+        p("Version 0.0.0.9012")
+      )
     )
   )
 }

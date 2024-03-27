@@ -15,7 +15,8 @@ conv_mode_layout = c(
   "           500px       1fr      40px",
   "30px       btn         convRes  btn_show_conv_history",
   "600px      opts        convRes  btn_show_conv_history",
-  "180px      download    convRes  btn_show_conv_history"
+  "180px      download    convRes  btn_show_conv_history",
+  "1px        version     version  version              "
 )
 
 conv_mode_note = tagList(
@@ -115,7 +116,14 @@ mod_conv_mode_ui <- function(id){
     grid_place(
       area = "btn_show_conv_history",
       mod_show_history_button_ui(ns("ConvertHistorySidebar"))
-    )
+    ),
+    grid_place(
+        area = "version",
+        card_body(
+          style = "text-align: right;", 
+          p("Version 0.0.0.9012")
+        )
+      )
   )
 }
 
@@ -224,7 +232,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
 
       output$both <- outputDownloadHandler(
         list(conv_output_fn, config_fn), 
-        list("conversionConfig", "conversionOutput"),
+        list("conversionOutput", "conversionConfig"),
         output_name = "phenoRankerConv.zip",
         zip_download = TRUE
       )
