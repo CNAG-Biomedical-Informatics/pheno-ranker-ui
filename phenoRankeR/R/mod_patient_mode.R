@@ -52,7 +52,7 @@ mod_patient_mode_ui <- function(id){
           area = "rankerInput",
           card_body(
             tabsetPanel(
-              id = "patientRankerTabsetPanel",
+              id = ns("patientRankerTabsetPanel"),
               selected = "Reference(s)",
               type = "pills",
               tabPanel(
@@ -341,7 +341,6 @@ mod_patient_mode_server <- function(
       print("handleFileUpload")
 
       rank_input_dir <- get_golem_options("rankInputFolder")
-      # rank_input_dir <- "./data/uploads/rankInput/"
 
       file <- input[[input_id]]
       print("file")
@@ -352,7 +351,6 @@ mod_patient_mode_server <- function(
       }
 
       allowed_types <- c("json")
-      # file_ext <- file_ext(file$name)
 
       # add to an extra file called validators.R
       if (!(get_file_ext(file$name) %in% allowed_types)) {
@@ -393,7 +391,7 @@ mod_patient_mode_server <- function(
       file_path <- file.path(targetDir, fn)
       file.copy(file$datapath, file_path)
       
-      if (grepl("references", targetDir) || grepl("cohortMode/cohort", targetDir)) {
+      if (grepl("references", targetDir)) {
         rv$uploadedReferenceFile <- fn
       } else {
         rv$uploadedTargetFile <- fn
@@ -485,7 +483,6 @@ mod_patient_mode_server <- function(
       req(input$referenceFiles)
 
       rank_input_dir <- get_golem_options("patientRankInputRefsFolder")
-      # rank_input_dir <- "./data/uploads/rankInput/patientMode/references"
       allowed_types <- c("json")
 
       input_format <- NULL
