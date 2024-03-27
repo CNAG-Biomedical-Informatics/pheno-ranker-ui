@@ -388,7 +388,8 @@ mod_cohort_mode_server <- function(
       req(input$cohortModeFiles)
 
       rank_input_dir <- get_golem_options("cohortRankInputFolder")
-      # rank_input_dir <- "./data/uploads/rankInput/cohortMode/cohorts"
+      print("rank_input_dir")
+      print(rank_input_dir)
       allowed_types <- c("json")
 
       input_format <- NULL
@@ -405,13 +406,26 @@ mod_cohort_mode_server <- function(
         stringsAsFactors = FALSE
       )
 
+      print("input$cohortModeFiles")
+      print(input$cohortModeFiles)
+
       total_individual_counts <- 0
       for (i in 1:nrow(input$cohortModeFiles)) {
         uploaded_file <- input$cohortModeFiles[i, ]
+        print("uploaded_file")
+        print(uploaded_file)
+
+        print("uploaded_file$datapath")
+        print(uploaded_file$datapath)
 
         file_con <- file(uploaded_file$datapath, "r")   
+        print("file_con")
+        print(file_con)
         individual_counts <- as.numeric(jq(file_con, "length"))
         close(file_con)
+
+        print("individual_counts")
+        print(individual_counts)
 
         total_individual_counts <- total_individual_counts + individual_counts
         if (total_individual_counts > 1000) {
@@ -449,15 +463,21 @@ mod_cohort_mode_server <- function(
             return(NULL)
           }
         }
+        print("file")
+        print(uploaded_file)
+        print("file$name")
+        print(uploaded_file$name)
 
         # add file name to the str_cohorts
         str_cohorts <- paste0(
           str_cohorts,
-          file$name,
+          uploaded_file$name,
           ":C",
           i,
           "\n"
         )
+        print("str_cohorts")
+        print(str_cohorts)
 
         fn <- paste0(
           timestamp,
@@ -473,6 +493,9 @@ mod_cohort_mode_server <- function(
           rank_input_dir,
           fn
         )
+
+        print("file_path")
+        print(file_path)
 
         file.copy(
           uploaded_file$datapath,

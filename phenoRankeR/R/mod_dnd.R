@@ -67,10 +67,13 @@ render_dnd <- function(ns,inputFormat=NULL) {
 mod_dnd_server <- function(id, rv_patient){
   moduleServer(id,function(input, output, session){
     ns <- session$ns
+    print("mod_dnd_server")
     output$incl_excl_list <- render_dnd(ns)
 
     observeEvent(rv_patient$inputFormat,{
+      print("rv_patient$inputFormat changed")
       output$incl_excl_list <- render_dnd(ns,rv_patient$inputFormat)
+      print("output$incl_excl_list")
     })
 
     # TODO

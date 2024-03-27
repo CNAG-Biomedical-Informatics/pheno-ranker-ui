@@ -2,6 +2,8 @@
 uploads/rankInput/patientMode/references/*.json
 uploads/rankInput/patientMode/targets/*.json
 
+uploads/rankInput/cohortMode/cohorts/*.json
+
 uploads/ontologies/*.yaml
 uploads/weights/*.yaml
 uploads/config/*.yaml
