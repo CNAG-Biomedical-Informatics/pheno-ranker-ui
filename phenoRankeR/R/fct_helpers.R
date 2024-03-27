@@ -268,21 +268,8 @@ observeTabChangeEvent <- function(
   notificationText, 
   updateValue) {
 
-  print("observeTabChangeEvent")
-  print("condition")
-  print(condition)
-
-  print("conditionCheckFun")
-  print(conditionCheckFun)
-
-  # below no longer working for
-  # patientRankerTabsetPanel
   observeEvent(input[[panel_id]], {
-    print("input[[panel_id]]")
-    print(input[[panel_id]])
     if (input[[panel_id]] == condition) {
-      print("conditionCheckFun()")
-      print(conditionCheckFun())
       if (conditionCheckFun()) {
         showNotification(
           notificationText,
@@ -324,7 +311,6 @@ observeTabChangeToSimulateData <- function(
     selected = NULL
   )
 
-  # This is still working
   observeTabChangeEvent(
     input,
     session,

@@ -26,7 +26,7 @@ golem::fill_desc(
   author_last_name = "Leist", # Your Last Name
   author_email = "ivo.leist@cnag.eu", # Your Email
   repo_url = "https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui", # The URL of the GitHub Repo (optional),
-  pkg_version = "0.0.0.9014" # The Version of the package containing the App
+  pkg_version = "0.0.0.9015" # The Version of the package containing the App
 )
 
 ## Set {golem} options ----
