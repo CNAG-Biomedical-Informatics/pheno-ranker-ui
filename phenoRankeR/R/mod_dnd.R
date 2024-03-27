@@ -74,6 +74,10 @@ mod_dnd_server <- function(id, rv){
     output$incl_excl_list <- render_dnd(ns)
 
     observeEvent(rv$inputFormat,{
+      if (!is.null(rv$allowedTerms)){
+        return()
+      }
+
       print("rv$inputFormat changed")
       output$incl_excl_list <- render_dnd(
         ns,
