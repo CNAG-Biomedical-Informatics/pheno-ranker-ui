@@ -19,9 +19,10 @@ mod_landing_page_ui <- function(id){
 
   grid_container(
     layout = c(
-      "         1fr         1fr   ",
-      "150px      welcome     welcome ",
-      "1fr      utilities   modes   "
+      "         1fr         1fr     ",
+      "150px    welcome     welcome ",
+      "1fr      utilities   modes   ",
+      "5px      version     version "
     ),
     gap_size = "0px",
     grid_place(
@@ -128,6 +129,13 @@ mod_landing_page_ui <- function(id){
           "Intra-/Inter-cohort comparison", 
           style = "width: 100%;"
         )
+      )
+    ),
+    grid_place(
+      area = "version",
+      card_body(
+        style = "text-align: right;", 
+        p("Version 0.0.0.9012")
       )
     )
   )
