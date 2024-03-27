@@ -76,7 +76,7 @@ app_server <- function(input, output, session) {
     ht = NULL,
     blastData = NULL,
     rankingDf = NULL,
-    extraConfigFilePath = NULL
+    allowedTerms = NULL
   )
 
   rv_cohort <- reactiveValues(
@@ -87,7 +87,7 @@ app_server <- function(input, output, session) {
     idPrefixesYamlValid = NULL,
     ht = NULL,
     mdsPlot = NULL,
-    extraConfigFilePath = NULL
+    allowedTerms = NULL
   )
 
   # load modules

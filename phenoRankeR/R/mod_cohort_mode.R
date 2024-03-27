@@ -630,7 +630,6 @@ mod_cohort_mode_server <- function(
 
       outDir <- paste0(
         get_golem_options("cohortModeOutputFolder"),
-        # "data/output/rankedCohortMatrixes/",
         timestamp,
         "/"
       )
@@ -877,6 +876,17 @@ mod_cohort_mode_server <- function(
         "yamlCohortEditor_config",
         value = as.yaml(yaml.load(file_data))
       )
+    })
+
+    observeEvent(input$yamlCohortEditor_config, {
+      result <- validateYAML(input$yamlCohortEditor_config)
+      output$configYamlCohortsErrorOutput <- renderText(result)
+
+      print("input$yamlCohortEditor_config")
+      data <- yaml.load(input$yamlCohortEditor_config)
+      print(data)
+
+      rv_cohort$allowedTerms <- data$allowed_terms
     })
 
     observeEvent(input$simulatedCohortInputFormatRadio, {

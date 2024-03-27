@@ -729,6 +729,17 @@ mod_patient_mode_server <- function(
       )
     })
 
+    observeEvent(input$yamlEditor_config, {
+      result <- validateYAML(input$yamlEditor_config)
+      output$configYamlErrorOutput <- renderText(result)
+
+      print("input$yamlEditor_config")
+      data <- yaml.load(input$yamlEditor_config)
+      print(data)
+
+      rv_patient$allowedTerms <- data$allowed_terms
+    })
+
     set_input_paths <- function(rv, rv_sim, rv_conversion, mode) {
       print("set_input_paths")
 

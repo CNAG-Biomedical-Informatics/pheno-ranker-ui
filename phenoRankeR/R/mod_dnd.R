@@ -29,19 +29,15 @@ incl_excl_criteria <- fromJSON(
   )
 )
 
-render_dnd <- function(ns,inputFormat=NULL, configFile=NULL) {
+render_dnd <- function(ns,inputFormat=NULL, allowedTerms=NULL) {
   print("render_dnd")
   labels = c ("")
   if (!is.null(inputFormat)){
     labels = incl_excl_criteria[[inputFormat]]
   }
 
-  if (!is.null(configFile)){
-    # load the configFile and extract the allowed terms
-    # from the file
-
-    print("configFile")
-    print(configFile)
+  if (!is.null(allowedTerms)){
+    labels = allowedTerms
   }
   print("labels")
   print(labels)
@@ -88,11 +84,11 @@ mod_dnd_server <- function(id, rv){
 
     # if the user uploads a config file
     # the labels should be extracted from the file
-    observeEvent(rv$extraConfigFilePath,{
-      print("rv$uploadedFile changed")
+    observeEvent(rv$allowedTerms,{
+      print("rv$allowedTerms changed")
       output$incl_excl_list <- render_dnd(
         ns,
-        configFile=rv$extraConfigFilePath
+        allowedTerms=rv$allowedTerms
       )
       print("output$incl_excl_list")
     })
