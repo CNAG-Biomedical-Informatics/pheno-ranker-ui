@@ -205,7 +205,7 @@ mod_sim_mode_ui <- function(id){
       area = "version",
       card_body(
         style = "text-align: right;", 
-        p("Version 0.0.0.9012")
+        p("Version 0.0.0.9013")
       )
     )
   )
@@ -629,8 +629,16 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       # print("settings_mapping")
       # print(settings_mapping)
 
+      print("ext_onts_settings_mapping")
+      print(ext_onts_settings_mapping)
+
       print("ext_onts_settings_string")
       print(ext_onts_settings_string)
+
+      
+
+      # BUG
+      # the ext_onts_settins_string is empty
 
       lapply(selectedOutputFormats, function(option) {
         if (option == "BFF") {
