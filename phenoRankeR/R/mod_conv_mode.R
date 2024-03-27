@@ -121,7 +121,7 @@ mod_conv_mode_ui <- function(id){
         area = "version",
         card_body(
           style = "text-align: right;", 
-          p("Version 0.0.0.9013")
+          p("Version 0.0.0.9014")
         )
       )
   )
