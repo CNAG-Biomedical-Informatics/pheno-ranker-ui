@@ -183,7 +183,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       filename = "example.csv",
       content = function(file) {
         file.copy(
-          "inst/extdata/examples/example.csv",
+          normalizePath("inst/extdata/examples/example.csv"),
           file
         )
       }
