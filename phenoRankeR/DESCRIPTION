@@ -1,6 +1,6 @@
 Package: phenoRankeR
 Title: Pheno-Ranker-UI
-Version: 0.0.0.9015
+Version: 0.0.0.9016
 Authors@R: 
     person("Ivo Christopher", "Leist", , "ivo.leist@cnag.eu", role = c("cre", "aut"))
 Description: Pheno-Ranker-UI is a web-interface for the CPAN's module Pheno::Ranker which is a tool designed for performing semantic similarity analysis in PXF/BFF data structures and beyond (JSON|YAML)
