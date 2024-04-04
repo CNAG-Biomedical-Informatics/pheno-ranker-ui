@@ -38,7 +38,7 @@ default_golem_opts <- list(
   patientModeOutputFolder="/app/data/output/rankedPatients/",
   cohortModeOutputFolder="/app/data/output/rankedCohortMatrixes/",
 
-  tempFolder="/app/data/temp/",
+  tempFolder="/app/data/temp/",  # no longer needed?
 
   runWithDocker = "True",
   LD_LIB_PATH = "/usr/local/lib/perl5/5.36.1/x86_64-linux-gnu/CORE",

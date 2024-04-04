@@ -30,7 +30,7 @@ run_app <- function(
     patientModeOutputFolder="../data/output/rankedPatients/",
     cohortModeOutputFolder="../data/output/rankedCohortMatrixes/",
 
-    tempFolder="../data/temp/",
+    tempFolder="../data/temp/", # no longer needed?
 
     runWithDocker = FALSE,
     PHENO_SIM_BIN = "bff-pxf-simulator",
