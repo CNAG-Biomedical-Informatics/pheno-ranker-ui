@@ -14,7 +14,9 @@
 
 **Documentation**: <a href="https://cnag-biomedical-informatics.github.io/pheno-ranker-ui" target="_blank">https://cnag-biomedical-informatics.github.io/pheno-ranker-ui</a>
 
-<!-- **Web APP Playground**: <a href="https://pheno-ranker.cnag.eu" target="_blank">https://pheno-ranker.cnag.eu</a> -->
+**Web APP Playground**: <a href="https://pheno-ranker.cnag.eu" target="_blank">https://pheno-ranker.cnag.eu</a>
+ - User: pheno
+ - Password: ranker
 
 **CLI Source Code**: <a href="https://github.com/cnag-biomedical-informatics/pheno-ranker" target="_blank">https://github.com/cnag-biomedical-informatics/pheno-ranker</a>
 
