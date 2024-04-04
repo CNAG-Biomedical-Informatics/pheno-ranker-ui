@@ -9,8 +9,7 @@
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom listviewer renderReactjson reactjson
 #' @importFrom shinyvalidate InputValidator sv_between
-#' @importFrom jsonlite read_json fromJSON
-#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite read_json fromJSON toJSON
 #' @importFrom spsComps addLoader
 #' @import reactR
 #' @noRd
