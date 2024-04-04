@@ -77,7 +77,7 @@ cert:
 	/usr/local/bin/mkcert -cert-file ./nginx_mountpoint/certs/${DOMAIN}.pem -key-file ./nginx_mountpoint/certs/${DOMAIN}-key.pem ${DOMAIN}
 
 prod:
-	docker compose -f docker-compose.prod.yml up
+	docker compose -f docker-compose.prod.yml up -d
 
 restart-shinyproxy:
 	docker compose -f docker-compose.prod.yml down shinyproxy

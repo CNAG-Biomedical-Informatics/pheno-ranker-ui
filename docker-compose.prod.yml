@@ -31,24 +31,24 @@ services:
   proxy:
     container_name: nginx-proxy
     image: nginx:1.25.3-alpine
+    depends_on:
+      keycloak:
+        condition: service_healthy
     ports:
-      - 80:80
       - 443:443
     volumes:
       - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
       - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
       - ./nginx_mountpoint/logs:/var/log/nginx
-      - ./nginx_mountpoint/certs/${DOMAIN}.pem:/etc/nginx/${DOMAIN}.pem:ro
-      - ./nginx_mountpoint/certs/${DOMAIN}-key.pem:/etc/nginx/${DOMAIN}-key.pem:ro
+      - ./nginx_mountpoint/certs/${DOMAIN}.cer:/etc/nginx/${DOMAIN}.cer:ro
+      - ./nginx_mountpoint/certs/${DOMAIN}_privatekey.pem:/etc/nginx/${DOMAIN}_privatekey.pem:ro
       - ./nginx_mountpoint/html/chromium_based_browsers_not_yet_supported.html:/usr/share/nginx/chromium_based_browsers_not_yet_supported.html:ro
     networks:
       - shiny-net
+    restart: unless-stopped
 
   shinyproxy:
     image: openanalytics/shinyproxy:3.0.2
-    depends_on:
-      keycloak:
-        condition: service_healthy
     container_name: shinyproxy
     environment:
       DOCKER_IMG: ${DOCKER_IMG}
@@ -73,6 +73,7 @@ services:
       - ${DOCKER_GROUP} # getent group docker | cut -d: -f3
     networks:
       - shiny-net 
+    restart: unless-stopped
 
   keycloak-db:
     image: postgres:16.1-alpine3.18
@@ -105,14 +106,16 @@ services:
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_PATH: /auth
       KC_HOSTNAME_URL: https://${DOMAIN}/auth/
+      # KC_HOSTNAME_URL: https://${DOMAIN}:8444/auth/
       KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
+      # KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}:8444/auth/
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
       KC_HEALTH_ENABLED: true
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
-      - ./nginx_mountpoint/certs/${DOMAIN}.pem:/opt/keycloak/conf/server.crt.pem:ro
-      - ./nginx_mountpoint/certs/${DOMAIN}-key.pem:/opt/keycloak/conf/server.key.pem:ro
+      - ./nginx_mountpoint/certs/${DOMAIN}.cer:/opt/keycloak/conf/server.crt.pem:ro
+      - ./nginx_mountpoint/certs/${DOMAIN}_privatekey.pem:/opt/keycloak/conf/server.key.pem:ro
     restart: unless-stopped
     command: ${KC_CMD}
     healthcheck:

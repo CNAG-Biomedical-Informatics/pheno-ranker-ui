@@ -1,24 +1,24 @@
 server {
   listen 443 ssl; # For IPv4 addresses
   listen [::]:443 ssl; # For IPv6 addresses
-  ssl_certificate       /etc/nginx/localhost.pem;
-  ssl_certificate_key   /etc/nginx/localhost-key.pem;
+  ssl_certificate       /etc/nginx/shiny-proxy.cnag.eu.cer;
+  ssl_certificate_key   /etc/nginx/shiny-proxy-cnag.eu_privatekey.pem;
   server_name shiny-proxy.local;
 
-  if ($http_user_agent ~* (chrome|chromium|edg)){
-    return 418; # I'am a teapot
-  }
+  #if ($http_user_agent ~* (chrome|chromium|edg)){
+  #  return 418; # I'am a teapot
+  #}
 
-  error_page 418 = @unsupported_browser;
-  location @unsupported_browser {
-   rewrite ^ /static/chromium_based_browsers_not_yet_supported.html;
-  }
+  #error_page 418 = @unsupported_browser;
+  #location @unsupported_browser {
+  # rewrite ^ /static/chromium_based_browsers_not_yet_supported.html;
+  #}
 
   location / {
     access_log /var/log/nginx/shinyproxy.access.log;
     error_log /var/log/nginx/shinyproxy.error.log;
 
-    proxy_pass          http://shinyproxy:8080/;
+    proxy_pass http://shinyproxy:8080/;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -32,12 +32,12 @@ server {
     proxy_set_header  X-Forwarded-Proto $scheme;
   }
 
-  location /static {
-    access_log /var/log/nginx/static.access.log;
-    error_log /var/log/nginx/static.error.log;
+  #location /static {
+  #  access_log /var/log/nginx/static.access.log;
+  #  error_log /var/log/nginx/static.error.log;
     
-    alias /usr/share/nginx/html;
-  }
+  #  alias /usr/share/nginx/html;
+  #}
 
   location /auth/ {
     access_log /var/log/nginx/kc.access.log;
