@@ -116,6 +116,9 @@ services:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
       - ./nginx_mountpoint/certs/${DOMAIN}.cer:/opt/keycloak/conf/server.crt.pem:ro
       - ./nginx_mountpoint/certs/${DOMAIN}_privatekey.pem:/opt/keycloak/conf/server.key.pem:ro
+      - ./custom_keycloak_theme/dist_keycloak/target/retrocompat-keycloakify-starter-keycloak-theme-6.1.5.jar:/opt/keycloak/providers/retrocompat-keycloakify-starter-keycloak-theme-6.1.5.jar:rw
+      - ./custom_keycloak_theme/dist_keycloak/src/main/resources/theme/account-v1:/opt/keycloak/themes/account-v1:rw
+      - ./custom_keycloak_theme/dist_keycloak/src/main/resources/theme/keycloakify-starter_retrocompat:/opt/keycloak/themes/keycloakify-starter_retrocompat:rw
     restart: unless-stopped
     command: ${KC_CMD}
     healthcheck:
