@@ -316,7 +316,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         print("primary key not in data")
         cmd <- paste(
           cmd,
-          "--set-primary-key"
+          "--generate-primary-key"
         )
       }
 
