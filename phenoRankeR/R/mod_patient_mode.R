@@ -1012,7 +1012,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (length(input$dnd_excl) > 0) {
+      if (length(dnd_excl) > 0) {
         settings <- paste0(
           settings,
           " -exclude-terms ",

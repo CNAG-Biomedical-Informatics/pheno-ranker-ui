@@ -68,6 +68,14 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
 
     fit <- cmdscale(merged_data, eig = TRUE, k = 2)
 
+    # TODO
+    # Error handling for the cmdscale error
+    # Error in cmdscale: 'k' must be in {1, 2, ..  n - 1}
+
+    # one trigger for the cmdscale error is when a user wants to compare
+    # one patient vs one patient 
+    # obviously you cannot do dimensionality reduction on 2 patients
+
     x <- fit$points[, 1]
     y <- fit$points[, 2]
 

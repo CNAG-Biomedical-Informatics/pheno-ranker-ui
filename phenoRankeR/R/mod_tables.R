@@ -538,9 +538,9 @@ mod_table_phenoHeadsUp_server <- function(
 
       renderTable <- function(output, values){
         
-        print("in renderTable")
-        print("values")
-        print(values)
+        # print("in renderTable")
+        # print("values")
+        # print(values)
 
         cumulated_hamming_distance <- values$hamDist
         jaccard_index <- values$JacIdx
