@@ -363,9 +363,9 @@ mod_table_phenoRanking_server <- function(
           paste0(
             "Input format: ",
             rv_patient$inputFormat,
-            " |> Target ID: ",
+            " | Target ID: ",
             ref_vs_target_targetId,
-            " |> Weighted: ",
+            " | Weighted: ",
             weighted
           )
         )
@@ -529,15 +529,6 @@ mod_table_phenoHeadsUp_server <- function(
         cumulated_hamming_distance <- values$hamDist
         jaccard_index <- values$JacIdx
         filtered_df <- values$df
-
-        # print("filtered_df")
-        # print(str(filtered_df))
-        
-        # print("ns(phenoHeadsUpTable-phenoHeadsUpTableHeader)")
-        # ns("phenoHeadsUpTable-phenoHeadsUpTableHeader")
-
-        # TODO is not rendering the table
-        # output[["patient_mode-phenoHeadsUpTable"]] <- renderUI({
 
         output$phenoHeadsUpTableHeader <- renderUI({
           p(

@@ -249,14 +249,14 @@ mod_patient_mode_ui <- function(id){
         # maybe that information is stored in the log file?
         verbatimTextOutput("phenoBlastRunId"),
         tabsetPanel(
-          selected = "Binary representation",
-          tabPanel(
-            title = "Binary representation",
-            mod_table_phenoBlast_ui(ns("phenoBlastTable"))
-          ),
+          selected = "Ranking",
           tabPanel(
             title = "Ranking",
             mod_table_phenoRanking_ui(ns("phenoRankingTable"))
+          ),
+          tabPanel(
+            title = "Binary representation",
+            mod_table_phenoBlast_ui(ns("phenoBlastTable"))
           ),
           tabPanel(
             title = "Hamming Distances Heatmap",
