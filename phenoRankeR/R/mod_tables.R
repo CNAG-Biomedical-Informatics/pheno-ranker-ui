@@ -99,7 +99,6 @@ mod_table_phenoBlast_server <- function(id,
       
       file_path <- paste0(
         get_golem_options("patientModeOutputFolder"),
-        # "data/output/rankedPatients/",
         runId,
         "/",
         runId,
@@ -461,7 +460,6 @@ mod_table_phenoHeadsUp_server <- function(
         print("in prepareTable")
         alignment_file_path <- paste0(
           get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients/",
           runId,
           "/",
           runId,
@@ -504,7 +502,14 @@ mod_table_phenoHeadsUp_server <- function(
         )
 
         ranking_df <- rv_patient$rankingDf
-        ranking_table_row <- ranking_df[ranking_df[, 2] == rv_patient$id, ]
+        print("ranking_df")
+        print(ranking_df)
+
+        ranking_table_row <- ranking_df[ranking_df[, 1] == rv_patient$id, ]
+
+        print("ranking_table_row")
+        print(ranking_table_row)
+
         cumulated_hamming_distance <- ranking_table_row$`Hamming Distance`
         jaccard_index <- ranking_table_row$`Jaccard Index`
 
@@ -518,6 +523,8 @@ mod_table_phenoHeadsUp_server <- function(
       renderTable <- function(output, values){
         
         print("in renderTable")
+        print("values")
+        print(values)
 
         cumulated_hamming_distance <- values$hamDist
         jaccard_index <- values$JacIdx
@@ -537,7 +544,7 @@ mod_table_phenoHeadsUp_server <- function(
             paste0(
               "Cumulated Hamming Distance: ",
               cumulated_hamming_distance,
-              " |> Jaccard Index: ",
+              " | Jaccard Index: ",
               jaccard_index
             )
           )

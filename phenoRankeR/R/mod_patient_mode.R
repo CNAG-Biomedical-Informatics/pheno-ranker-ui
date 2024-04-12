@@ -1023,6 +1023,8 @@ mod_patient_mode_server <- function(
         )
       }
       settings2 <- settings
+      print("settings2")
+      print(settings2)
       ref_prefixes <- rv_patient$mappingDf$id_prefixes[1:nrow((rv_patient$mappingDf)) - 1]
       print("ref_prefixes")
       print(ref_prefixes)
