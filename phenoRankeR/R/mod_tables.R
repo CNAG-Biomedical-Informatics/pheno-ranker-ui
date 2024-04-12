@@ -207,8 +207,20 @@ mod_table_phenoBlast_server <- function(id,
         }
       }
 
-      # # TODO
-      # # figure out how to search but keep the first row fixed
+      # TODO
+      # figure out how to search but keep the first row fixed
+
+      # one possible solution would be to convert every input into the searchbox
+      # into a regular expression
+      # e.g. T\|Beacon_1\b|R\|Beacon_1\b
+      # would match the following rows
+      # T|Beacon_1
+      # R|Beacon_1
+
+      # but then we would need an extra custom search box
+      # with some custom filter logic which would be quite some work
+      # postponed for now
+
       output$binaryRepresentationTable <- renderDT({
         dt <- datatable(
           blast_data,
@@ -224,6 +236,10 @@ mod_table_phenoBlast_server <- function(id,
             paging = FALSE,
             searching = FALSE,
             ordering = FALSE,
+            # search = list(
+            #   regex = TRUE,   # Enable regular expression searching
+            #   caseInsensitive = TRUE
+            # ),
             initComplete = JS(
               "function(settings, json) {",
               paste0(unlist(lapply(names(col_colors), function(col_name) {
