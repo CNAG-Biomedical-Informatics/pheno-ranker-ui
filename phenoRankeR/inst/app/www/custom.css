@@ -67,7 +67,7 @@
 }
 
 /* for the table in patient mode */
-#binaryRepresentationTable tbody tr:first-child {
+#DataTables_Table_3 tbody tr:first-child {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
