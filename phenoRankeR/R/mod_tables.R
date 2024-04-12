@@ -18,7 +18,7 @@
 mod_table_phenoBlast_ui <- function(id){
   ns <- NS(id)
   card_body(
-    htmlOutput(ns("phenoBlastTableHeader")),
+    htmlOutput(ns("binaryRepresentationTableHeader")),
     tags$div(
       style = "overflow-x: scroll;",
 
@@ -28,14 +28,14 @@ mod_table_phenoBlast_ui <- function(id){
       # but it does not work
 
       # style = HTML(
-      #   "#phenoBlastTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody {
+      #   "#binaryRepresentationTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody {
       # transform:rotateX(180deg);
       # }
-      # #phenoBlastTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody table{
+      # #binaryRepresentationTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody table{
       # transform:rotateX(180deg);
       # }"
       # ),
-      DTOutput(ns("phenoBlastTable"))
+      DTOutput(ns("binaryRepresentationTable"))
     )
   )
 }
@@ -95,7 +95,7 @@ mod_table_phenoBlast_server <- function(id,
 
     print("in mod_table_phenoBlast_server")
     
-    renderPhenoBlastTable <- function(runId) {
+    renderbinaryRepresentationTable <- function(runId) {
       
       file_path <- paste0(
         get_golem_options("patientModeOutputFolder"),
@@ -209,7 +209,7 @@ mod_table_phenoBlast_server <- function(id,
 
       # # TODO
       # # figure out how to search but keep the first row fixed
-      output$phenoBlastTable <- renderDT({
+      output$binaryRepresentationTable <- renderDT({
         dt <- datatable(
           blast_data,
           selection = "single",
@@ -253,7 +253,7 @@ mod_table_phenoBlast_server <- function(id,
         }
         dt
       }, )
-      output$phenoBlastTableHeader <- renderUI({
+      output$binaryRepresentationTableHeader <- renderUI({
         div()
       })
       return (blast_data)
@@ -271,9 +271,9 @@ mod_table_phenoBlast_server <- function(id,
       )
       return()
     }
-    blast_data <- renderPhenoBlastTable(runId)
+    blast_data <- renderbinaryRepresentationTable(runId)
 
-    observeEvent(input$phenoBlastTable_row_last_clicked, {
+    observeEvent(input$binaryRepresentationTable_row_last_clicked, {
 
       # TODO
       # check for an existing patient$id
@@ -282,12 +282,12 @@ mod_table_phenoBlast_server <- function(id,
       # Do not change the patient$id
       # and select the row in the table to which the patient$id belongs to
 
-      row <- input$phenoBlastTable_row_last_clicked
+      row <- input$binaryRepresentationTable_row_last_clicked
       print("rv_patient")
       print(rv_patient)
       blast_data <- rv_patient$blastData
       ranking_df <- rv_patient$rankingDf
-      print(paste("phenoBlastTable row", row, "clicked"))
+      print(paste("binaryRepresentationTable row", row, "clicked"))
 
       clickedRowData <- blast_data[row, ]
       patient_id <- strsplit(clickedRowData$Id, split = "\\|")[[1]][2]

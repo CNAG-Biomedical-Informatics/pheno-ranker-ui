@@ -256,7 +256,7 @@ mod_patient_mode_ui <- function(id){
           ),
           tabPanel(
             title = "Binary representation",
-            mod_table_phenoBlast_ui(ns("phenoBlastTable"))
+            mod_table_phenoBlast_ui(ns("binaryRepresentationTable"))
           ),
           tabPanel(
             title = "Hamming Distances Heatmap",
@@ -328,7 +328,7 @@ mod_patient_mode_server <- function(
       rv_patient
     )
 
-    mod_table_phenoBlast_server("phenoBlastTable")
+    mod_table_phenoBlast_server("binaryRepresentationTable")
     mod_table_phenoRanking_server("phenoRankingTable")
     mod_table_phenoHeadsUp_server("phenoHeadsUpTable")
     mod_plot_mds_server("mds_scatter")
@@ -1108,7 +1108,7 @@ mod_patient_mode_server <- function(
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
-        "phenoBlastTable", 
+        "binaryRepresentationTable", 
         runId = timestamp,
         rv_patient = rv_patient
       )
@@ -1137,7 +1137,7 @@ mod_patient_mode_server <- function(
       )
       
 
-      # blast_data <- renderPhenoBlastTable(timestamp)
+      # blast_data <- renderbinaryRepresentationTable(timestamp)
       # ranking_df <- renderRankingTable(timestamp)
       # CardHeader: Target vs a selected reference individual
       # renderPhenoHeadsUpTable(timestamp, blast_data, ranking_df)
