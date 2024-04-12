@@ -7,10 +7,11 @@
 #' @noRd
 #'
 #' @importFrom shiny NS need validate
-#' @importFrom plotly plotlyOutput renderPlotly ggplotly
+#' @importFrom plotly plotlyOutput renderPlotly ggplotly event_register event_data
 #' @importFrom ggplot2 ggplot aes geom_point labs theme element_text scale_color_discrete
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom stats cmdscale
+#' @importFrom magrittr %>%
 
 mod_plot_mds_ui <- function(id){
   ns <- NS(id)
@@ -18,7 +19,9 @@ mod_plot_mds_ui <- function(id){
     plotlyOutput(
       outputId = ns("plot_mds"),
       height = "600px"
-    )
+    ),
+    p("Mouse over or select the points to see the patient IDs"),
+    verbatimTextOutput(ns("selected_points"))
   )
 }
 
@@ -101,7 +104,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       aes(
         x, y, 
         color = .data[["original_fn"]], 
-        label = label
+        label = label,
+        customdata = label
       )
     ) +
     geom_point() +
@@ -162,7 +166,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     print(df)
     aes_func <- aes(
       x, y,
-      label = label
+      label = label,
+      customdata = label
     )
 
     if (uploaded_files_count > 1) {
@@ -228,9 +233,10 @@ mod_plot_mds_server <- function(
       )
 
       output$plot_mds <- renderPlotly({
-        ggplotly(rv$mdsPlot)
+        plot <- ggplotly(rv$mdsPlot) %>% 
+          event_register("plotly_selected")  
       })
-      return()
+      return(plot)
     }
 
     output$plot_mds <- renderPlotly({
@@ -240,6 +246,19 @@ mod_plot_mds_server <- function(
           "Click on Rank to generate the plot"
         )
       )
+    })
+
+    observeEvent(event_data("plotly_selected"), {
+      print("plotly_selected")
+      selected_points <- event_data("plotly_selected")
+      # get the labels of the selected points
+      patientIds <- selected_points$customdata
+      print(selected_points)
+      print(patientIds)
+
+      output$selected_points <- renderPrint({
+        paste("Selected patient IDs: ", paste(patientIds, collapse = ", "))
+      })
     })
   })
 }
