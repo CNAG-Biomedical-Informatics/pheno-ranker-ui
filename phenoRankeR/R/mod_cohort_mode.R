@@ -807,6 +807,8 @@ mod_cohort_mode_server <- function(
       )
     })
 
+
+
     # TODO
     # the yaml validator needs to be more strict:
     # fails:
@@ -894,7 +896,7 @@ mod_cohort_mode_server <- function(
       result <- validateYAML(input$yamlCohortEditor_config)
       output$configYamlCohortsErrorOutput <- renderText(result)
 
-      print("input$yamlCohortEditor_config")
+      # print("input$yamlCohortEditor_config")
       data <- yaml.load(input$yamlCohortEditor_config)
       print(data)
 
