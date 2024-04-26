@@ -9,7 +9,8 @@
 #' @importFrom shiny NS actionButton
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom jsonlite toJSON
-#' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON
+#' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON doLayout
+#' @importFrom qgraph qgraph
 
 
 mod_cytoscape_mode_layout <- c(
@@ -22,9 +23,6 @@ mod_cytoscape_mode_layout <- c(
 mod_cytoscape_ui <- function(id) {
   ns <- NS(id)
 
-  # card_body(
-
-  # )
   grid_container(
     layout = mod_cytoscape_mode_layout,
     grid_place(
@@ -65,12 +63,23 @@ mod_cytoscape_ui <- function(id) {
       )
     )
   )
+}
 
-  # card_body(
-  #   cyjShinyOutput(
-  #     ns("cyjShiny")
-  #   )
-  # )
+# Function to determine color based on threshold values
+getColorBasedOnThreshold <- function(
+    value,
+    thresholdHigh,
+    thresholdMid,
+    colorHigh,
+    colorMid,
+    colorLow) {
+  if (value > thresholdHigh) {
+    return(colorHigh)
+  } else if (value > thresholdMid) {
+    return(colorMid)
+  } else {
+    return(colorLow)
+  }
 }
 
 mod_cytoscape_server <- function(
@@ -81,12 +90,20 @@ mod_cytoscape_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    observeEvent(input$layoutSelector, {
+      print(input$layoutSelector)
+      doLayout(session, input$layoutSelector)
+    })
+
+    # TODO
+    # This should be the Jaccard similarity matrix
+
     filePath <- paste0(
       get_golem_options("patientModeOutputFolder"),
       runId,
       "/",
       runId,
-      ".txt"
+      "_jaccard.txt"
     )
 
     if (!file.exists(filePath)) {
@@ -94,28 +111,115 @@ mod_cytoscape_server <- function(
       return()
     }
 
-    # this needs to be a jaccard similarity matrix
-    # sim_matrix <- as.matrix(
-    #   read.table(
-    #     "matrix.txt",
-    #     header = TRUE,
-    #     row.names = 1
-    #   )
-    # )
-
     sim_matrix <- as.matrix(
       readTxt(
         get_golem_options("patientModeOutputFolder"),
         runId = runId,
-        row_names = 1
+        row_names = 1,
+        fileName_suffix = "_jaccard.txt"
       )
     )
 
-    print("dim(sim_matrix)")
-    print(dim(sim_matrix))
+    print("sim_matrix")
+    print(sim_matrix)
+
+    # Toggle for coloring the last node black
+    colorLastNodeBlack <- FALSE
 
     # threshold for edge creation
     threshold <- 0.8
+
+    # Apply this function to each node and edge
+    node_thresholds <- apply(
+      sim_matrix, 1, function(x) sum(x > 0.9)
+    )
+
+    print("node_thresholds")
+    print(node_thresholds)
+
+    max_node_threshold <- max(node_thresholds)
+    min_node_threshold <- min(node_thresholds)
+
+    print("max_node_threshold")
+    print(max_node_threshold)
+
+    print("min_node_threshold")
+    print(min_node_threshold)
+
+    normalized_node_thresholds <- (node_thresholds - min_node_threshold) / (max_node_threshold - min_node_threshold)
+
+    print("(node_thresholds - min_node_threshold)")
+    print((node_thresholds - min_node_threshold))
+
+    print("(max_node_threshold - min_node_threshold)")
+    print((max_node_threshold - min_node_threshold))
+
+    print("normalized_node_thresholds")
+    print(normalized_node_thresholds)
+
+    # Color nodes based on normalized threshold
+    node_colors <- colorRampPalette(
+      c("red", "green", "blue")
+    )(length(unique(normalized_node_thresholds)))
+
+    print("node_colors")
+    print(node_colors)
+
+    node_colors <- node_colors[
+      as.integer(
+        cut(normalized_node_thresholds,
+          breaks = length(node_colors),
+          include.lowest = TRUE
+        )
+      )
+    ]
+
+    print("node_colors")
+    print(node_colors)
+
+    # Conditionally color the last node black
+    if (colorLastNodeBlack) {
+      node_colors[length(node_colors)] <- "black" # Last node in black
+    }
+
+    # Edge colors with similar logic
+    edge_colors <- apply(
+      sim_matrix,
+      c(1, 2),
+      function(x) {
+        getColorBasedOnThreshold(
+          x, 0.90, 0.50, "blue", "green", "red"
+        )
+      }
+    )
+    edge_colors <- matrix(
+      edge_colors,
+      nrow = nrow(sim_matrix),
+      ncol = ncol(sim_matrix)
+    )
+
+    print("node_colors")
+    print(node_colors)
+
+    print("edge_colors")
+    print(edge_colors)
+
+    # graph <- qgraph(
+    #   sim_matrix,
+    #   labels = colnames(sim_matrix),
+    #   layout = "spring",
+    #   label.font = 2,
+    #   vsize = 10,
+    #   threshold = 0.50,
+    #   shape = "circle",
+    #   color = node_colors,
+    #   edge.color = edge_colors,
+    #   edge.width = 1,
+    #   cut = 0.5,
+    #   plot = FALSE
+    # )
+
+    # print(graph)
 
     # Identify where the matrix values exceed the threshold
     edges <- which(
