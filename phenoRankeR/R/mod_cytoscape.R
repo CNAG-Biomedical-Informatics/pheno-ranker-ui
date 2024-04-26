@@ -207,49 +207,6 @@ mod_cytoscape_server <- function(
     print("colnames(sim_matrix)")
     print(colnames(sim_matrix))
 
-    df <- qgraph(
-      sim_matrix,
-      labels = colnames(sim_matrix),
-      layout = "spring",
-      label.font = 2,
-      vsize = 10,
-      threshold = 0.50,
-      shape = "circle",
-      color = node_colors,
-      edge.color = edge_colors,
-      edge.width = 1,
-      cut = 0.5,
-      DoNotPlot = TRUE
-    )
-
-    print("df")
-    print(df)
-
-    # Create a list of unique nodes
-    nodes <- unique(c(df$From, df$To))
-    nodes_data <- lapply(nodes, function(node) {
-      list(data = list(id = as.character(node)))
-    })
-
-    # Create edges
-    edges_data <- apply(df, 1, function(row) {
-      list(data = list(
-        source = as.character(row["From"]),
-        target = as.character(row["To"]),
-        weight = as.numeric(row["Weight"])
-      ))
-    })
-
-    # Combine nodes and edges into a list
-    cytoscape_data <- list(
-      elements = list(
-        nodes = nodes_data,
-        edges = edges_data
-      )
-    )
-
-    graph_json <- toJSON(cytoscape_data)
-
     # Identify where the matrix values exceed the threshold
     edges <- which(
       sim_matrix > threshold,
@@ -300,26 +257,6 @@ mod_cytoscape_server <- function(
     )
 
     print(graph_json)
-
-    # Example DATA ----
-    # tbl_nodes <- data.frame(
-    #   id = c("A", "B", "C"),
-    #   size = c(10, 20, 30),
-    #   stringsAsFactors = FALSE
-    # )
-
-    # # Must have the interaction column
-    # tbl_edges <- data.frame(
-    #   source = c("A", "B", "C"),
-    #   target = c("B", "C", "A"),
-    #   interaction = c("inhibit", "stimulate", "inhibit"),
-    #   stringsAsFactors = FALSE
-    # )
-
-    # graph_json <- toJSON(
-    #   dataFramesToJSON(tbl_edges, tbl_nodes),
-    #   auto_unbox = TRUE
-    # )
 
     output$cyjShiny <- renderCyjShiny({
       cyjShiny(graph_json, layoutName = "cola")
