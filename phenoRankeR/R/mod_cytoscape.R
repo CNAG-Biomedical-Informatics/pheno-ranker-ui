@@ -10,8 +10,6 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom jsonlite toJSON
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON doLayout
-#' @importFrom qgraph qgraph
-
 
 mod_cytoscape_mode_layout <- c(
   "            100px             1fr     ",
