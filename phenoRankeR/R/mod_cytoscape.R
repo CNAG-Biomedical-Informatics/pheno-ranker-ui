@@ -13,10 +13,10 @@
 
 
 mod_cytoscape_mode_layout <- c(
-  "           500px           1fr     ",
-  "30px       layoutSelector  cyjShiny"
-  # "600px      btns            cyjShiny",
-  # "180px      download        cyjShiny"
+  "            100px             1fr     ",
+  "30px        layoutSelector    cyjShiny",
+  "150px        btns              cyjShiny",
+  "50px        download          cyjShiny"
 )
 
 mod_cytoscape_ui <- function(id) {
@@ -58,8 +58,10 @@ mod_cytoscape_ui <- function(id) {
     ),
     grid_place(
       area = "cyjShiny",
-      cyjShinyOutput(
-        ns("cyjShiny")
+      card_body(
+        cyjShinyOutput(
+          ns("cyjShiny")
+        )
       )
     )
   )
