@@ -237,6 +237,12 @@ mod_cytoscape_server <- function(
     print("node_list")
     print(node_list)
 
+    colors <- sample(
+      c("red", "green", "blue", "yellow", "purple"),
+      nrow(edges),
+      replace = TRUE
+    )
+
     edge_list <- apply(edges, 1, function(x) {
       source <- rownames(sim_matrix)[x[1]]
       target <- colnames(sim_matrix)[x[2]]
@@ -244,7 +250,8 @@ mod_cytoscape_server <- function(
       list(data = list(
         source = source,
         target = target,
-        weight = weight
+        weight = weight,
+        color = colors[x[1]]
       ))
     })
 
@@ -255,10 +262,11 @@ mod_cytoscape_server <- function(
 
     json_edges <- paste(lapply(edge_list, function(x) {
       sprintf(
-        '{"data": {"source": "%s", "target": "%s", "weight": %f}}',
+      '{"data": {"source": "%s", "target": "%s", "weight": %f, "color": "%s"}}',
         x$data$source,
         x$data$target,
-        x$data$weight
+        x$data$weight,
+        x$data$color
       )
     }), collapse = ", ")
 
