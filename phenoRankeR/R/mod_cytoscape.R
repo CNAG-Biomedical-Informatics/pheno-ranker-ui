@@ -127,11 +127,11 @@ mod_cytoscape_server <- function(
     colorLastNodeBlack <- FALSE
 
     # threshold for edge creation
-    threshold <- 0.8
+    threshold <- 0.2
 
     # Apply this function to each node and edge
     node_thresholds <- apply(
-      sim_matrix, 1, function(x) sum(x > 0.9)
+      sim_matrix, 1, function(x) sum(x > threshold)
     )
 
     print("node_thresholds")
@@ -204,22 +204,51 @@ mod_cytoscape_server <- function(
     print("edge_colors")
     print(edge_colors)
 
-    # graph <- qgraph(
-    #   sim_matrix,
-    #   labels = colnames(sim_matrix),
-    #   layout = "spring",
-    #   label.font = 2,
-    #   vsize = 10,
-    #   threshold = 0.50,
-    #   shape = "circle",
-    #   color = node_colors,
-    #   edge.color = edge_colors,
-    #   edge.width = 1,
-    #   cut = 0.5,
-    #   plot = FALSE
-    # )
+    print("colnames(sim_matrix)")
+    print(colnames(sim_matrix))
 
-    # print(graph)
+    df <- qgraph(
+      sim_matrix,
+      labels = colnames(sim_matrix),
+      layout = "spring",
+      label.font = 2,
+      vsize = 10,
+      threshold = 0.50,
+      shape = "circle",
+      color = node_colors,
+      edge.color = edge_colors,
+      edge.width = 1,
+      cut = 0.5,
+      DoNotPlot = TRUE
+    )
+
+    print("df")
+    print(df)
+
+    # Create a list of unique nodes
+    nodes <- unique(c(df$From, df$To))
+    nodes_data <- lapply(nodes, function(node) {
+      list(data = list(id = as.character(node)))
+    })
+
+    # Create edges
+    edges_data <- apply(df, 1, function(row) {
+      list(data = list(
+        source = as.character(row["From"]),
+        target = as.character(row["To"]),
+        weight = as.numeric(row["Weight"])
+      ))
+    })
+
+    # Combine nodes and edges into a list
+    cytoscape_data <- list(
+      elements = list(
+        nodes = nodes_data,
+        edges = edges_data
+      )
+    )
+
+    graph_json <- toJSON(cytoscape_data)
 
     # Identify where the matrix values exceed the threshold
     edges <- which(
@@ -269,6 +298,8 @@ mod_cytoscape_server <- function(
       json_nodes,
       json_edges
     )
+
+    print(graph_json)
 
     # Example DATA ----
     # tbl_nodes <- data.frame(
