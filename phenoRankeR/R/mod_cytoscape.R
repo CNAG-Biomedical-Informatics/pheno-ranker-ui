@@ -123,7 +123,7 @@ mod_cytoscape_server <- function(
     print(sim_matrix)
 
     # Toggle for coloring the last node black
-    colorLastNodeBlack <- FALSE
+    colorLastNodeBlack <- TRUE
 
     # threshold for edge creation
     threshold <- 0.4
@@ -200,8 +200,8 @@ mod_cytoscape_server <- function(
     print("node_colors")
     print(node_colors)
 
-    print("edge_colors")
-    print(edge_colors)
+    # print("edge_colors")
+    # print(edge_colors)
 
     print("colnames(sim_matrix)")
     print(colnames(sim_matrix))
@@ -221,27 +221,17 @@ mod_cytoscape_server <- function(
       colnames(sim_matrix)[edges[, 2]]
     ))
 
-    # Assign colors to nodes
-    set.seed(123)
-    colors <- sample(
-      c("red", "green", "blue", "yellow", "purple"),
-      length(nodes),
-      replace = TRUE
-    )
-    names(colors) <- nodes
-
     node_list <- lapply(nodes, function(x) {
-      list(data = list(id = x, color = colors[x]))
+      # TODO
+      # better understand how the node coloring is working
+      # I do not want to color the last node black
+      # but the node with the target id
+      # In the beacon example it should be T|Beacon_1
+      list(data = list(id = x, color = node_colors[match(x, nodes)]))
     })
 
     print("node_list")
     print(node_list)
-
-    colors <- sample(
-      c("red", "green", "blue", "yellow", "purple"),
-      nrow(edges),
-      replace = TRUE
-    )
 
     edge_list <- apply(edges, 1, function(x) {
       source <- rownames(sim_matrix)[x[1]]
@@ -251,7 +241,7 @@ mod_cytoscape_server <- function(
         source = source,
         target = target,
         weight = weight,
-        color = colors[x[1]]
+        color = edge_colors[x[1], x[2]]
       ))
     })
 
@@ -260,9 +250,11 @@ mod_cytoscape_server <- function(
       sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
     }), collapse = ", ")
 
+    # edgewidth is missing. Here it should be the value of the Jaccard similarity matrix
+
     json_edges <- paste(lapply(edge_list, function(x) {
       sprintf(
-      '{"data": {"source": "%s", "target": "%s", "weight": %f, "color": "%s"}}',
+        '{"data": {"source": "%s", "target": "%s", "weight": %f, "color": "%s"}}',
         x$data$source,
         x$data$target,
         x$data$weight,
