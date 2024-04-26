@@ -29,13 +29,14 @@ mod_cytoscape_ui <- function(id) {
         ns("layoutSelector"),
         "Layout",
         choices = c(
+          "circle",
           "cola",
           "cose",
+          "fcose",
           "grid",
-          "random",
-          "circle"
+          "random"
         ),
-        selected = "cola"
+        selected = "fcose"
       )
     ),
     grid_place(
@@ -125,7 +126,7 @@ mod_cytoscape_server <- function(
     colorLastNodeBlack <- FALSE
 
     # threshold for edge creation
-    threshold <- 0.2
+    threshold <- 0.4
 
     # Apply this function to each node and edge
     node_thresholds <- apply(
@@ -211,15 +212,31 @@ mod_cytoscape_server <- function(
       arr.ind = TRUE
     )
 
+    # but remove the diagonal
+    edges <- edges[edges[, 1] != edges[, 2], ]
+
     # Create node and edge lists
     nodes <- unique(c(
       rownames(sim_matrix)[edges[, 1]],
       colnames(sim_matrix)[edges[, 2]]
     ))
-    node_list <- lapply(
-      nodes,
-      function(x) list(data = list(id = x))
+
+    # Assign colors to nodes
+    set.seed(123)
+    colors <- sample(
+      c("red", "green", "blue", "yellow", "purple"),
+      length(nodes),
+      replace = TRUE
     )
+    names(colors) <- nodes
+
+    node_list <- lapply(nodes, function(x) {
+      list(data = list(id = x, color = colors[x]))
+    })
+
+    print("node_list")
+    print(node_list)
+
     edge_list <- apply(edges, 1, function(x) {
       source <- rownames(sim_matrix)[x[1]]
       target <- colnames(sim_matrix)[x[2]]
@@ -233,10 +250,7 @@ mod_cytoscape_server <- function(
 
     # Manually create JSON string
     json_nodes <- paste(lapply(node_list, function(x) {
-      sprintf(
-        '{"data": {"id": "%s"}}',
-        x$data$id
-      )
+      sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
     }), collapse = ", ")
 
     json_edges <- paste(lapply(edge_list, function(x) {
@@ -256,8 +270,19 @@ mod_cytoscape_server <- function(
 
     print(graph_json)
 
+    basicStyleFile <- system.file(
+      "extdata",
+      "cytoscape_styles",
+      "basicStyle.js",
+      package = "phenoRankeR"
+    )
+
     output$cyjShiny <- renderCyjShiny({
-      cyjShiny(graph_json, layoutName = "cola")
+      cyjShiny(
+        graph_json,
+        layoutName = "fcose",
+        styleFile = basicStyleFile
+      )
     })
   })
 }
