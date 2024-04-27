@@ -10,14 +10,16 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom jsonlite toJSON
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON doLayout
-#' @importFrom dplyr group_by mutate row_number
+#' @importFrom shinyWidgets colorPickr
 
 mod_cytoscape_mode_layout <- c(
-  "             200px             1fr     ",
-  "100px        layoutSelector    cyjShiny",
-  "100px        thresholdSlider   cyjShiny",
-  "150px        btns              cyjShiny",
-  "50px         download          cyjShiny"
+  "             200px                       1fr     ",
+  "100px        layoutSelector              cyjShiny",
+  "100px        thresholdSlider             cyjShiny",
+  "100px        targetNodeColorPicker       cyjShiny",
+  "100px        referenceNodesColorPicker   cyjShiny",
+  "150px        btns                        cyjShiny",
+  "50px         download                    cyjShiny"
 )
 
 mod_cytoscape_ui <- function(id) {
@@ -50,6 +52,22 @@ mod_cytoscape_ui <- function(id) {
         max = 1,
         value = 0.5,
         step = 0.01
+      )
+    ),
+    grid_place(
+      area = "targetNodeColorPicker",
+      colorPickr(
+        ns("targetNodeColorPicker"),
+        "Target Node Color",
+        selected = "teal"
+      )
+    ),
+    grid_place(
+      area = "referenceNodesColorPicker",
+      colorPickr(
+        ns("referenceNodesColorPicker"),
+        "Reference Nodes Color",
+        selected = "red"
       )
     ),
     grid_place(
@@ -95,7 +113,12 @@ getColorBasedOnThreshold <- function(
 }
 
 # Function to create the cytoscape graph
-create_cyto_graph <- function(runId, jaccard_idx_threshold = 0.5) {
+create_cyto_graph <- function(
+  runId, 
+  jaccard_idx_threshold = 0.5,
+  target_node_color = "teal",
+  reference_nodes_color = "red"
+  ) {
   
   filePath <- paste0(
     get_golem_options("patientModeOutputFolder"),
@@ -145,6 +168,8 @@ create_cyto_graph <- function(runId, jaccard_idx_threshold = 0.5) {
       similar_pats_count_per_pat - min_similar_pat_count) /
       (max_similar_pats_count - min_similar_pat_count)
   }
+
+  # BELOW only makes sense for the cohort mode
 
   # prepare the color gradient for the nodes
   # TODO: let the user choose the colors
@@ -214,7 +239,7 @@ create_cyto_graph <- function(runId, jaccard_idx_threshold = 0.5) {
   if (length(edges) == 0) {
     print("No edges found")
     node_template <- '{"data": {"id": "%s", "color": "%s"}}'
-    node <- sprintf(node_template, target_id, "pink")
+    node <- sprintf(node_template, target_id, target_node_color)
     return(sprintf('{"elements": {"nodes": [%s], "edges": []}}', node))
   }
   
@@ -227,7 +252,8 @@ create_cyto_graph <- function(runId, jaccard_idx_threshold = 0.5) {
 
   node_list <- lapply(nodes, function(x) {
     index <- which(rownames(df) == x)
-    node_color <- if (x == target_id) "pink" else df$node_color[index]
+    # node_color <- if (x == target_id) "pink" else df$node_color[index]
+    node_color <- if (x == target_id) target_node_color else reference_nodes_color
 
     list(data = list(id = x, color = node_color))
   })
@@ -307,6 +333,30 @@ mod_cytoscape_server <- function(
     observeEvent(input$thresholdSlider, {
       print(input$thresholdSlider)
       graph_json <- create_cyto_graph(runId, input$thresholdSlider)
+      output$cyjShiny <- renderCyjShiny({
+        cyjShiny(
+          graph_json,
+          layoutName = input$layoutSelector,
+          styleFile = basicStyleFile
+        )
+      })
+    })
+
+    observeEvent(input$targetNodeColorPicker, {
+      print(input$targetNodeColorPicker)
+      graph_json <- create_cyto_graph(runId, input$thresholdSlider, input$targetNodeColorPicker)
+      output$cyjShiny <- renderCyjShiny({
+        cyjShiny(
+          graph_json,
+          layoutName = input$layoutSelector,
+          styleFile = basicStyleFile
+        )
+      })
+    })
+
+    observeEvent(input$referenceNodesColorPicker, {
+      print(input$referenceNodesColorPicker)
+      graph_json <- create_cyto_graph(runId, input$thresholdSlider, input$targetNodeColorPicker, input$referenceNodesColorPicker)
       output$cyjShiny <- renderCyjShiny({
         cyjShiny(
           graph_json,
