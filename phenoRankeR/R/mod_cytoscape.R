@@ -16,13 +16,31 @@
 
 mod_cytoscape_mode_layout <- c(
   "             200px                       1fr     ",
-  "100px        layoutSelector              cyjShiny",
-  "100px        thresholdSlider             cyjShiny",
-  "100px        targetNodeColorPicker       cyjShiny",
-  "100px        referenceNodesColorPicker   cyjShiny",
-  "100px        edgesColorPicker            cyjShiny",
-  "150px        btns                        cyjShiny",
-  "50px         download                    cyjShiny"
+  "70px        layoutSelector              cyjShiny",
+  "80px        thresholdSlider             cyjShiny",
+  "70px        targetNodeColorPicker       cyjShiny",
+  "70px        referenceNodesColorPicker   cyjShiny",
+  "70px        edgesColorPicker            cyjShiny",
+  "70px        download                    cyjShiny"
+)
+
+color_palette_choices <- list(
+  "Default" = list(
+    "default" = c("red", "green", "blue")
+  ),
+  "Viridis" = list(
+    "viridis" = viridis_pal(option = "viridis")(3),
+    "magma" = viridis_pal(option = "magma")(3),
+    "inferno" = viridis_pal(option = "inferno")(3),
+    "plasma" = viridis_pal(option = "plasma")(3),
+    "cividis" = viridis_pal(option = "cividis")(3)
+  ),
+  "Brewer" = list(
+    "Blues" = brewer_pal(palette = "Blues")(3),
+    "Reds" = brewer_pal(palette = "Reds")(3),
+    "Paired" = brewer_pal(palette = "Paired")(3),
+    "Set1" = brewer_pal(palette = "Set1")(3)
+  )
 )
 
 mod_cytoscape_ui <- function(id) {
@@ -78,33 +96,12 @@ mod_cytoscape_ui <- function(id) {
       fluidRow(
         palettePicker(
           inputId = ns("edgesColorPicker"),
-          label = "Choose an edge color palette:",
-          choices = list(
-            "Viridis" = list(
-              "viridis" = viridis_pal(option = "viridis")(10),
-              "magma" = viridis_pal(option = "magma")(10),
-              "inferno" = viridis_pal(option = "inferno")(10),
-              "plasma" = viridis_pal(option = "plasma")(10),
-              "cividis" = viridis_pal(option = "cividis")(10)
-            ),
-            "Brewer" = list(
-              "Blues" = brewer_pal(palette = "Blues")(8),
-              "Reds" = brewer_pal(palette = "Reds")(8),
-              "Paired" = brewer_pal(palette = "Paired")(8),
-              "Set1" = brewer_pal(palette = "Set1")(8)
-            )
-          ),
+          label = "Edge color palette",
+          choices = color_palette_choices,
           textColor = c(
-            rep("white", 5), rep("black", 4)
+            rep("white", 6), rep("black", 4)
           )
         )
-      )
-    ),
-    grid_place(
-      area = "btns",
-      actionButton(
-        ns("getSelectedNodes"),
-        "Get Selected Nodes"
       )
     ),
     grid_place(
@@ -126,19 +123,42 @@ mod_cytoscape_ui <- function(id) {
 }
 
 # Function to determine color based on threshold values
+# Threshold high/mid should not be hardcoded
 getColorBasedOnThreshold <- function(
     value,
     thresholdHigh,
     thresholdMid,
-    colorHigh,
-    colorMid,
-    colorLow) {
+    color_palette_name
+    ) {
+
+  for (palette_type in names(color_palette_choices)) {
+    print("palette_type")
+    print(palette_type)
+  
+    print("color_palette_choices[[palette_type]]")
+    print(color_palette_choices[[palette_type]])
+
+    if (color_palette_name %in% names(color_palette_choices[[palette_type]])) {
+      edge_color_palette <- color_palette_choices[[palette_type]][color_palette_name]
+      print("edge_color_palette")
+      print(edge_color_palette)
+      break
+    }
+  }
+
+  colors_vector <- sub(
+    "FF$", "", # remove the alpha channel
+    edge_color_palette[[1]]
+  )
+  print("colors_vector")
+  print(colors_vector)
+
   if (value > thresholdHigh) {
-    return(colorHigh)
+    return(colors_vector[3])
   } else if (value > thresholdMid) {
-    return(colorMid)
+    return(colors_vector[2])
   } else {
-    return(colorLow)
+    return(colors_vector[1])
   }
 }
 
@@ -147,7 +167,8 @@ create_cyto_graph <- function(
   runId, 
   jaccard_idx_threshold = 0.5,
   target_node_color = "teal",
-  reference_nodes_color = "red"
+  reference_nodes_color = "red",
+  edge_color_palette = "default"
   ) {
   
   filePath <- paste0(
@@ -171,10 +192,6 @@ create_cyto_graph <- function(
       fileName_suffix = "_jaccard.txt"
     )
   )
-
-  # remove the diagonal from the matrix
-  print("sim_matrix")
-  print(sim_matrix)
 
   # column count where jaccard index <= jaccard_idx_threshold
   # check row-wise
@@ -242,7 +259,7 @@ create_cyto_graph <- function(
     c(1, 2),
     function(x) {
       getColorBasedOnThreshold(
-        x, 0.90, 0.50, "blue", "green", "red"
+        x, 0.90, 0.50, edge_color_palette
       )
     }
   )
@@ -289,22 +306,19 @@ create_cyto_graph <- function(
   })
 
   edge_list <- apply(edges, 1, function(x) {
-      source <- rownames(sim_matrix)[x[1]]
-      target <- colnames(sim_matrix)[x[2]]
-      weight <- sim_matrix[x[1], x[2]]
-      list(data = list(
-        source = source,
-        target = target,
-        weight = weight,
-        color = edge_colors[x[1], x[2]]
-      ))
-    })
+    source <- rownames(sim_matrix)[x[1]]
+    target <- colnames(sim_matrix)[x[2]]
+    weight <- sim_matrix[x[1], x[2]]
+    list(data = list(
+      source = source,
+      target = target,
+      weight = weight,
+      color = edge_colors[x[1], x[2]]
+    ))
+  })
 
   # filter the edge list to only include edges connected to the target node"
   edge_list <- edge_list[sapply(edge_list, function(x) x$data$target == target_id)]
-
-  print("edge_list")
-  print(edge_list)
 
   # remove the nodes that are not connected to the target node
   node_list <- node_list[
@@ -335,7 +349,7 @@ create_cyto_graph <- function(
     json_nodes,
     json_edges
   )
-
+  print("graph_json")
   print(graph_json)
   return(graph_json)
 }
@@ -385,8 +399,31 @@ mod_cytoscape_server <- function(
     })
 
     observeEvent(input$referenceNodesColorPicker, {
-      print(input$referenceNodesColorPicker)
-      graph_json <- create_cyto_graph(runId, input$thresholdSlider, input$targetNodeColorPicker, input$referenceNodesColorPicker)
+      graph_json <- create_cyto_graph(
+        runId,
+        input$thresholdSlider,
+        input$targetNodeColorPicker,
+        input$referenceNodesColorPicker
+      )
+      output$cyjShiny <- renderCyjShiny({
+        cyjShiny(
+          graph_json,
+          layoutName = input$layoutSelector,
+          styleFile = basicStyleFile
+        )
+      })
+    })
+
+    observeEvent(input$edgesColorPicker, {
+      print("edgesColorPicker")
+      print(input$edgesColorPicker)
+      graph_json <- create_cyto_graph(
+        runId,
+        input$thresholdSlider,
+        input$targetNodeColorPicker,
+        input$referenceNodesColorPicker,
+        input$edgesColorPicker
+      )
       output$cyjShiny <- renderCyjShiny({
         cyjShiny(
           graph_json,
