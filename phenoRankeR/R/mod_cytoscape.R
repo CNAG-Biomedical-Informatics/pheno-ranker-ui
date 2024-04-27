@@ -127,7 +127,7 @@ mod_cytoscape_server <- function(
     colorLastNodeBlack <- TRUE
 
     # threshold for edge creation
-    threshold <- 0.5
+    threshold <- 0.4
 
     # Apply this function to each node and edge
     node_thresholds <- apply(
@@ -307,11 +307,15 @@ mod_cytoscape_server <- function(
     # edgewidth is missing. Here it should be the value of the Jaccard similarity matrix
 
     json_edges <- paste(lapply(edge_list, function(x) {
+      
+      # get width of edge in pixels
+      edge_width <- paste0(1 + 10 * x$data$weight, "px")
+
       sprintf(
-        '{"data": {"source": "%s", "target": "%s", "weight": %f, "color": "%s"}}',
+        '{"data": {"source": "%s", "target": "%s", "weight": "%s", "color": "%s"}}',
         x$data$source,
         x$data$target,
-        x$data$weight,
+        edge_width,
         x$data$color
       )
     }), collapse = ", ")

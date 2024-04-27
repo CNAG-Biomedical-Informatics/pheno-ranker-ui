@@ -12,7 +12,8 @@
     "selector": "edge", "css": {
       "line-color": "data(color)",
       "target-arrow-shape": "triangle",
-      "target-arrow-color": "data(color)"
+      "target-arrow-color": "data(color)",
+      "width": "data(weight)"
     }
   }
 ]
