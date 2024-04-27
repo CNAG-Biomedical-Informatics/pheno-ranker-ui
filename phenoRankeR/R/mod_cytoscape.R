@@ -123,11 +123,8 @@ mod_cytoscape_server <- function(
     print("sim_matrix")
     print(sim_matrix)
 
-    # Toggle for coloring the last node black
-    colorLastNodeBlack <- TRUE
-
     # threshold for edge creation
-    threshold <- 0.4
+    threshold <- 0.5
 
     # Apply this function to each node and edge
     node_thresholds <- apply(
@@ -211,6 +208,9 @@ mod_cytoscape_server <- function(
       node_color = node_colors
     )
 
+    print("df")
+    print(df)
+
     # Edge colors with similar logic
     edge_colors <- apply(
       sim_matrix,
@@ -252,15 +252,6 @@ mod_cytoscape_server <- function(
     ))
 
     node_list <- lapply(nodes, function(x) {
-      # TODO
-      # better understand how the node coloring is working
-      # I do not want to color the last node black
-      # but the node with the target id
-      # In the beacon example it should be T|Beacon_1
-
-      # index of the node in the dataframe
-      # x is the node ID
-    
       index <- which(rownames(df) == x)
 
       # Determine the color: if the node ID matches "T1_Beacon_1", set it to pink; otherwise, use its assigned color
