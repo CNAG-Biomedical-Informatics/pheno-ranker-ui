@@ -11,6 +11,8 @@
 #' @importFrom jsonlite toJSON
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON doLayout
 #' @importFrom shinyWidgets colorPickr
+#' @importFrom scales brewer_pal viridis_pal
+#' @importFrom esquisse palettePicker
 
 mod_cytoscape_mode_layout <- c(
   "             200px                       1fr     ",
@@ -18,6 +20,7 @@ mod_cytoscape_mode_layout <- c(
   "100px        thresholdSlider             cyjShiny",
   "100px        targetNodeColorPicker       cyjShiny",
   "100px        referenceNodesColorPicker   cyjShiny",
+  "100px        edgesColorPicker            cyjShiny",
   "150px        btns                        cyjShiny",
   "50px         download                    cyjShiny"
 )
@@ -68,6 +71,33 @@ mod_cytoscape_ui <- function(id) {
         ns("referenceNodesColorPicker"),
         "Reference Nodes Color",
         selected = "red"
+      )
+    ),
+    grid_place(
+      area = "edgesColorPicker",
+      fluidRow(
+        palettePicker(
+          inputId = ns("edgesColorPicker"),
+          label = "Choose an edge color palette:",
+          choices = list(
+            "Viridis" = list(
+              "viridis" = viridis_pal(option = "viridis")(10),
+              "magma" = viridis_pal(option = "magma")(10),
+              "inferno" = viridis_pal(option = "inferno")(10),
+              "plasma" = viridis_pal(option = "plasma")(10),
+              "cividis" = viridis_pal(option = "cividis")(10)
+            ),
+            "Brewer" = list(
+              "Blues" = brewer_pal(palette = "Blues")(8),
+              "Reds" = brewer_pal(palette = "Reds")(8),
+              "Paired" = brewer_pal(palette = "Paired")(8),
+              "Set1" = brewer_pal(palette = "Set1")(8)
+            )
+          ),
+          textColor = c(
+            rep("white", 5), rep("black", 4)
+          )
+        )
       )
     ),
     grid_place(
