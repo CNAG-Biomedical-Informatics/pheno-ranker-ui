@@ -13,6 +13,7 @@
 #' @importFrom shinyWidgets colorPickr
 #' @importFrom scales brewer_pal viridis_pal
 #' @importFrom esquisse palettePicker
+#' @importFrom shiny.blueprint MultiSlider.shinyInput
 
 mod_cytoscape_mode_layout <- c(
   "             200px                       1fr     ",
@@ -21,7 +22,8 @@ mod_cytoscape_mode_layout <- c(
   "70px        targetNodeColorPicker       cyjShiny",
   "70px        referenceNodesColorPicker   cyjShiny",
   "70px        edgesColorPicker            cyjShiny",
-  "70px        download                    cyjShiny"
+  "80px        multiSlider                 cyjShiny"
+  # "70px        download                    cyjShiny"
 )
 
 color_palette_choices <- list(
@@ -105,12 +107,39 @@ mod_cytoscape_ui <- function(id) {
       )
     ),
     grid_place(
-      area = "download",
-      actionButton(
-        ns("downloadGraph"),
-        "Download Graph"
+      area = "multiSlider",
+      fluidRow(
+        MultiSlider.shinyInput(
+        ns("multiSlider"),
+          "Jaccard index threshold",
+          min = 0,
+          max = 1,
+          stepSize = 0.05,
+          # values = c(0.5, 0.75),
+          values = list(
+            list(
+              value = 0.5,
+              type = "start",
+              intentBefore = "danger",
+              intentAfter = "warning"
+            ),
+            list(
+              value = 0.75,
+              type = "end",
+              intentAfter = "success"
+            )
+          ),
+          showTrackFill = TRUE
+        )
       )
     ),
+    # grid_place(
+    #   area = "download",
+    #   actionButton(
+    #     ns("downloadGraph"),
+    #     "Download Graph"
+    #   )
+    # ),
     grid_place(
       area = "cyjShiny",
       card_body(
