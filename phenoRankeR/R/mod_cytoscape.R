@@ -296,6 +296,9 @@ mod_cytoscape_server <- function(
     print("edge_list")
     print(edge_list)
 
+    # remove the nodes that are not connected to the target node
+    node_list <- node_list[sapply(node_list, function(x) x$data$id %in% c(target_id, sapply(edge_list, function(x) x$data$source)))]
+
     # Manually create JSON string
     json_nodes <- paste(lapply(node_list, function(x) {
       sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
