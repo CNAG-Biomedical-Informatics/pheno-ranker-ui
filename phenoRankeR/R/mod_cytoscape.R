@@ -13,7 +13,7 @@
 #' @importFrom shinyWidgets colorPickr
 #' @importFrom scales brewer_pal viridis_pal
 #' @importFrom esquisse palettePicker
-#' @importFrom shiny.blueprint MultiSlider.shinyInput
+#' @importFrom shiny.blueprint reactOutput renderReact MultiSlider MultiSliderHandle
 
 mod_cytoscape_mode_layout <- c(
   "             200px                       1fr     ",
@@ -70,7 +70,7 @@ mod_cytoscape_ui <- function(id) {
       area = "thresholdSlider",
       sliderInput(
         ns("thresholdSlider"),
-        "Jaccard index threshold",
+        "Minimum Jaccard index",
         min = 0,
         max = 1,
         value = 0.5,
@@ -109,28 +109,8 @@ mod_cytoscape_ui <- function(id) {
     grid_place(
       area = "multiSlider",
       fluidRow(
-        MultiSlider.shinyInput(
-        ns("multiSlider"),
-          "Jaccard index threshold",
-          min = 0,
-          max = 1,
-          stepSize = 0.05,
-          # values = c(0.5, 0.75),
-          values = list(
-            list(
-              value = 0.5,
-              type = "start",
-              intentBefore = "danger",
-              intentAfter = "warning"
-            ),
-            list(
-              value = 0.75,
-              type = "end",
-              intentAfter = "success"
-            )
-          ),
-          showTrackFill = TRUE
-        )
+        p("Edge color thresholds"),
+        reactOutput(ns("multiSlider"))
       )
     ),
     # grid_place(
@@ -383,6 +363,41 @@ create_cyto_graph <- function(
   return(graph_json)
 }
 
+render_multi_slider <- function(ns, min_val = 0.5) {
+
+  print("render_multi_slider")
+  print(min_val)
+
+  max_val <- 1
+  available_range <- max_val - min_val
+  print("available_range")
+  print(available_range)
+
+  mid_val <- (available_range / 3) + min_val
+  print("mid_val")
+  print(mid_val)
+  high_val <- (available_range / 3) * 2 + min_val
+  print("high_val")
+  print(high_val)
+
+  renderReact({
+    MultiSlider(
+      min = min_val,
+      max = 1,
+      stepSize = 0.01,
+      MultiSliderHandle(
+        value = mid_val,
+        trackStyleBefore = list(background = "red"),
+        trackStyleAfter = list(background = "green")
+      ),
+      MultiSliderHandle(
+        value = high_val,
+        trackStyleAfter = list(background = "blue"),
+      )
+    )
+  })
+}
+
 mod_cytoscape_server <- function(
     id,
     runId = NULL,
@@ -406,6 +421,11 @@ mod_cytoscape_server <- function(
     observeEvent(input$thresholdSlider, {
       print(input$thresholdSlider)
       graph_json <- create_cyto_graph(runId, input$thresholdSlider)
+
+      output$multiSlider <- render_multi_slider(
+        ns, min = input$thresholdSlider
+      )
+
       output$cyjShiny <- renderCyjShiny({
         cyjShiny(
           graph_json,
@@ -461,6 +481,8 @@ mod_cytoscape_server <- function(
         )
       })
     })
+
+    output$multiSlider <- render_multi_slider(ns)
 
     output$cyjShiny <- renderCyjShiny({
       cyjShiny(
