@@ -162,50 +162,16 @@ mod_cytoscape_server <- function(
     print("node_colors 1")
     print(node_colors)
 
-    # node_colors <- node_colors[
-    #   as.integer(
-    #     cut(normalized_node_thresholds,
-    #       breaks = length(node_colors),
-    #       include.lowest = TRUE
-    #     )
-    #   )
-    # ]
-
-    bins <- cut(
+    bin_indeces <- as.integer(cut(
       normalized_node_thresholds,
       breaks = length(node_colors),
       include.lowest = TRUE
-    )
-
-    print("bins")
-    print(bins)
-
-    print("bin_indices")
-    print(as.integer(bins))
-
-
-    # bins <- cut(normalized_thresholds, breaks=unique_values, include.lowest=TRUE)
-
-    # print("node_colors")
-    # print(node_colors)
-    
-
-    bin_indices <- as.integer(bins)
-    node_colors <- node_colors[bin_indices]
-    
-    # the target node should be colored black
-    # Conditionally color the last node black
-    # if (colorLastNodeBlack) {
-    #   node_colors[length(node_colors)] <- "black" # Last node in black
-    # }
-    
-    print("node_colors 2")
-    print(node_colors)
+    ))
 
     df <- data.frame(
       normalized_threshold = normalized_node_thresholds,
-      bin_index = bin_indices,
-      node_color = node_colors
+      bin_index = bin_indeces,
+      node_color = node_colors[bin_indeces]
     )
 
     print("df")
@@ -242,7 +208,7 @@ mod_cytoscape_server <- function(
       arr.ind = TRUE
     )
 
-    # but remove the diagonal
+    # remove the diagonal
     edges <- edges[edges[, 1] != edges[, 2], ]
 
     # Create node and edge lists
@@ -251,22 +217,16 @@ mod_cytoscape_server <- function(
       colnames(sim_matrix)[edges[, 2]]
     ))
 
+    target_id <- colnames(sim_matrix)[length(colnames(sim_matrix))]
+    print("target_id")
+    print(target_id)
+
     node_list <- lapply(nodes, function(x) {
       index <- which(rownames(df) == x)
-
-      # Determine the color: if the node ID matches "T1_Beacon_1", set it to pink; otherwise, use its assigned color
-      target_id <- "T1_Beacon_1" # TODO this should no be hardcoded
-      node_color <- if(x == target_id) "pink" else df$node_color[index]
+      node_color <- if (x == target_id) "pink" else df$node_color[index]
 
       list(data = list(id = x, color = node_color))
     })
-
-    print("node_list")
-    print(node_list)
-
-    # TODO
-    # only include the edges that have a target node of "T1_Beacon_1"
-
 
     edge_list <- apply(edges, 1, function(x) {
       source <- rownames(sim_matrix)[x[1]]
@@ -280,28 +240,24 @@ mod_cytoscape_server <- function(
       ))
     })
 
-    # filter the edge list to only include edges that have a target node of "T1_Beacon_1"
-    target_id <- "T1_Beacon_1"
+    # filter the edge list to only include edges connected to the target node"
     edge_list <- edge_list[sapply(edge_list, function(x) x$data$target == target_id)]
 
-    print("edge_list")
-    print(edge_list)
-
     # remove the nodes that are not connected to the target node
-    node_list <- node_list[sapply(node_list, function(x) x$data$id %in% c(target_id, sapply(edge_list, function(x) x$data$source)))]
+    node_list <- node_list[
+      sapply(
+        node_list,
+        function(x) x$data$id %in% c(target_id,sapply(edge_list, function(x) x$data$source))
+      )
+    ]
 
     # Manually create JSON string
     json_nodes <- paste(lapply(node_list, function(x) {
       sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
     }), collapse = ", ")
 
-    # edgewidth is missing. Here it should be the value of the Jaccard similarity matrix
-
     json_edges <- paste(lapply(edge_list, function(x) {
-      
-      # get width of edge in pixels
       edge_width <- paste0(1 + 10 * x$data$weight, "px")
-
       sprintf(
         '{"data": {"source": "%s", "target": "%s", "weight": "%s", "color": "%s"}}',
         x$data$source,
