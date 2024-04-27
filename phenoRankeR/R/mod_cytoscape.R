@@ -10,11 +10,12 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom jsonlite toJSON
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON doLayout
+#' @importFrom dplyr group_by mutate row_number
 
 mod_cytoscape_mode_layout <- c(
   "            100px             1fr     ",
   "30px        layoutSelector    cyjShiny",
-  "150px        btns              cyjShiny",
+  "150px        btns             cyjShiny",
   "50px        download          cyjShiny"
 )
 
@@ -126,7 +127,7 @@ mod_cytoscape_server <- function(
     colorLastNodeBlack <- TRUE
 
     # threshold for edge creation
-    threshold <- 0.4
+    threshold <- 0.5
 
     # Apply this function to each node and edge
     node_thresholds <- apply(
@@ -161,25 +162,54 @@ mod_cytoscape_server <- function(
       c("red", "green", "blue")
     )(length(unique(normalized_node_thresholds)))
 
-    print("node_colors")
+    print("node_colors 1")
     print(node_colors)
 
-    node_colors <- node_colors[
-      as.integer(
-        cut(normalized_node_thresholds,
-          breaks = length(node_colors),
-          include.lowest = TRUE
-        )
-      )
-    ]
+    # node_colors <- node_colors[
+    #   as.integer(
+    #     cut(normalized_node_thresholds,
+    #       breaks = length(node_colors),
+    #       include.lowest = TRUE
+    #     )
+    #   )
+    # ]
 
-    print("node_colors")
-    print(node_colors)
+    bins <- cut(
+      normalized_node_thresholds,
+      breaks = length(node_colors),
+      include.lowest = TRUE
+    )
 
+    print("bins")
+    print(bins)
+
+    print("bin_indices")
+    print(as.integer(bins))
+
+
+    # bins <- cut(normalized_thresholds, breaks=unique_values, include.lowest=TRUE)
+
+    # print("node_colors")
+    # print(node_colors)
+    
+
+    bin_indices <- as.integer(bins)
+    node_colors <- node_colors[bin_indices]
+    
+    # the target node should be colored black
     # Conditionally color the last node black
-    if (colorLastNodeBlack) {
-      node_colors[length(node_colors)] <- "black" # Last node in black
-    }
+    # if (colorLastNodeBlack) {
+    #   node_colors[length(node_colors)] <- "black" # Last node in black
+    # }
+    
+    print("node_colors 2")
+    print(node_colors)
+
+    df <- data.frame(
+      normalized_threshold = normalized_node_thresholds,
+      bin_index = bin_indices,
+      node_color = node_colors
+    )
 
     # Edge colors with similar logic
     edge_colors <- apply(
@@ -227,11 +257,25 @@ mod_cytoscape_server <- function(
       # I do not want to color the last node black
       # but the node with the target id
       # In the beacon example it should be T|Beacon_1
-      list(data = list(id = x, color = node_colors[match(x, nodes)]))
+
+      # index of the node in the dataframe
+      # x is the node ID
+    
+      index <- which(rownames(df) == x)
+
+      # Determine the color: if the node ID matches "T1_Beacon_1", set it to pink; otherwise, use its assigned color
+      target_id <- "T1_Beacon_1" # TODO this should no be hardcoded
+      node_color <- if(x == target_id) "pink" else df$node_color[index]
+
+      list(data = list(id = x, color = node_color))
     })
 
     print("node_list")
     print(node_list)
+
+    # TODO
+    # only include the edges that have a target node of "T1_Beacon_1"
+
 
     edge_list <- apply(edges, 1, function(x) {
       source <- rownames(sim_matrix)[x[1]]
@@ -244,6 +288,13 @@ mod_cytoscape_server <- function(
         color = edge_colors[x[1], x[2]]
       ))
     })
+
+    # filter the edge list to only include edges that have a target node of "T1_Beacon_1"
+    target_id <- "T1_Beacon_1"
+    edge_list <- edge_list[sapply(edge_list, function(x) x$data$target == target_id)]
+
+    print("edge_list")
+    print(edge_list)
 
     # Manually create JSON string
     json_nodes <- paste(lapply(node_list, function(x) {
