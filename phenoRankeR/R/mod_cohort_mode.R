@@ -813,7 +813,7 @@ mod_cohort_mode_server <- function(
       # TabHeader: Hamming Distances Heatmap
       mod_heatmap_server(
         "heatmap",
-        timestamp, 
+        timestamp,
         rv_cohort,
         "cohort",
         uploaded_files_count = uploaded_files_count
@@ -826,6 +826,14 @@ mod_cohort_mode_server <- function(
         rv = rv_cohort,
         mode = "cohort",
         uploaded_files_count = uploaded_files_count
+      )
+
+      # TabHeader: Cytoscape
+      mod_cytoscape_server(
+        "cytoscape",
+        timestamp,
+        rv = rv_cohort,
+        mode = "cohort"
       )
     })
 

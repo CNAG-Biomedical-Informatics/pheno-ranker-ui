@@ -179,6 +179,7 @@ getColorBasedOnThreshold <- function(
 
 #region cyto_graph
 create_cyto_graph <- function(
+  mode,
   runId,
   jaccard_idx_threshold = 0.5,
   target_node_color = "teal",
@@ -192,13 +193,23 @@ create_cyto_graph <- function(
     return()
   }
 
+  inputDir <- get_golem_options(
+    paste0(mode, "ModeOutputFolder")
+  )
+
+  print("inputDir")
+  print(inputDir)
+
   filePath <- paste0(
-    get_golem_options("patientModeOutputFolder"),
+    inputDir,
     runId,
     "/",
     runId,
     "_jaccard.txt"
   )
+
+  print("filePath")
+  print(filePath)
 
   if (!file.exists(filePath)) {
     stop("Jaccard file not found")
@@ -207,7 +218,7 @@ create_cyto_graph <- function(
 
   sim_matrix <- as.matrix(
     readTxt(
-      get_golem_options("patientModeOutputFolder"),
+      inputDir,
       runId = runId,
       row_names = 1,
       fileName_suffix = "_jaccard.txt"
@@ -302,12 +313,14 @@ create_cyto_graph <- function(
   # remove the diagonal
   edges <- edges[edges[, 1] != edges[, 2], ]
 
-  target_id <- colnames(sim_matrix)[length(colnames(sim_matrix))]
-  if (length(edges) == 0) {
-    print("No edges found")
-    node_template <- '{"data": {"id": "%s", "color": "%s"}}'
-    node <- sprintf(node_template, target_id, target_node_color)
-    return(sprintf('{"elements": {"nodes": [%s], "edges": []}}', node))
+  if (mode == "patient") {
+    target_id <- colnames(sim_matrix)[length(colnames(sim_matrix))]
+    if (length(edges) == 0) {
+      print("No edges found")
+      node_template <- '{"data": {"id": "%s", "color": "%s"}}'
+      node <- sprintf(node_template, target_id, target_node_color)
+      return(sprintf('{"elements": {"nodes": [%s], "edges": []}}', node))
+    }
   }
 
   # Create node and edge lists
@@ -316,14 +329,20 @@ create_cyto_graph <- function(
     colnames(sim_matrix)[edges[, 2]]
   ))
 
+  if (mode == "patient") {
+    node_list <- lapply(nodes, function(x) {
+      index <- which(rownames(df) == x)
+      # node_color <- if (x == target_id) "pink" else df$node_color[index]
+      node_color <- if (x == target_id) target_node_color else reference_nodes_color
 
-  node_list <- lapply(nodes, function(x) {
-    index <- which(rownames(df) == x)
-    # node_color <- if (x == target_id) "pink" else df$node_color[index]
-    node_color <- if (x == target_id) target_node_color else reference_nodes_color
-
-    list(data = list(id = x, color = node_color))
-  })
+      list(data = list(id = x, color = node_color))
+    })
+  } else {
+    node_list <- lapply(nodes, function(x) {
+      index <- which(rownames(df) == x)
+      list(data = list(id = x, color = df$node_color[index]))
+    })
+  }
 
   edge_list <- apply(edges, 1, function(x) {
     source <- rownames(sim_matrix)[x[1]]
@@ -337,16 +356,23 @@ create_cyto_graph <- function(
     ))
   })
 
-  # filter the edge list to only include edges connected to the target node"
-  edge_list <- edge_list[sapply(edge_list, function(x) x$data$target == target_id)]
+  if (mode == "patient") {
+    # filter the edge list to only include edges connected to the target node"
+    edge_list <- edge_list[
+      sapply(
+        edge_list,
+        function(x) x$data$target == target_id
+      )
+    ]
 
-  # remove the nodes that are not connected to the target node
-  node_list <- node_list[
-    sapply(
-      node_list,
-      function(x) x$data$id %in% c(target_id,sapply(edge_list, function(x) x$data$source))
-    )
-  ]
+    # remove the nodes that are not connected to the target node
+    node_list <- node_list[
+      sapply(
+        node_list,
+        function(x) x$data$id %in% c(target_id,sapply(edge_list, function(x) x$data$source))
+      )
+    ]
+  }
 
   # Manually create JSON string
   json_nodes <- paste(lapply(node_list, function(x) {
@@ -378,8 +404,8 @@ create_cyto_graph <- function(
 render_multi_slider <- function(
   ns,
   multiSliderMinVal,
-  multiSliderHandlersVal, 
-  min_val = 0.5, 
+  multiSliderHandlersVal,
+  min_val = 0.5,
   edge_color_palette = "default"
   ) {
 
@@ -489,7 +515,11 @@ mod_cytoscape_server <- function(
 
     observeEvent(input$thresholdSlider, {
       print(input$thresholdSlider)
-      graph_json <- create_cyto_graph(runId, input$thresholdSlider)
+      graph_json <- create_cyto_graph(
+        mode,
+        runId,
+        input$thresholdSlider
+      )
 
       min_val <- input$thresholdSlider
       max_val <- 1
@@ -512,7 +542,12 @@ mod_cytoscape_server <- function(
 
     observeEvent(input$targetNodeColorPicker, {
       print(input$targetNodeColorPicker)
-      graph_json <- create_cyto_graph(runId, input$thresholdSlider, input$targetNodeColorPicker)
+      graph_json <- create_cyto_graph(
+        mode,
+        runId,
+        input$thresholdSlider,
+        input$targetNodeColorPicker
+      )
       output$cyjShiny <- renderCyjShiny({
         cyjShiny(
           graph_json,
@@ -524,6 +559,7 @@ mod_cytoscape_server <- function(
 
     observeEvent(input$referenceNodesColorPicker, {
       graph_json <- create_cyto_graph(
+        mode,
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
@@ -542,6 +578,7 @@ mod_cytoscape_server <- function(
       print("edgesColorPicker")
       print(input$edgesColorPicker)
       graph_json <- create_cyto_graph(
+        mode,
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
@@ -566,6 +603,7 @@ mod_cytoscape_server <- function(
       print("multiSlider")
       print(input$multiSliderHandlersVal)
       graph_json <- create_cyto_graph(
+        mode,
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
@@ -587,6 +625,7 @@ mod_cytoscape_server <- function(
       print("edgesWidthSlider")
       print(input$edgesWidthSlider)
       graph_json <- create_cyto_graph(
+        mode,
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
@@ -611,7 +650,11 @@ mod_cytoscape_server <- function(
 
     output$cyjShiny <- renderCyjShiny({
       cyjShiny(
-        create_cyto_graph(runId, multiSliderMinVal),
+        create_cyto_graph(
+          mode,
+          runId,
+          multiSliderMinVal
+        ),
         layoutName = "fcose",
         styleFile = basicStyleFile
       )
