@@ -296,7 +296,7 @@ create_cyto_graph <- function(
 
   # Identify where the matrix values exceed the threshold
   edges <- which(
-    sim_matrix > jaccard_idx_threshold,
+    sim_matrix >= jaccard_idx_threshold,
     arr.ind = TRUE
   )
 
