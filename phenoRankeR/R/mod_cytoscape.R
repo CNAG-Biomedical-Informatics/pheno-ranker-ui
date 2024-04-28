@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS actionButton
 #' @importFrom gridlayout grid_container grid_card grid_place
-#' @importFrom jsonlite toJSON validate
+#' @importFrom jsonlite toJSON fromJSON
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny doLayout
 #' @importFrom shinyWidgets colorPickr
 #' @importFrom scales brewer_pal viridis_pal
@@ -399,6 +399,15 @@ create_cyto_graph <- function(
   )
   print("graph_json")
   print(graph_json)
+
+  # Parse the JSON to check if it's valid
+  parsed_json <- tryCatch({
+    fromJSON(graph_json)
+  }, error = function(e) {
+      print("e")
+      print(e)
+      stop("Invalid JSON")
+  })
 
   # when doing the validation
   # the Cytoscape network will not render
