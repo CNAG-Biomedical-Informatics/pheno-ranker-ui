@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS actionButton
 #' @importFrom gridlayout grid_container grid_card grid_place
-#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite toJSON validate
 #' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny doLayout
 #' @importFrom shinyWidgets colorPickr
 #' @importFrom scales brewer_pal viridis_pal
@@ -346,7 +346,9 @@ create_cyto_graph <- function(
 
   edge_list <- apply(edges, 1, function(x) {
     source <- rownames(sim_matrix)[x[1]]
+    source <- gsub(":", ".", source)
     target <- colnames(sim_matrix)[x[2]]
+    target <- gsub("X", "", target)
     weight <- sim_matrix[x[1], x[2]]
     list(data = list(
       source = source,
@@ -397,6 +399,17 @@ create_cyto_graph <- function(
   )
   print("graph_json")
   print(graph_json)
+
+  # when doing the validation
+  # the Cytoscape network will not render
+
+  # valid <- validate(graph_json)
+  # if (!valid) {
+  #   stop("Invalid JSON")
+  # }
+  # print("valid")
+  # print(valid)
+
   return(graph_json)
 }
 
@@ -645,7 +658,7 @@ mod_cytoscape_server <- function(
 
     #region default render
     output$multiSlider <- render_multi_slider(
-      ns, multiSliderMinVal, multiSliderHandlerVal
+      ns, multiSliderMinVal, multiSliderHandlersVal
     )
 
     output$cyjShiny <- renderCyjShiny({
@@ -653,7 +666,7 @@ mod_cytoscape_server <- function(
         create_cyto_graph(
           mode,
           runId,
-          multiSliderMinVal
+          jaccard_idx_threshold = 0.5
         ),
         layoutName = "fcose",
         styleFile = basicStyleFile
