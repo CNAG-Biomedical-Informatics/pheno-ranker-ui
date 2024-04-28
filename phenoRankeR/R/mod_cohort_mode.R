@@ -208,6 +208,10 @@ mod_cohort_mode_ui <- function(id){
         tabPanel(
           title = "Multi Dimensional Scaling Scatter Plot",
           mod_plot_mds_ui(ns("mds_scatter"))
+        ),
+        tabPanel(
+          title = "Cytoscape",
+          mod_cytoscape_ui(ns("cytoscape"))
         )
       )
     ),
@@ -590,15 +594,18 @@ mod_cohort_mode_server <- function(
       rv_cohort$runId <- timestamp
 
       session$sendCustomMessage(
-        type = "changeURL", 
-        message = list(mode="cohort",id=timestamp)
+        type = "changeURL",
+        message = list(
+          mode = "cohort",
+          id = timestamp
+        )
       )
       runId <- paste0(
         "RUN ID: ",
         timestamp
       )
       output$phenoBlastCohortRunId <- renderText(runId)
-      
+
       weights_file_path <- NULL
       if (input$yamlCohortEditor_weights != "") {
         fn <- paste0(
@@ -619,7 +626,7 @@ mod_cohort_mode_server <- function(
       if (input$yamlCohortEditor_config != "") {
         extra_config_file_path <- file.path(
           get_golem_options("extraConfigsUploadFolder"),
-          paste0(timestamp,"_config.yaml")
+          paste0(timestamp, "_config.yaml")
         )
 
         writeLines(
@@ -635,7 +642,7 @@ mod_cohort_mode_server <- function(
       )
 
       dir.create(
-        outDir, 
+        outDir,
         recursive = TRUE
       )
 
@@ -664,11 +671,11 @@ mod_cohort_mode_server <- function(
       # when commenting below in the app crashes
       settingsMapping <- create_settings_mapping_cohort_mode(
         ns,
-        weights_file_path, 
-        extra_config_file_path, 
-        input, 
-        outDir, 
-        timestamp, 
+        weights_file_path,
+        extra_config_file_path,
+        input,
+        outDir,
+        timestamp,
         rv_cohort
       )
 
@@ -725,7 +732,7 @@ mod_cohort_mode_server <- function(
           )
         )
       }
-      
+
       print(outDir)
       settings <- paste0(
         settings,
@@ -756,18 +763,33 @@ mod_cohort_mode_server <- function(
       # TODO
       # writing to log file is missing
 
-      
-      phenoRankBin <- get_golem_options("PHENO_RANK_BIN")
-      # run the perl script
-      cmd <- paste0(
-        phenoRankBin,
-        settings
-      )
-      print(cmd)
+      # loop over metrics
+      for (metric in c("hamming", "jaccard")) {
+        settings <- generate_settings(
+          "cohort",
+          NULL,
+          NULL,
+          outDir,
+          timestamp,
+          weights_file_path = weights_file_path,
+          extra_config_file_path = extra_config_file_path,
+          dnd_incl = dnd_incl,
+          dnd_excl = dnd_excl,
+          rv = rv_cohort,
+          similarity_metric_cohort = metric
+        )
 
-      script_status <- system(cmd, intern = TRUE)
-      if (length(script_status) > 0 && script_status != 0) {
-        stop("Perl script execution failed.")
+        # run the perl script
+        cmd <- paste0(
+          get_golem_options("PHENO_RANK_BIN"),
+          settings
+        )
+        print(cmd)
+
+        script_status <- system(cmd, intern = TRUE)
+        if (length(script_status) > 0 && script_status != 0) {
+          stop("Perl script execution failed.")
+        }
       }
 
       label <- "all toplevel terms"

@@ -293,8 +293,7 @@ create_cyto_graph <- function(
     ncol = ncol(sim_matrix)
   )
 
-
-  # Identify where the matrix values exceed the threshold
+  # Identify where the matrix values hit/exceed the threshold
   edges <- which(
     sim_matrix >= jaccard_idx_threshold,
     arr.ind = TRUE

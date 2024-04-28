@@ -252,7 +252,7 @@ store_job_in_db <- function(runId,userId, mode,label, settings, db_conn) {
 }
 
 
-### Listeners for the patient/cohort mode ###  
+### Listeners for the patient/cohort mode ### 
 
 #' Observe tab change events
 #' @importFrom shiny observeEvent updateSelectInput
@@ -783,4 +783,126 @@ observeConvertedDataChange <- function(
       value = paste(yamlCfg, collapse = "\n")
     )
   })
+}
+
+# generate the settings string for running PhenoRanker
+
+# below does not work as expected
+# in patient mode
+
+generate_settings <- function(
+    mode,
+    ref_files,
+    inputTargetFilePath,
+    outDir,
+    timestamp,
+    weights_file_path = NULL,
+    extra_config_file_path = NULL,
+    dnd_incl = NULL,
+    dnd_excl = NULL,
+    rv = NULL,
+    similarity_metric_cohort = "hamming") {
+  # Construct the basic settings string
+  if (mode == "patient") {
+    settings <- paste0(
+      " -r ", paste0(ref_files, collapse = " "),
+      " -t ", inputTargetFilePath,
+      " -o ", paste0(outDir, timestamp, ".txt"),
+      " --align ", paste0(outDir, timestamp, "_alignment")
+    )
+  } else {
+    # cohort mode
+    print("cohort mode")
+    print("similarity_metric_cohort")
+    print(similarity_metric_cohort)
+
+    outpath <- paste0(outDir, timestamp, ".txt")
+    if (similarity_metric_cohort == "jaccard") {
+      outpath <- paste0(outDir, timestamp, "_jaccard.txt")
+    }
+
+    if (is.null(inputTargetFilePath)) {
+      print("cohort mode")
+      settings <- paste0(
+        " -r ", paste0(rv$mappingDf$new_fn, collapse = " "),
+        " -o ", outpath
+      )
+    } else {
+      # cohort mode executed within the patient mode
+      settings <- paste0(
+        " -r ", paste0(ref_files, collapse = " "),
+        " ", inputTargetFilePath,
+        " -o ", outpath
+      )
+    }
+
+    settings <- paste0(
+      settings,
+      " -similarity-metric-cohort ", similarity_metric_cohort
+    )
+  }
+
+  # Add weights file path if provided
+  if (!is.null(weights_file_path)) {
+    settings <- paste0(
+      settings,
+      " -w ",
+      normalizePath(weights_file_path)
+    )
+  }
+
+  # Add extra config file path if provided
+  if (!is.null(extra_config_file_path)) {
+    settings <- paste0(
+      settings,
+      " -config ",
+      normalizePath(extra_config_file_path)
+    )
+  }
+
+  # Handling of include and exclude terms
+  if (!is.null(dnd_incl) && length(dnd_incl) > 0) {
+    settings <- paste0(
+      settings,
+      " -include-terms ",
+      paste(dnd_incl, collapse = " ")
+    )
+  }
+
+  if (!is.null(dnd_excl) && length(dnd_excl) > 0) {
+    settings <- paste0(
+      settings,
+      " -exclude-terms ",
+      paste(dnd_excl, collapse = " ")
+    )
+  }
+
+
+  if (mode == "patient") {
+    # Append prefixes if the rv_patient object is valid and has a mappingDf with more than 2 rows
+    if (!is.null(rv) && !is.null(rv$mappingDf) && nrow(rv$mappingDf) > 2) {
+      ref_prefixes <- rv$mappingDf$id_prefixes[1:(nrow(rv$mappingDf) - 1)]
+      settings <- paste0(
+        settings,
+        " --append-prefixes ",
+        paste(ref_prefixes, collapse = " ")
+      )
+    }
+  } else {
+    uploaded_files_count <- nrow(rv$mappingDf)
+    if (uploaded_files_count > 1) {
+      all_prefixes <- rv$mappingDf$id_prefixes
+      print("all_prefixes")
+      print(all_prefixes)
+      settings <- paste0(
+        settings,
+        " --append-prefixes ",
+        paste(all_prefixes, collapse = " ")
+      )
+    }
+  }
+
+  print("generate_settings - settings")
+  print(settings)
+  return(settings)
 }

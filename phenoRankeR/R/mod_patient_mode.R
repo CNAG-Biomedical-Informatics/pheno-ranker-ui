@@ -308,110 +308,110 @@ incl_excl_criteria <- fromJSON(
   )
 )
 
-generate_settings <- function(
-    mode,
-    ref_files,
-    inputTargetFilePath,
-    outDir,
-    timestamp,
-    weights_file_path = NULL,
-    extra_config_file_path = NULL,
-    dnd_incl = NULL,
-    dnd_excl = NULL,
-    rv_patient = NULL,
-    similarity_metric_cohort = "hamming") {
-  # Construct the basic settings string
+# generate_settings <- function(
+#     mode,
+#     ref_files,
+#     inputTargetFilePath,
+#     outDir,
+#     timestamp,
+#     weights_file_path = NULL,
+#     extra_config_file_path = NULL,
+#     dnd_incl = NULL,
+#     dnd_excl = NULL,
+#     rv_patient = NULL,
+#     similarity_metric_cohort = "hamming") {
+#   # Construct the basic settings string
 
-  if (mode == "patient") {
-    settings <- paste0(
-      " -r ", paste0(ref_files, collapse = " "),
-      " -t ", inputTargetFilePath,
-      " -o ", paste0(outDir, timestamp, ".txt"),
-      " --align ", paste0(outDir, timestamp, "_alignment")
-    )
-  } else {
-    # cohort mode
-    print("cohort mode")
-    print("similarity_metric_cohort")
-    print(similarity_metric_cohort)
-    settings <- paste0(
-      " -r ", paste0(ref_files, collapse = " "),
-      " ", inputTargetFilePath,
-      " -o ", paste0(outDir, timestamp, ".txt")
-    )
+#   if (mode == "patient") {
+#     settings <- paste0(
+#       " -r ", paste0(ref_files, collapse = " "),
+#       " -t ", inputTargetFilePath,
+#       " -o ", paste0(outDir, timestamp, ".txt"),
+#       " --align ", paste0(outDir, timestamp, "_alignment")
+#     )
+#   } else {
+#     # cohort mode
+#     print("cohort mode")
+#     print("similarity_metric_cohort")
+#     print(similarity_metric_cohort)
+#     settings <- paste0(
+#       " -r ", paste0(ref_files, collapse = " "),
+#       " ", inputTargetFilePath,
+#       " -o ", paste0(outDir, timestamp, ".txt")
+#     )
 
-    if (similarity_metric_cohort == "jaccard") {
-      settings <- paste0(
-        " -r ", paste0(ref_files, collapse = " "),
-        " ", inputTargetFilePath,
-        " -o ", paste0(outDir, timestamp, "_jaccard.txt"),
-        " -similarity-metric-cohort ", similarity_metric_cohort
-      )
-    }
-  }
+#     if (similarity_metric_cohort == "jaccard") {
+#       settings <- paste0(
+#         " -r ", paste0(ref_files, collapse = " "),
+#         " ", inputTargetFilePath,
+#         " -o ", paste0(outDir, timestamp, "_jaccard.txt"),
+#         " -similarity-metric-cohort ", similarity_metric_cohort
+#       )
+#     }
+#   }
 
-  # Add weights file path if provided
-  if (!is.null(weights_file_path)) {
-    settings <- paste0(
-      settings,
-      " -w ",
-      normalizePath(weights_file_path)
-    )
-  }
+#   # Add weights file path if provided
+#   if (!is.null(weights_file_path)) {
+#     settings <- paste0(
+#       settings,
+#       " -w ",
+#       normalizePath(weights_file_path)
+#     )
+#   }
 
-  # Add extra config file path if provided
-  if (!is.null(extra_config_file_path)) {
-    settings <- paste0(
-      settings,
-      " -config ",
-      normalizePath(extra_config_file_path)
-    )
-  }
+#   # Add extra config file path if provided
+#   if (!is.null(extra_config_file_path)) {
+#     settings <- paste0(
+#       settings,
+#       " -config ",
+#       normalizePath(extra_config_file_path)
+#     )
+#   }
 
-  # Handling of include and exclude terms
-  if (!is.null(dnd_incl) && length(dnd_incl) > 0) {
-    settings <- paste0(
-      settings,
-      " -include-terms ",
-      paste(dnd_incl, collapse = " ")
-    )
-  }
+#   # Handling of include and exclude terms
+#   if (!is.null(dnd_incl) && length(dnd_incl) > 0) {
+#     settings <- paste0(
+#       settings,
+#       " -include-terms ",
+#       paste(dnd_incl, collapse = " ")
+#     )
+#   }
 
-  if (!is.null(dnd_excl) && length(dnd_excl) > 0) {
-    settings <- paste0(
-      settings,
-      " -exclude-terms ",
-      paste(dnd_excl, collapse = " ")
-    )
-  }
+#   if (!is.null(dnd_excl) && length(dnd_excl) > 0) {
+#     settings <- paste0(
+#       settings,
+#       " -exclude-terms ",
+#       paste(dnd_excl, collapse = " ")
+#     )
+#   }
 
 
-  if (mode == "patient") {
-    # Append prefixes if the rv_patient object is valid and has a mappingDf with more than 2 rows
-    if (!is.null(rv_patient) && !is.null(rv_patient$mappingDf) && nrow(rv_patient$mappingDf) > 2) {
-      ref_prefixes <- rv_patient$mappingDf$id_prefixes[1:(nrow(rv_patient$mappingDf) - 1)]
-      settings <- paste0(
-        settings,
-        " --append-prefixes ",
-        paste(ref_prefixes, collapse = " ")
-      )
-    }
-  } else {
-    # cohort mode
-    all_prefixes <- rv_patient$mappingDf$id_prefixes
-    print("all_prefixes")
-    print(all_prefixes)
-    settings <- paste0(
-      settings,
-      " --append-prefixes ",
-      paste(all_prefixes, collapse = " ")
-    )
-  }
+#   if (mode == "patient") {
+#     # Append prefixes if the rv_patient object is valid and has a mappingDf with more than 2 rows
+#     if (!is.null(rv_patient) && !is.null(rv_patient$mappingDf) && nrow(rv_patient$mappingDf) > 2) {
+#       ref_prefixes <- rv_patient$mappingDf$id_prefixes[1:(nrow(rv_patient$mappingDf) - 1)]
+#       settings <- paste0(
+#         settings,
+#         " --append-prefixes ",
+#         paste(ref_prefixes, collapse = " ")
+#       )
+#     }
+#   } else {
+#     # cohort mode
+#     all_prefixes <- rv_patient$mappingDf$id_prefixes
+#     print("all_prefixes")
+#     print(all_prefixes)
+#     settings <- paste0(
+#       settings,
+#       " --append-prefixes ",
+#       paste(all_prefixes, collapse = " ")
+#     )
+#   }
 
-  print("generate_settings - settings")
-  print(settings)
-  return(settings)
-}
+#   print("generate_settings - settings")
+#   print(settings)
+#   return(settings)
+# }
 
 
 mod_patient_mode_server <- function(
@@ -1158,7 +1158,7 @@ mod_patient_mode_server <- function(
         extra_config_file_path = extra_config_file_path,
         dnd_incl = dnd_incl,
         dnd_excl = dnd_excl,
-        rv_patient = rv_patient
+        rv = rv_patient
       )
 
       cmd <- paste0(
@@ -1197,16 +1197,16 @@ mod_patient_mode_server <- function(
         extra_config_file_path = extra_config_file_path,
         dnd_incl = dnd_incl,
         dnd_excl = dnd_excl,
-        rv_patient = rv_patient
+        rv = rv_patient
       )
 
-      all_prefixes <- rv_patient$mappingDf$id_prefixes
-      cmd2 <- paste0(
-        get_golem_options("PHENO_RANK_BIN"),
-        settings2,
-        " --append-prefixes ",
-        paste(all_prefixes, collapse = " ")
-      )
+      # all_prefixes <- rv_patient$mappingDf$id_prefixes
+      # cmd2 <- paste0(
+      #   get_golem_options("PHENO_RANK_BIN"),
+      #   settings2,
+      #   " --append-prefixes ",
+      #   paste(all_prefixes, collapse = " ")
+      # )
 
       cmd2 <- paste0(
         get_golem_options("PHENO_RANK_BIN"),
@@ -1236,7 +1236,7 @@ mod_patient_mode_server <- function(
         extra_config_file_path = extra_config_file_path,
         dnd_incl = dnd_incl,
         dnd_excl = dnd_excl,
-        rv_patient = rv_patient,
+        rv = rv_patient,
         similarity_metric_cohort = "jaccard"
       )
 
