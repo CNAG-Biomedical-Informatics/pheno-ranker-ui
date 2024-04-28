@@ -177,7 +177,7 @@ getColorBasedOnThreshold <- function(
   }
 }
 
-# Function to create the cytoscape graph
+#region cyto_graph
 create_cyto_graph <- function(
   runId,
   jaccard_idx_threshold = 0.5,
@@ -214,7 +214,7 @@ create_cyto_graph <- function(
     )
   )
 
-  # column count where jaccard index <= jaccard_idx_threshold
+  # column count where jaccard index >= jaccard_idx_threshold
   # check row-wise
   similar_pats_count_per_pat <- apply(
     sim_matrix,
@@ -296,7 +296,7 @@ create_cyto_graph <- function(
 
   # Identify where the matrix values exceed the threshold
   edges <- which(
-    sim_matrix >= jaccard_idx_threshold,
+    sim_matrix > jaccard_idx_threshold,
     arr.ind = TRUE
   )
 
@@ -375,6 +375,7 @@ create_cyto_graph <- function(
   return(graph_json)
 }
 
+#region Multi Slider
 render_multi_slider <- function(
   ns,
   multiSliderMinVal,
@@ -440,6 +441,14 @@ render_multi_slider <- function(
   })
 }
 
+basicStyleFile <- system.file(
+  "extdata",
+  "cytoscape_styles",
+  "basicStyle.js",
+  package = "phenoRankeR"
+)
+
+#region Module Server
 mod_cytoscape_server <- function(
     id,
     runId = NULL,
@@ -448,9 +457,23 @@ mod_cytoscape_server <- function(
   
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
-    # assuming that min jaccard index is 0.5
 
+    #region Reactive Values
+
+    # TODO
+    # using reactive values inside the
+    # create_cyto_graph function
+    # could prevent the need for multiple create cyto graph calls
+    # cytoscapeVals <- reactiveValues(
+    #   jaccard_idx_threshold = 0.5,
+    #   target_node_color = "teal",
+    #   reference_nodes_color = "red",
+    #   edge_color_palette = "default",
+    #   edge_thresholds = c(0.5, 0.9),
+    #   edge_width_multiplier = 5
+    # )
+
+    # below should not be the jaccardIdx threshold
     multiSliderMinValDefault <- 0.5
     multiSliderMinVal <- reactiveVal(multiSliderMinValDefault)
 
@@ -459,13 +482,7 @@ mod_cytoscape_server <- function(
 
     observe(multiSliderHandlersVal(input$multiSliderHandlersVal)) |> bindEvent(input$multiSliderHandlersVal)
 
-    basicStyleFile <- system.file(
-      "extdata",
-      "cytoscape_styles",
-      "basicStyle.js",
-      package = "phenoRankeR"
-    )
-
+    #region Observe Events
     observeEvent(input$layoutSelector, {
       print(input$layoutSelector)
       doLayout(session, input$layoutSelector)
@@ -474,19 +491,13 @@ mod_cytoscape_server <- function(
     observeEvent(input$thresholdSlider, {
       print(input$thresholdSlider)
       graph_json <- create_cyto_graph(runId, input$thresholdSlider)
-      
+
       min_val <- input$thresholdSlider
       max_val <- 1
       available_range <- max_val - min_val
-      print("available_range")
-      print(available_range)
 
       mid_val <- (available_range / 3) + min_val
-      print("mid_val")
-      print(mid_val)
       high_val <- (available_range / 3) * 2 + min_val
-      print("high_val")
-      print(high_val)
 
       multiSliderMinVal(min_val)
       multiSliderHandlersVal(c(mid_val, high_val))
@@ -552,16 +563,16 @@ mod_cytoscape_server <- function(
       )
     })
 
-    observeEvent(input$multiSliderInput, {
+    observeEvent(input$multiSliderHandlersVal, {
       print("multiSlider")
-      print(input$multiSliderInput)
+      print(input$multiSliderHandlersVal)
       graph_json <- create_cyto_graph(
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
         input$referenceNodesColorPicker,
         input$edgesColorPicker,
-        input$multiSliderInput,
+        input$multiSliderHandlersVal,
         input$edgesWidthSlider
       )
       output$cyjShiny <- renderCyjShiny({
@@ -594,13 +605,14 @@ mod_cytoscape_server <- function(
       })
     })
 
+    #region default render
     output$multiSlider <- render_multi_slider(
       ns, multiSliderMinVal, multiSliderHandlerVal
     )
 
     output$cyjShiny <- renderCyjShiny({
       cyjShiny(
-        create_cyto_graph(runId),
+        create_cyto_graph(runId, multiSliderMinVal),
         layoutName = "fcose",
         styleFile = basicStyleFile
       )
