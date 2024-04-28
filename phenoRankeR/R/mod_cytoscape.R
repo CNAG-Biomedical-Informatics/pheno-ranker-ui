@@ -14,7 +14,7 @@
 #' @importFrom scales brewer_pal viridis_pal
 #' @importFrom esquisse palettePicker
 #' @importFrom shiny.blueprint reactOutput renderReact MultiSlider MultiSliderHandle
-
+#' @importFrom shiny.react setInput
 
 # TODO
 # add shinyjs to add custom event handlers
@@ -194,13 +194,14 @@ create_cyto_graph <- function(
   target_node_color = "teal",
   reference_nodes_color = "red",
   edge_color_palette = "default",
+  edge_thresholds = c(0.5, 0.9),
   edge_width_multiplier = 5
   ) {
 
   if (is.null(runId)) {
     return()
   }
-  
+
   filePath <- paste0(
     get_golem_options("patientModeOutputFolder"),
     runId,
@@ -238,7 +239,9 @@ create_cyto_graph <- function(
   # Check if all values are the same
   if (max_similar_pats_count == min_similar_pat_count) {
     # Assign a default value
-    normalized_similar_pats_count_per_pat <- rep(0.5, length(similar_pats_count_per_pat))
+    normalized_similar_pats_count_per_pat <- rep(
+      0.5, length(similar_pats_count_per_pat
+    ))
   } else {
     # Normalize the counts to a 0-1 scale
     normalized_similar_pats_count_per_pat <- (
@@ -279,7 +282,7 @@ create_cyto_graph <- function(
     bin_index = bin_indeces,
     node_color = node_colors[bin_indeces]
   )
-  
+
   print("df")
   print(df)
 
@@ -300,8 +303,6 @@ create_cyto_graph <- function(
     ncol = ncol(sim_matrix)
   )
 
-  # print("edge_colors")
-  # print(edge_colors)
 
   # Identify where the matrix values exceed the threshold
   edges <- which(
@@ -319,7 +320,7 @@ create_cyto_graph <- function(
     node <- sprintf(node_template, target_id, target_node_color)
     return(sprintf('{"elements": {"nodes": [%s], "edges": []}}', node))
   }
-  
+
   # Create node and edge lists
   nodes <- unique(c(
     rownames(sim_matrix)[edges[, 1]],
@@ -384,7 +385,7 @@ create_cyto_graph <- function(
   return(graph_json)
 }
 
-render_multi_slider <- function(ns, min_val = 0.5, edge_color_palette = "default") {
+render_multi_slider <- function(ns, multiSliderVal, min_val = 0.5, edge_color_palette = "default") {
 
   print("render_multi_slider")
   print(min_val)
@@ -422,17 +423,22 @@ render_multi_slider <- function(ns, min_val = 0.5, edge_color_palette = "default
 
   renderReact({
     MultiSlider(
+      onChange = setInput(ns("multiSliderVal")),
       min = min_val,
       max = 1,
       stepSize = 0.01,
       MultiSliderHandle(
-        value = mid_val,
+        type = "start",
+        value = multiSliderVal()[1],
         trackStyleBefore = list(background = low_range_color),
-        trackStyleAfter = list(background = mid_range_color)
+        trackStyleAfter = list(background = mid_range_color),
+        interactionKind = "push"
       ),
       MultiSliderHandle(
-        value = high_val,
+        type = "end",
+        value = multiSliderVal()[2],
         trackStyleAfter = list(background = high_range_color),
+        interactionKind = "push"
       )
     )
   })
@@ -446,6 +452,11 @@ mod_cytoscape_server <- function(
   
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    defaultValue <- c(0.3, 0.7)
+
+    multiSliderVal <- reactiveVal(defaultValue)
+    observe(multiSliderVal(input$multiSliderVal)) |> bindEvent(input$multiSliderVal)
 
     basicStyleFile <- system.file(
       "extdata",
@@ -463,10 +474,10 @@ mod_cytoscape_server <- function(
       print(input$thresholdSlider)
       graph_json <- create_cyto_graph(runId, input$thresholdSlider)
 
-      output$multiSlider <- render_multi_slider(
-        ns, min = input$thresholdSlider,
-        edge_color_palette = input$edgesColorPicker
-      )
+      # output$multiSlider <- render_multi_slider(
+      #   ns, min = input$thresholdSlider,
+      #   edge_color_palette = input$edgesColorPicker
+      # )
 
       output$cyjShiny <- renderCyjShiny({
         cyjShiny(
@@ -522,21 +533,22 @@ mod_cytoscape_server <- function(
           styleFile = basicStyleFile
         )
       })
-      output$multiSlider <- render_multi_slider(
-        ns, min = input$thresholdSlider,
-        edge_color_palette = input$edgesColorPicker
-      )
+      # output$multiSlider <- render_multi_slider(
+      #   ns, min = input$thresholdSlider,
+      #   edge_color_palette = input$edgesColorPicker
+      # )
     })
 
-    observeEvent(input$edgesWidthSlider, {
-      print("edgesWidthSlider")
-      print(input$edgesWidthSlider)
+    observeEvent(input$multiSliderInput, {
+      print("multiSlider")
+      print(input$multiSliderInput)
       graph_json <- create_cyto_graph(
         runId,
         input$thresholdSlider,
         input$targetNodeColorPicker,
         input$referenceNodesColorPicker,
         input$edgesColorPicker,
+        input$multiSliderInput,
         input$edgesWidthSlider
       )
       output$cyjShiny <- renderCyjShiny({
@@ -548,7 +560,28 @@ mod_cytoscape_server <- function(
       })
     })
 
-    output$multiSlider <- render_multi_slider(ns)
+    observeEvent(input$edgesWidthSlider, {
+      print("edgesWidthSlider")
+      print(input$edgesWidthSlider)
+      graph_json <- create_cyto_graph(
+        runId,
+        input$thresholdSlider,
+        input$targetNodeColorPicker,
+        input$referenceNodesColorPicker,
+        input$edgesColorPicker,
+        input$multiSlider,
+        input$edgesWidthSlider
+      )
+      output$cyjShiny <- renderCyjShiny({
+        cyjShiny(
+          graph_json,
+          layoutName = input$layoutSelector,
+          styleFile = basicStyleFile
+        )
+      })
+    })
+
+    output$multiSlider <- render_multi_slider(ns, multiSliderVal)
 
     output$cyjShiny <- renderCyjShiny({
       cyjShiny(
