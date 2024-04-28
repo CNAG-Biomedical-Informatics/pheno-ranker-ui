@@ -284,6 +284,9 @@ create_cyto_graph <- function(
     node_color = node_colors[bin_indeces]
   )
 
+  # replace in the row names the ":" with "."
+  rownames(df) <- gsub(":", ".", rownames(df))
+
   print("df")
   print(df)
 
@@ -376,38 +379,77 @@ create_cyto_graph <- function(
     ]
   }
 
-  # Manually create JSON string
-  json_nodes <- paste(lapply(node_list, function(x) {
-    sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
-  }), collapse = ", ")
+  # create JSON string
+  json_nodes <- toJSON(lapply(node_list, function(x) {
+    list(data = list(
+      id = x$data$id,
+      color = x$data$color
+    ))
+  }), auto_unbox = TRUE)
 
-  json_edges <- paste(lapply(edge_list, function(x) {
+  json_edges <- toJSON(lapply(edge_list, function(x) {
     edge_width <- paste0(edge_width_multiplier * x$data$weight, "px")
-    sprintf(
-      '{"data": {"source": "%s", "target": "%s", "weight": "%s", "color": "%s"}}',
-      x$data$source,
-      x$data$target,
-      edge_width,
-      x$data$color
-    )
-  }), collapse = ", ")
+    list(data = list(
+      source = x$data$source,
+      target = x$data$target,
+      weight = edge_width,
+      color = x$data$color
+    ))
+  }), auto_unbox = TRUE)
 
-  graph_json <- sprintf(
-    '{"elements": {"nodes": [%s], "edges": [%s]}}',
-    json_nodes,
-    json_edges
+  graph_json <- toJSON(
+    list(
+      elements = list(
+        nodes = fromJSON(json_nodes),
+        edges = fromJSON(json_edges)
+      )
+    ),
+    auto_unbox = TRUE
   )
-  print("graph_json")
-  print(graph_json)
+
+  # json_nodes <- paste(lapply(node_list, function(x) {
+  #   sprintf('{"data": {"id": "%s", "color": "%s"}}', x$data$id, x$data$color)
+  # }), collapse = ", ")
+
+  # json_edges <- paste(lapply(edge_list, function(x) {
+  #   edge_width <- paste0(edge_width_multiplier * x$data$weight, "px")
+  #   sprintf(
+  #     '{"data": {"source": "%s", "target": "%s", "weight": "%s", "color": "%s"}}',
+  #     x$data$source,
+  #     x$data$target,
+  #     edge_width,
+  #     x$data$color
+  #   )
+  # }), collapse = ",")
+
+  # graph_json <- sprintf(
+  #   '{"elements": {"nodes": [%s], "edges": [%s]}}',
+  #   json_nodes,
+  #   json_edges
+  # )
+  # print("graph_json")
+  # print(graph_json)
 
   # Parse the JSON to check if it's valid
   parsed_json <- tryCatch({
     fromJSON(graph_json)
   }, error = function(e) {
-      print("e")
-      print(e)
-      stop("Invalid JSON")
-  })
+      for (json_string in c(json_nodes, json_edges)) {
+        tryCatch({
+          fromJSON(json_string)
+        }, error = function(e) {
+          # print("json_string")
+          # print(json_string)
+          print("e")
+          print(e)
+          stop("Invalid JSON")
+        })
+      }
+    }
+  )
+
+  return(as.character(graph_json))
+  # return(graph_json)
 
   # when doing the validation
   # the Cytoscape network will not render
@@ -419,7 +461,7 @@ create_cyto_graph <- function(
   # print("valid")
   # print(valid)
 
-  return(graph_json)
+  
 }
 
 #region Multi Slider
