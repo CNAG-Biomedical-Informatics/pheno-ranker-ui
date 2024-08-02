@@ -392,7 +392,7 @@ create_cyto_graph <- function(
   )
 
   graph_json <- toJSON(
-    graph_structure, 
+    graph_structure,
     auto_unbox = TRUE
   )
 
