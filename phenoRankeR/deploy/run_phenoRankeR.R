@@ -24,21 +24,22 @@ parse_args <- function(args) {
 }
 
 default_golem_opts <- list(
-  rankInputFolder= "/app/data/uploads/rankInput/",
-  patientRankInputRefsFolder="/app/data/uploads/rankInput/patientMode/references",
+  rankInputFolder = "/app/data/uploads/rankInput/",
+  patientRankInputRefsFolder = "/app/data/uploads/rankInput/patientMode/references",
 
-  cohortRankInputFolder="/app/data/uploads/rankInput/cohortMode/cohorts",
-  
-  weightsUploadFolder="/app/data/uploads/weights",
-  extraConfigsUploadFolder="/app/data/uploads/config",
-  ontologyUploadFolder="/app/data/uploads/ontologies/",
+  cohortRankInputFolder = "/app/data/uploads/rankInput/cohortMode/cohorts",
 
-  simulationOutputFolder="/app/data/output/simulatedData/",
-  conversionOutputFolder="/app/data/output/convertedData/",
-  patientModeOutputFolder="/app/data/output/rankedPatients/",
-  cohortModeOutputFolder="/app/data/output/rankedCohortMatrixes/",
+  weightsUploadFolder = "/app/data/uploads/weights",
+  extraConfigsUploadFolder = "/app/data/uploads/config",
+  ontologyUploadFolder = "/app/data/uploads/ontologies/",
 
-  tempFolder="/app/data/temp/",  # no longer needed?
+  inputExamplesOutputFolder = "/app/data/output/inputExamples/",
+  simulationOutputFolder = "/app/data/output/simulatedData/",
+  conversionOutputFolder = "/app/data/output/convertedData/",
+  patientModeOutputFolder = "/app/data/output/rankedPatients/",
+  cohortModeOutputFolder = "/app/data/output/rankedCohortMatrixes/",
+
+  tempFolder = "/app/data/temp/",  # no longer needed?
 
   runWithDocker = "True",
   LD_LIB_PATH = "/usr/local/lib/perl5/5.36.1/x86_64-linux-gnu/CORE",

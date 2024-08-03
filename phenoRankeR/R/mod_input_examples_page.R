@@ -35,7 +35,7 @@ mod_input_examples_page_ui <- function(id){
     grid_place(
       area = "btn",
       actionButton(
-        ns("RetrieveExampleCohorts"),
+        ns("retrieveExampleCohorts"),
         "Retrieve Example Cohorts",
         class = "btn btn-primary"
       )
@@ -193,7 +193,7 @@ get_input_examples <- function(retrievalId, number_of_individuals) {
   return(read_json(fn))
 }
 
-mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_input_examples) {
+mod_input_examples_page_server <- function(id, session, db_conn, rv_input_examples) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
@@ -217,39 +217,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
     iv$add_rule("arraySizeInput", sv_between(0, 5000))
     iv$enable()
 
-    # data <- data.frame(
-    #   ontologies = c(
-    #     "diseases",
-    #     "exposures",
-    #     "phenotypicFeatures",
-    #     "procedures",
-    #     "treatments"
-    #   ),
-    #   count = c(3, 3, 3, 3, 3),
-    #   max_pool_size = c(5, 5, 5, 5, 5)
-    # )
-
-    # Render the DataTable with input fields for count and max_pool_size
-    # output$simulationSettings <- renderDT(
-    #   data,
-    #   selection = "none",
-    #   options = list(
-    #     paging = FALSE,
-    #     searching = FALSE,
-    #     ordering = FALSE,
-    #     info = FALSE,
-    #     autoWidth = FALSE,
-    #     columnDefs = list(
-    #       list(
-    #         targets = c(2, 3),
-    #         render = JS("returnNumberInputField")
-    #       )
-    #     )
-    #   )
-    # )
-
     retrieved_examples_folder <- get_golem_options(
-      "retrievedInputExamplesFolder"
+      "inputExamplesOutputFolder"
     )
 
     # simulationOutputFolder <- get_golem_options("simulationOutputFolder")
@@ -263,9 +232,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       )
       # bffOutputFn <- paste0(path, ".bff.json")
       pxfOutputFn <- paste0(path, ".pxf.json")
-
-      print("bffOutputFn")
-      print(bffOutputFn)
 
       # output$bffDl <- outputDownloadHandler(bffOutputFn, "phenoRankerSim.bff")
       output$pxfDl <- outputDownloadHandler(
@@ -385,18 +351,11 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
     #   rv_sim$dtInputs <- input$inputs
     # })
 
-    observeEvent(input$retrieveBtnClicked, {
+    observeEvent(input$retrieveExampleCohorts, {
+      print("observeEvent(input$retrieveExampleCohorts")
       req(iv$is_valid())
-      # req(rv_sim$dtInputs)
-      # simSettings <- c(rv_sim$dtInputs, input$arraySizeInput)
 
-      # simulationId <- writeYAMLDataToFile(
-      #   input$yamlEditor_diseases,
-      #   input$yamlEditor_expos,
-      #   input$yamlEditor_phenos,
-      #   input$yamlEditor_procedures,
-      #   input$yamlEditor_treatments
-      # )
+      retrievalId <- format(Sys.time(), "%Y%m%d%H%M%S")
 
       session$sendCustomMessage(
         type = "changeURL",
@@ -474,9 +433,9 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
 
       # number_of_individuals <- simSettings[11]
 
-      rv_input_examples$retrievedExamples <- get_input_examples(
-        retrievalId, 
-        number_of_individuals
+      rv_input_examples$inputExamples <- get_input_examples(
+        retrievalId,
+        input$arraySizeInput
       )
       
 
@@ -508,8 +467,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       mod_json_viewer_server(
         ns("json_viewer"),
         selectedOutputFormats,
-        rv_input_examples$retrievedExamples,
-        rv_input_examples$retrievedExamples,
+        rv_input_examples$inputExamples,
+        rv_input_examples$inputExamples,
         # rv_sim$simResult_bff,
         # rv_sim$simResult_pxf,
         input$arraySizeInput
@@ -521,7 +480,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       settings <- list(
         # outputFormats = tolower(selectedOutputFormats),
         # externalOntologies = ext_onts_settings_mapping,
-        numberOfIndividuals = number_of_individuals
+        numberOfIndividuals = input$arraySizeInput
       )
 
       # TODO
@@ -558,12 +517,12 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
         VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
       "
 
-      if (db_driver == "SQLite") {
-        query_string <- "
-          INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
-          VALUES (%s,%s,'%s','%s','%s','%s')
-        "
-      }
+      # if (db_driver == "SQLite") {
+      #   query_string <- "
+      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+      #     VALUES (%s,%s,'%s','%s','%s','%s')
+      #   "
+      # }
       query <- sprintf(
         query_string,
         retrievalId, 1,"input_examples",label,settings_json,"success"

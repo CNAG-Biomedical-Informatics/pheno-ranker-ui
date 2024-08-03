@@ -16,21 +16,22 @@ run_app <- function(
   enableBookmarking = NULL,
   uiPattern = "/",
   golem_opts = list(
-    rankInputFolder= "../data/uploads/rankInput/",
-    patientRankInputRefsFolder="../data/uploads/rankInput/patientMode/references",
+    rankInputFolder = "../data/uploads/rankInput/",
+    patientRankInputRefsFolder ="../data/uploads/rankInput/patientMode/references",
 
-    cohortRankInputFolder="../data/uploads/rankInput/cohortMode/cohorts",
-    
-    weightsUploadFolder="../data/uploads/weights",
-    extraConfigsUploadFolder="../data/uploads/config",
-    ontologyUploadFolder="../data/uploads/ontologies/",
+    cohortRankInputFolder ="../data/uploads/rankInput/cohortMode/cohorts",
 
-    simulationOutputFolder="../data/output/simulatedData/",
-    conversionOutputFolder="../data/output/convertedData/",
-    patientModeOutputFolder="../data/output/rankedPatients/",
-    cohortModeOutputFolder="../data/output/rankedCohortMatrixes/",
+    weightsUploadFolder ="../data/uploads/weights",
+    extraConfigsUploadFolder ="../data/uploads/config",
+    ontologyUploadFolder ="../data/uploads/ontologies/",
 
-    tempFolder="../data/temp/", # no longer needed?
+    inputExamplesOutputFolder ="../data/output/inputExamples/",
+    simulationOutputFolder ="../data/output/simulatedData/",
+    conversionOutputFolder ="../data/output/convertedData/",
+    patientModeOutputFolder ="../data/output/rankedPatients/",
+    cohortModeOutputFolder ="../data/output/rankedCohortMatrixes/",
+
+    tempFolder ="../data/temp/", # no longer needed?
 
     runWithDocker = FALSE,
     PHENO_SIM_BIN = "bff-pxf-simulator",

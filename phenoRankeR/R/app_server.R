@@ -46,6 +46,11 @@ app_server <- function(input, output, session) {
   # reactlog_enable()
 
   # initialize reactive values
+  rv_input_examples <- reactiveValues(
+    retrievalId = NULL,
+    inputExamples = NULL
+  )
+
   rv_sim <- reactiveValues(
     dtInputs = NULL,
     simResult_bff = NULL,
@@ -96,6 +101,13 @@ app_server <- function(input, output, session) {
   db_driver <- get_golem_options("dbDriver")
   print("dbDriver")
   print(db_driver)
+
+  mod_input_examples_page_server(
+    "input_examples",
+    session,
+    db_conn,
+    rv_input_examples
+  )
 
   mod_sim_mode_server(
     "sim_mode",
