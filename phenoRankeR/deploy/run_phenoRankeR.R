@@ -33,6 +33,7 @@ default_golem_opts <- list(
   extraConfigsUploadFolder = "/app/data/uploads/config",
   ontologyUploadFolder = "/app/data/uploads/ontologies/",
 
+  inputExamplesInputFolder = "/app/data/input_examples/phenopacket_store/0.1.16/",
   inputExamplesOutputFolder = "/app/data/output/inputExamples/",
   simulationOutputFolder = "/app/data/output/simulatedData/",
   conversionOutputFolder = "/app/data/output/convertedData/",

@@ -105,9 +105,8 @@ mod_input_examples_page_ui <- function(id){
 }
 
 get_input_examples <- function(retrievalId, number_of_individuals) {
-  # phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
+  inputFolder <- get_golem_options("inputExamplesInputFolder")
   ouputFolder <- get_golem_options("inputExamplesOutputFolder")
-  # ontologyUploadFolder <- get_golem_options("ontologyUploadFolder")
 
   fn <- paste0(
     ouputFolder,
@@ -115,71 +114,10 @@ get_input_examples <- function(retrievalId, number_of_individuals) {
     ".pxf.json"
   )
 
-  # settings <- "-external-ontologies "
-
-  # ontology_path <- paste0(ontologyUploadFolder, paste0(simulationId, "_ontologies.yaml "))
-  # settings <- paste0(settings, ontology_path)
-  # settings <- paste0(settings, ext_onts_settings_string)
-
-  # print("settings")
-  # print(settings)
-
-  # # maybe better get it from a config file
-  # flags <- c(
-  #   "diseases", 
-  #   "exposures", 
-  #   "phenotypicFeatures", 
-  #   "procedures", 
-  #   "treatments"
-  # )
-
-  # external_ontologies_settings <- unlist(
-  #   lapply(
-  #     flags, 
-  #     function(flag) 
-  #     c(
-  #       paste0("-", flag), 
-  #       paste0("-max-", flag, "-pool")
-  #     )
-  #   )
-  # )
-
-  # indices <- seq(1, length(external_ontologies_settings))
-
-  # # Loop through the settings and add them
-  # settings_mapping <- list()
-  # for (i in seq(1, length(indices), by = 2)) {
-  #   ontology <- external_ontologies_settings[i]
-  #   max_pool <- external_ontologies_settings[i + 1]
-
-  #   ontology_count <- simSettings[indices[i]]
-  #   max_pool_size <- simSettings[indices[i + 1]]
-
-  #   settings <- paste0(
-  #     settings, ontology, " ", ontology_count, " ",
-  #     max_pool, " ", max_pool_size, " ")
-
-  #   settings_mapping[[ontology]] <- ontology_count
-  #   settings_mapping[[max_pool]] <- max_pool_size
-  # }
-
-  # number_of_individuals <- simSettings[11]
-  # settings_mapping[["-n"]] <- number_of_individuals
-
-  # print("settings_mapping")
-  # print(settings_mapping)
-
-  # settings <- paste0(
-  #   settings,
-  #   " -n ", number_of_individuals,
-  #   " -f ", outputFormat,
-  #   " -o ", fn
-  # )
-
-  # jq -s '.' $(ls -1 */*json | sort -R | head -10) > combined.json
-
-  cmd <- paste(
-    "jq -s '.' $(ls -1 */*json | sort -R | head -",
+  cmd <- paste0(
+    "jq -s '.' $(ls -1 ",
+    inputFolder,
+    "*/*json | sort -R | head -",
     number_of_individuals,
     ") > ",
     fn
