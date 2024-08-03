@@ -14,12 +14,12 @@
 #' @import reactR
 #' @noRd
 
-mode_sim_layout <- c(
-  "         500px       1fr     40px                ",
-  "30px     btn         simRes  btn_show_sim_history",
-  "800px    table       simRes  btn_show_sim_history",
-  "70px     download    simRes  btn_show_sim_history",
-  "1px      version     version version             "
+mode_input_examples_layout <- c(
+  "         500px       1fr     40px                           ",
+  "30px     btn         examplesRes  btn_show_retrieval_history",
+  "800px    table       examplesRes  btn_show_retrieval_history",
+  "70px     download    examplesRes  btn_show_retrieval_history",
+  "1px      version     version version                        "
 )
 
 mod_json_viewer_ui <- function(id) {
@@ -30,13 +30,13 @@ mod_json_viewer_ui <- function(id) {
 mod_input_examples_page_ui <- function(id){
   ns <- NS(id)
   grid_container(
-    layout = mode_sim_layout,
+    layout = mode_input_examples_layout,
     gap_size = "0px",
     grid_place(
       area = "btn",
       actionButton(
-        ns("simulateCohort"), 
-        " Simulate", 
+        ns("RetrieveExampleCohorts"),
+        "Retrieve Example Cohorts",
         class = "btn btn-primary"
       )
     ),
@@ -50,16 +50,6 @@ mod_input_examples_page_ui <- function(id){
             "85px   arraySizeInput"
           ),
           gap_size = "0px",
-          # grid_place(
-          #   area = "checkboxes",
-          #   checkboxGroupInput(
-          #     ns("checkboxes"),
-          #     "Select output(s):",
-          #     choices = c("BFF", "PXF"),
-          #     selected = c("BFF", "PXF"),
-          #     inline = TRUE
-          #   )
-          # ),
           grid_place(
             area = "arraySizeInput",
             numericInput(
@@ -74,95 +64,6 @@ mod_input_examples_page_ui <- function(id){
         )
       )
     ),
-          # grid_place(
-          #   area = "onts",
-          #   div(
-          #     tags$head(
-          #       tags$style(
-          #         HTML(".shiny-notification {
-          #           position:fixed;
-          #           top: calc(15%);
-          #           left: calc(20.5%);
-          #           }
-          #         ")
-          #       )
-          #     )
-              # fileInput(
-              #   ns("ontologiesFile"), 
-              #   "Either upload an ontologies yaml file",
-              #   multiple = FALSE,
-              #   accept = c(
-              #     ".yaml"
-              #   )
-              # ),
-              # span("or modify the ontologies below:"),
-              # tabsetPanel(
-              #   selected = "diseases",
-              #   tabPanel(
-              #     title = "diseases",
-              #     aceEditor(
-              #       ns("yamlEditor_diseases"),
-              #       value = onts_defaults_diseases,
-              #       mode = "yaml",
-              #       theme = "github",
-              #       height = "200px"
-              #     )
-              #   ),
-              #   tabPanel(
-              #     title = "exposures",
-              #     aceEditor(
-              #       ns("yamlEditor_expos"),
-              #       value = onts_defaults_phenos,
-              #       mode = "yaml",
-              #       theme = "github",
-              #       height = "200px"
-              #     )
-              #   ),
-              #   tabPanel(
-              #     title = "phenotypicFeatures",
-              #     aceEditor(
-              #       ns("yamlEditor_phenos"),
-              #       value = onts_defaults_phenos,
-              #       mode = "yaml",
-              #       theme = "github",
-              #       height = "200px"
-              #     )
-              #   ),
-              #   tabPanel(
-              #     title = "procedures",
-              #     aceEditor(
-              #       ns("yamlEditor_procedures"),
-              #       value = onts_defaults_procedures,
-              #       mode = "yaml",
-              #       theme = "github",
-              #       height = "200px"
-              #     )
-              #   ),
-              #   tabPanel(
-              #     title = "treatments",
-              #     aceEditor(
-              #       ns("yamlEditor_treatments"),
-              #       value = onts_defaults_treatments,
-              #       mode = "yaml",
-              #       theme = "github",
-              #       height = "200px"
-              #     )
-              #   )
-              # ),
-              # verbatimTextOutput(ns("errorOutput")),
-              # useShinyjs(),
-              # extendShinyjs(
-              #   script = "www/handlers.js",
-              #   functions = c("getInputs")
-              # ),
-              # div(
-              #   class = "grid-item-table", 
-              #   dataTableOutput(ns("simulationSettings"))
-        #     )
-        #   )
-        # )
-      # )
-    # ),
     grid_card(
       area = "download",
       card_body(
@@ -172,18 +73,10 @@ mod_input_examples_page_ui <- function(id){
             "25px pxfDl "
           ),
           gap_size = "5px",
-          # grid_place(
-          #   area = "bffDl",
-          #   downloadButton(ns("bffDl"), "BFF")
-          # ),
           grid_place(
             area = "pxfDl",
             downloadButton(ns("pxfDl"), "PXF")
-          )#,
-          # grid_place(
-          #   area = "allDl",
-          #   downloadButton(ns("allDl"), "All")
-          # )
+          )
         )
       )
     ),
@@ -210,69 +103,6 @@ mod_input_examples_page_ui <- function(id){
     )
   )
 }
-
-# loadOntologyDefaults <- function(file_path, ontology) {
-#   if (file.exists(file_path)) {
-#     data <- paste(
-#       readLines(file_path),
-#       collapse = "\n"
-#     )
-#     data <- yaml.load(data)
-#     return(as.yaml(data[[ontology]]))
-#   } else {
-#     return(NULL)
-#   }
-# }
-
-# onts_defaults_diseases <- loadOntologyDefaults(
-#   "inst/extdata/defaults/diseases_onts.yaml",
-#   "diseases"
-# )
-
-# onts_defaults_phenos <- loadOntologyDefaults(
-#   "inst/extdata/defaults/phenos_onts.yaml",
-#   "phenotypicFeatures"
-# )
-
-# onts_defaults_treatments <- loadOntologyDefaults(
-#   "inst/extdata/defaults/treatments_onts.yaml",
-#   "treatments"
-# )
-
-# onts_defaults_procedures <- loadOntologyDefaults(
-#   "inst/extdata/defaults/procedures_onts.yaml",
-#   "procedures"
-# )
-
-# onts_defaults_exposures <- loadOntologyDefaults(
-#   "inst/extdata/defaults/exposures_onts.yaml",
-#   "exposures"
-# )
-
-# writeYAMLDataToFile <- function(
-#   yaml_diseases,
-#   yaml_expos,
-#   yaml_phenos,
-#   yaml_procedures,
-#   yaml_treatments
-#   ) {
-  
-#   yaml_data <- list()
-#   yaml_data$diseases <- yaml.load(yaml_diseases)
-#   yaml_data$exposures <- yaml.load(yaml_expos)
-#   yaml_data$phenotypicFeatures <- yaml.load(yaml_phenos)
-#   yaml_data$procedures <- yaml.load(yaml_procedures)
-#   yaml_data$treatments <- yaml.load(yaml_treatments)
-
-#   timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
-#   # file_path <- file.path("./data/uploads/ontologies", paste0(timestamp, "_ontologies.yaml"))
-#   file_path <- file.path(
-#     get_golem_options("ontologyUploadFolder"), 
-#     paste0(timestamp, "_ontologies.yaml")
-#   )
-#   writeLines(as.yaml(yaml_data), file_path)
-#   return(timestamp)
-# }
 
 get_input_examples <- function(retrievalId, number_of_individuals) {
   # phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
@@ -678,8 +508,10 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       mod_json_viewer_server(
         ns("json_viewer"),
         selectedOutputFormats,
-        rv_sim$simResult_bff,
-        rv_sim$simResult_pxf,
+        rv_input_examples$retrievedExamples,
+        rv_input_examples$retrievedExamples,
+        # rv_sim$simResult_bff,
+        # rv_sim$simResult_pxf,
         input$arraySizeInput
       )
 
