@@ -69,7 +69,7 @@ mod_landing_page_ui <- function(id){
           href = "https://monarch-initiative.github.io/phenopacket-store"
         ),
         actionButton(
-          ns("navigateToExampleData"),
+          ns("navigateToExamples"),
           "Use example data",
           style = "width: 100%;"
         ),

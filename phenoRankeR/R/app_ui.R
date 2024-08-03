@@ -68,6 +68,11 @@ app_ui <- function(request) {
       navbarMenu(
         "Utilities",
         tabPanel(
+          title = "Get example input",
+          value = "input_examples",
+          mod_input_examples_page_ui("input_examples")
+        ),
+        tabPanel(
           title = "Simulate BFF/PXF",
           value = "sim",
           mod_history_sidebar_ui(
