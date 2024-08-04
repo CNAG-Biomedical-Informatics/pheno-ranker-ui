@@ -68,6 +68,17 @@ mod_cohort_mode_ui <- function(id){
                 )
               ),
               tabPanel(
+                title = "Example data",
+                card_body(
+                  selectInput(
+                    ns("cohort_input_examples"),
+                    "Select example cohort(s)",
+                    multiple = TRUE,
+                    choices = NULL
+                  )
+                )
+              ),
+              tabPanel(
                 title = "Simulated data",
                 card_body(
                   grid_container(
@@ -92,8 +103,8 @@ mod_cohort_mode_ui <- function(id){
                 )
               ),
               tabPanel(
-                  title = "Converted data",
-                  card_body(
+                title = "Converted data",
+                card_body(
                   selectInput(
                     ns("cohort_conv"),
                     "Select a converted cohort",
@@ -233,13 +244,13 @@ weights_defaults <- paste(
 
 create_settings_mapping_cohort_mode <- function(
   ns,
-  weights_file_path, 
-  extra_config_file_path, 
-  input, 
-  outDir, 
-  timestamp, 
+  weights_file_path,
+  extra_config_file_path,
+  input,
+  outDir,
+  timestamp,
   rv_cohort) {
-  
+
   settings <- list()
 
   # TODO
@@ -275,7 +286,7 @@ create_settings_mapping_cohort_mode <- function(
   }
 
   if (length(input$dn_excl) > 0) {
-    
+
     # TODO
     # Throw an error and stop the execution
     # when the user tries to include and exclude terms
@@ -296,7 +307,7 @@ create_settings_mapping_cohort_mode <- function(
 
   print(outDir)
   print(settings)
-  
+
   return(settings)
 }
 
@@ -364,7 +375,7 @@ create_settings_mapping_cohort_mode <- function(
 # }
 
 mod_cohort_mode_server <- function(
-  id, 
+  id,
   session,
   db_conn,
   rv_cohort,
@@ -571,7 +582,7 @@ mod_cohort_mode_server <- function(
       }
       result <- validateYAML(input$yamlCohortEditorIdPrefixes)
       print("validateYAML result")
-      print(result) 
+      print(result)
       output$cohortIdPrefixesErrorOutput <- renderText(result)
       rv_cohort$idPrefixesYamlValid <- TRUE
     })
@@ -581,7 +592,7 @@ mod_cohort_mode_server <- function(
     observeEvent(input$rankCohort, {
       if (is.null(rv_cohort$mappingDf)) {
         showNotification(
-          "Please upload at least one file or select simulated data",
+          "Please upload at least one file or select example/simulated data",
           type = "error"
         )
         return(NULL)
@@ -591,15 +602,18 @@ mod_cohort_mode_server <- function(
       rv_cohort$runId <- timestamp
 
       session$sendCustomMessage(
-        type = "changeURL", 
-        message = list(mode="cohort",id=timestamp)
+        type = "changeURL",
+        message = list(
+          mode = "cohort",
+          id = timestamp
+        )
       )
       runId <- paste0(
         "RUN ID: ",
         timestamp
       )
       output$phenoBlastCohortRunId <- renderText(runId)
-      
+
       weights_file_path <- NULL
       if (input$yamlCohortEditor_weights != "") {
         fn <- paste0(
@@ -620,7 +634,7 @@ mod_cohort_mode_server <- function(
       if (input$yamlCohortEditor_config != "") {
         extra_config_file_path <- file.path(
           get_golem_options("extraConfigsUploadFolder"),
-          paste0(timestamp,"_config.yaml")
+          paste0(timestamp, "_config.yaml")
         )
 
         writeLines(
@@ -636,7 +650,7 @@ mod_cohort_mode_server <- function(
       )
 
       dir.create(
-        outDir, 
+        outDir,
         recursive = TRUE
       )
 
@@ -665,11 +679,11 @@ mod_cohort_mode_server <- function(
       # when commenting below in the app crashes
       settingsMapping <- create_settings_mapping_cohort_mode(
         ns,
-        weights_file_path, 
-        extra_config_file_path, 
-        input, 
-        outDir, 
-        timestamp, 
+        weights_file_path,
+        extra_config_file_path,
+        input,
+        outDir,
+        timestamp,
         rv_cohort
       )
 
@@ -726,7 +740,7 @@ mod_cohort_mode_server <- function(
           )
         )
       }
-      
+
       print(outDir)
       settings <- paste0(
         settings,
@@ -757,7 +771,7 @@ mod_cohort_mode_server <- function(
       # TODO
       # writing to log file is missing
 
-      
+
       phenoRankBin <- get_golem_options("PHENO_RANK_BIN")
       # run the perl script
       cmd <- paste0(
@@ -785,14 +799,21 @@ mod_cohort_mode_server <- function(
 
       userId <- 1
       # settings <- list()
-      store_job_in_db(timestamp,userId,"cohort",label, settingsMapping, db_conn)
+      store_job_in_db(
+        timestamp,
+        userId,
+        "cohort",
+        label,
+        settingsMapping,
+        db_conn
+      )
 
       click("CohortHistorySidebar-btn_show_history")
 
       # TabHeader: Hamming Distances Heatmap
       mod_heatmap_server(
         "heatmap",
-        timestamp, 
+        timestamp,
         rv_cohort,
         "cohort",
         uploaded_files_count = uploaded_files_count
@@ -801,7 +822,7 @@ mod_cohort_mode_server <- function(
       # TabHeader: Multi Dimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "mds_scatter",
-        timestamp, 
+        timestamp,
         rv = rv_cohort,
         mode = "cohort",
         uploaded_files_count = uploaded_files_count
@@ -899,7 +920,7 @@ mod_cohort_mode_server <- function(
 
       print("observeEvent input$simulatedCohortInputFormatRadio")
       rv_cohort$inputFormat <- input$simulatedCohortInputFormatRadio
-      
+
       simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
       row <- data.frame(
         file_info = "Cohort",
@@ -924,7 +945,7 @@ mod_cohort_mode_server <- function(
       )
 
       rv_cohort$mappingDf <- rbind(mapping_df, row)
-      
+
       # put this into a general function
       editor_val <- ""
       for (i in 1:nrow(rv_cohort$mappingDf)) {
@@ -947,6 +968,16 @@ mod_cohort_mode_server <- function(
       print("input$cohortRankerTabsetPanel")
       print(input$cohortRankerTabsetPanel)
 
+      if(input$cohortRankerTabsetPanel == "Example data") {
+        observeTabChangeToExampleData(
+          input,
+          session,
+          db_conn,
+          "cohortRankerTabsetPanel",
+          "cohort_input_examples"
+        )
+      }
+
       if (input$cohortRankerTabsetPanel == "Simulated data") {
         observeTabChangeToSimulateData(
           input,
@@ -954,7 +985,7 @@ mod_cohort_mode_server <- function(
           db_conn,
           "cohortRankerTabsetPanel",
           "cohort_sim"
-          )
+        )
       }
 
       if (input$cohortRankerTabsetPanel == "Converted data") {
@@ -966,6 +997,23 @@ mod_cohort_mode_server <- function(
           "cohort_conv"
         )
       }
+    })
+
+    observeEvent(input$cohort_input_examples, {
+      req(input$cohort_input_examples)
+      print("input$cohort_input_examples")
+      print(input$cohort_input_examples)
+      print("HERE")
+
+      observeExampleDataChange(
+        session,
+        input,
+        output,
+        rv_cohort,
+        rv_input_examples,
+        "cohort_input_examples",
+        "yamlCohortEditorIdPrefixes"
+      )
     })
 
     observeEvent(input$cohort_sim, {
@@ -983,14 +1031,14 @@ mod_cohort_mode_server <- function(
         input,
         output,
         db_conn,
-        rv_cohort, 
+        rv_cohort,
         rv_sim,
-        "cohort_sim", 
+        "cohort_sim",
         "yamlCohortEditorIdPrefixes",
         expectedRowCount
       )
     })
-    
+
     observeEvent(input$cohort_conv, {
       req(input$cohort_conv)
       observeConvertedDataChange(
@@ -998,12 +1046,11 @@ mod_cohort_mode_server <- function(
         input,
         output,
         rv_cohort,
-        rv_conversion, 
-        "cohort_conv", 
+        rv_conversion,
+        "cohort_conv",
         "yamlCohortEditorIdPrefixes",
         "yamlCohortEditor_config"
       )
     })
-
   })
 }

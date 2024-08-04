@@ -24,29 +24,29 @@ get_file_ext <- function(filepath) {
 
 readTxt <- function(
   path,
-  fileName_suffix=NULL,
-  runId=NULL, 
-  sep = "", 
+  fileName_suffix = NULL,
+  runId = NULL,
+  sep = "",
   header = TRUE,
   row_names = NULL
-  ){
+) {
   # examples for path
   # data/output/rankedPatients/
   # data/output/rankedCohortMatrixes/
-  
-  if (Sys.getenv("R_PACKAGE_BUILD") == "T"){
-    if("rankedPatients" %in% path){
+
+  if (Sys.getenv("R_PACKAGE_BUILD") == "T") {
+    if ("rankedPatients" %in% path) {
       path <- "tests/fixtures/rankedPatients"
       runId <- "rankedPatients"
-    } else if ("rankedCohortMatrixes" %in% path){
+    } else if ("rankedCohortMatrixes" %in% path) {
       path <- "tests/fixtures/rankedCohortMatrixes"
       runId <- "rankedCohortMatrixes"
     }
-  } 
+  }
 
-  suffix = ".txt"
+  suffix <- ".txt"
   if (!is.null(fileName_suffix)) {
-    suffix = fileName_suffix
+    suffix <- fileName_suffix
   }
 
   filePath <- paste0(
@@ -69,19 +69,19 @@ readTxt <- function(
   txtData <- tryCatch(
     {
       read.table(
-        filePath, 
-        header = header, 
+        filePath,
+        header = header,
         row.names = row_names,
         sep = sep
       )
     },
     error = function(e) {
       print("Error reading the file: ")
-      cat("Error reading the file: ", e, "\n")
+      cat("Error reading the file: ", filePath, "\n")
       print(e)
       # throw error
       return()
-    } 
+    }
   )
   return(txtData)
 }
@@ -725,6 +725,10 @@ observeExampleDataChange <- function(
   observeEvent(input[[input_id]], {
     rv_input_examples$retrievalId <- input[[input_id]]
 
+    print("HERE 2")
+    print("rv_input_examples$retrievalId")
+    print(rv_input_examples$retrievalId)
+
     # if (input[[input_id]] == "") {
     #   rv$inputFormat <- NULL
     #   return()
@@ -779,6 +783,10 @@ observeExampleDataChange <- function(
       simulatedData = FALSE,
       stringsAsFactors = FALSE
     )
+
+    print("row")
+    print(row)
+
     rv$mappingDf <- rbind(mapping_df, row)
 
     # put this into a general function
