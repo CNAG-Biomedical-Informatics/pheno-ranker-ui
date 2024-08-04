@@ -51,8 +51,7 @@ markdown_extensions:
 
 nav:
   - Introduction:
-      - What is Pheno-Ranker-UI?: pheno-ranker-ui.md
-      - Supported formats: supported-formats.md
+      - What is Pheno-Ranker-UI?: what-is-pheno-ranker-ui.md
   - Use:
       - Playground: playground.md
       - Run locally: run-locally.md
