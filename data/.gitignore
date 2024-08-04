@@ -19,3 +19,9 @@ output/rankedCohortMatrixes/*
 
 output/convertedData/*
 !output/convertedData/README.md
+
+output/inputExamples/*
+!output/inputExamples/README.md
+
+input_examples/*
+!input_examples/README.md
