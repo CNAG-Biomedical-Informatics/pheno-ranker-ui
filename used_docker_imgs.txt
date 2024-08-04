@@ -1,0 +1,3 @@
+leistivo/pheno-ranker-ui:latest
+postgres:13-alpine
+quay.io/keycloak/keycloak:20.0.1
