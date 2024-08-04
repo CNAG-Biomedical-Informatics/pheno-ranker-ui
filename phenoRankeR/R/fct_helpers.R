@@ -285,6 +285,46 @@ observeTabChangeEvent <- function(
   })
 }
 
+observeTabChangeToExampleData <- function (
+  input,
+  session,
+  db_conn,
+  panel_id,
+  dropdown_id
+  ) {
+
+  # should not be hardcoded
+  user_id <- 1
+
+  query <- sprintf(
+    "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'input_examples' AND status = 'success' ORDER BY submitted_at DESC",
+    user_id
+  )
+
+  res <- dbGetQuery(db_conn, query)
+  choices <- setNames(res$run_id, res$label)
+
+  updateSelectInput(
+    session,
+    dropdown_id,
+    choices = choices,
+    selected = NULL
+  )
+
+  observeTabChangeEvent(
+    input,
+    session,
+    panel_id,
+    "Example data",
+    function() {
+      nrow(res) == 0
+    },
+    "Please run example data first",
+    "Upload"
+  )
+}
+
+
 observeTabChangeToSimulateData <- function(
   input,
   session,
@@ -412,11 +452,15 @@ observeSimulatedDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useSimulatedReference <- TRUE
+      rv$useExampleReference <- FALSE
+      rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
     } else if (grepl("target", input_id)) {
       id_prefix <- "T"
       file_info <- "Target"
       rv$useSimulatedTarget <- TRUE
+      rv$useExampleTarget <- FALSE
+      rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
       print(mapping_df)
       mapping_df <- subset(mapping_df, file_info != "Target")
@@ -666,25 +710,116 @@ observeSimulatedDataChange <- function(
   })
 }
 
+observeExampleDataChange <- function(
+  session,
+  input,
+  output,
+  rv,
+  rv_input_examples,
+  input_id,
+  yaml_editor_id) {
+  # possible values:
+  # input_id <-
+  # "patient_example"
+
+  observeEvent(input[[input_id]], {
+    rv_input_examples$retrievalId <- input[[input_id]]
+
+    # if (input[[input_id]] == "") {
+    #   rv$inputFormat <- NULL
+    #   return()
+    # }
+
+    if (is.null(rv$mappingDf)) {
+      mapping_df <- create_new_mapping_df()
+    } else {
+      mapping_df <- rv$mappingDf
+    }
+
+    file_info <- "Cohort"
+    if (grepl("reference", input_id)) {
+      id_prefix <- "R"
+      file_info <- "Reference"
+      rv$useExampleReference <- TRUE
+      rv$useSimulatedReference <- FALSE
+      rv$useConvertedReference <- FALSE
+      mapping_df <- create_new_mapping_df()
+    } else if (grepl("target", input_id)) {
+      id_prefix <- "T"
+      file_info <- "Target"
+      rv$useExampleTarget <- TRUE
+      rv$useSimulatedTarget <- FALSE
+      rv$useConvertedTarget <- FALSE
+      print("mapping_df before subset")
+      print(mapping_df)
+      mapping_df <- subset(mapping_df, file_info != "Target")
+      print("mapping_df after subset")
+      print(mapping_df)
+    } else {
+      id_prefix <- "C"
+      mapping_df <- create_new_mapping_df()
+    }
+
+    exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
+
+    row <- data.frame(
+      file_info = file_info,
+      original_fn = paste0(
+        input[[input_id]],
+        ".pxf.json"
+      ),
+      new_fn = normalizePath(
+        paste0(
+          exampleDataInputDir,
+          input[[input_id]],
+          ".pxf.json"
+        )
+      ),
+      id_prefixes = id_prefix,
+      simulatedData = FALSE,
+      stringsAsFactors = FALSE
+    )
+    rv$mappingDf <- rbind(mapping_df, row)
+
+    # put this into a general function
+    editor_val <- ""
+    for (i in 1:nrow(rv$mappingDf)) {
+      editor_val <- paste0(
+        editor_val,
+        rv$mappingDf$original_fn[i],
+        ":",
+        rv$mappingDf$id_prefixes[i],
+        "\n"
+      )
+    }
+    updateAceEditor(
+      session,
+      yaml_editor_id,
+      value = editor_val
+    )
+  })
+}
+
+
 observeConvertedDataChange <- function(
   session,
   input,
   output,
-  rv, 
+  rv,
   rv_conversion,
-  input_id, 
-  yaml_editor_id, 
+  input_id,
+  yaml_editor_id,
   yaml_cfg_editor_id) {
   # possible values:
   # input_id <-
   # "patient_conv_reference"
 
   print("observeConvertedDataChange")
-  observeEvent(input[[input_id]] , {
-    
+  observeEvent(input[[input_id]], {
+
     convertedId <- input[[input_id]]
     rv_conversion$id <- convertedId
-    print(convertedId )
+    print(convertedId)
 
     if (convertedId == "") {
       rv$inputFormat <- NULL
@@ -701,6 +836,7 @@ observeConvertedDataChange <- function(
     if(grepl("reference", input_id)) {
       id_prefix <- "R"
       file_info <- "Reference"
+      rv$useExampleReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- TRUE
       
@@ -708,6 +844,7 @@ observeConvertedDataChange <- function(
     } else if (grepl("target", input_id)) {
       id_prefix <- "T"
       file_info <- "Target"
+      rv$useExampleTarget <- FALSE
       rv$useSimulatedTarget <- FALSE
       rv$useConvertedTarget <- TRUE
       print("mapping_df before subset")

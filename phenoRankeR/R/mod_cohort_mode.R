@@ -365,9 +365,10 @@ create_settings_mapping_cohort_mode <- function(
 
 mod_cohort_mode_server <- function(
   id, 
-  session, 
-  db_conn, 
+  session,
+  db_conn,
   rv_cohort,
+  rv_input_examples,
   rv_sim,
   rv_conversion){
   # NOTE somehow this function is only working with the

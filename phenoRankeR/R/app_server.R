@@ -72,6 +72,7 @@ app_server <- function(input, output, session) {
     alignmentDf = NULL,
     id = NULL,
     mdsPlot = NULL,
+    useExampleReference = FALSE,
     useSimulatedReference = FALSE,
     useSimulatedTarget = FALSE,
     useConvertedReference = FALSE,
@@ -129,6 +130,7 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     rv_patient,
+    rv_input_examples,
     rv_sim,
     rv_conversion
   )
@@ -138,6 +140,7 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     rv_cohort,
+    rv_input_examples,
     rv_sim,
     rv_conversion
   )

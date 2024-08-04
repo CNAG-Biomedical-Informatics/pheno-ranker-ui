@@ -75,6 +75,30 @@ mod_patient_mode_ui <- function(id){
                     # TODO as soon there is file uploaded
                     # select simulated data should be disabled
                     tabPanel(
+                      title = "Example data",
+                      grid_container(
+                        layout = c(
+                          "      1fr",
+                          "150px dropdown"
+                        ),
+                        grid_place(
+                          area = "dropdown",
+                          selectInput(
+                            ns("patient_example_reference"),
+                            "Select an example cohort",
+                            choices = NULL
+                          )
+                        )
+                        # grid_place(
+                        #   area = "radio",
+                        #   uiOutput(ns("simulatedRefsInputFormats"))
+                        # )
+                      )
+                    ),
+
+
+
+                    tabPanel(
                       title = "Simulated data",
                       grid_container(
                         layout = c(
@@ -137,6 +161,16 @@ mod_patient_mode_ui <- function(id){
                         mode = "yaml",
                         theme = "github",
                         height = "125px"
+                      )
+                    ),
+                    tabPanel(
+                      title = "Example data",
+                      card_body(
+                        selectInput(
+                          ns("patient_example_target"),
+                          "Select an example individual",
+                          choices = NULL
+                        )
                       )
                     ),
                     tabPanel(
@@ -307,8 +341,9 @@ incl_excl_criteria <- fromJSON(
 mod_patient_mode_server <- function(
   id, 
   session,
-  db_conn, 
+  db_conn,
   rv_patient,
+  rv_input_examples,
   rv_sim,
   rv_conversion){
   # NOTE somehow this function is only working with the
@@ -405,12 +440,22 @@ mod_patient_mode_server <- function(
       }
       mod_table_phenoHeadsUp_server(
         "phenoHeadsUpTable",
-        rv_patient=rv_patient
+        rv_patient = rv_patient
       )
     })
 
     observeEvent(input$patientRankerReferenceTabsetPanel, {
       print(input$patientRankerReferenceTabsetPanel)
+
+      if (input$patientRankerReferenceTabsetPanel == "Example data") {
+        observeTabChangeToExampleData(
+          input,
+          session,
+          db_conn,
+          "patientRankerReferenceTabsetPanel",
+          "patient_example_reference"
+        )
+      }
 
       if (input$patientRankerReferenceTabsetPanel == "Simulated data") {
         observeTabChangeToSimulateData(
@@ -427,7 +472,7 @@ mod_patient_mode_server <- function(
           input,
           session,
           db_conn,
-          "patientRankerReferenceTabsetPanel", 
+          "patientRankerReferenceTabsetPanel",
           "patient_conv_reference"
         )
       }
@@ -437,14 +482,24 @@ mod_patient_mode_server <- function(
       print("input$patientRankerTargetTabsetPanel")
       print(input$patientRankerTargetTabsetPanel)
 
-      if (input$patientRankerReferenceTabsetPanel == "Simulated data") {
+      if (input$patientRankerTargetTabsetPanel == "Example data") {
+        observeTabChangeToExampleData(
+          input,
+          session,
+          db_conn,
+          "patientRankerTargetTabsetPanel",
+          "patient_example_target"
+        )
+      }
+
+      if (input$patientRankerTargetTabsetPanel == "Simulated data") {
         observeTabChangeToSimulateData(
           input,
           session,
           db_conn,
-          "patientRankerReferenceTabsetPanel",
+          "patientRankerTargetTabsetPanel",
           "patient_sim_target"
-          )
+        )
       }
 
       if (input$patientRankerTargetTabsetPanel == "Converted data") {
@@ -465,6 +520,7 @@ mod_patient_mode_server <- function(
       "Target",
       function() {
         is.null(rv_patient$uploadedReferenceFile) && 
+        rv_patient$useExampleReference == FALSE &&
         rv_patient$useSimulatedReference == FALSE && 
         rv_patient$useConvertedReference == FALSE
       },
@@ -740,8 +796,19 @@ mod_patient_mode_server <- function(
       rv_patient$allowedTerms <- data$allowed_terms
     })
 
-    set_input_paths <- function(rv, rv_sim, rv_conversion, mode) {
+    set_input_paths <- function(rv, rv_input_examples, rv_sim, rv_conversion, mode) {
       print("set_input_paths")
+      print("rv_input_examples$retrievalId")
+      print(rv_input_examples$retrievalId)
+
+      exampleDataPath <- paste0(
+        get_golem_options("inputExamplesOutputFolder"),
+        rv_input_examples$retrievalId,
+        ".pxf.json"
+      )
+
+      print("exampleDataPath")
+      print(exampleDataPath)
 
       simDataPath <- paste0(
         get_golem_options("simulationOutputFolder"),
@@ -778,12 +845,24 @@ mod_patient_mode_server <- function(
       )
       print(file_paths)
 
+      if (mode == "patientMode" && rv$useExampleReference) {
+        file_paths["reference_file_path"] <- exampleDataPath
+      }
+
       if (mode == "patientMode" && rv$useSimulatedReference) {
         file_paths["reference_file_path"] <- simDataPath
       }
 
       if (mode == "patientMode" && rv$useConvertedReference) {
         file_paths["reference_file_path"] <- convDataPath
+      }
+
+      if (mode == "patientMode" && rv$useExampleTarget) {
+        file_paths["target_file_path"] <- generate_target_based_on_example_data(
+          rv,
+          rv_input_examples,
+          exampleDataPath
+        )
       }
 
       if (mode == "patientMode" && rv$useSimulatedTarget) {
@@ -839,6 +918,7 @@ mod_patient_mode_server <- function(
 
       paths <- set_input_paths(
         rv_patient,
+        rv_input_examples,
         rv_sim,
         rv_conversion,
         "patientMode"
@@ -1195,11 +1275,11 @@ mod_patient_mode_server <- function(
         input,
         output,
         rv_patient,
-        rv_conversion, 
-        "patient_conv_reference", 
+        rv_conversion,
+        "patient_conv_reference",
         "yamlEditorIdPrefixes",
         "yamlEditor_config"
-        )
+      )
     })
 
     # merge it with the one above
@@ -1210,10 +1290,36 @@ mod_patient_mode_server <- function(
         input,
         output,
         rv_patient,
-        rv_conversion, 
-        "patient_conv_target", 
+        rv_conversion,
+        "patient_conv_target",
         "yamlEditorIdPrefixes",
         "yamlEditor_config"
+      )
+    })
+
+    observeEvent(input$patient_example_reference, {
+      req(input$patient_example_reference)
+      observeExampleDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_input_examples,
+        "patient_example_reference",
+        "yamlEditorIdPrefixes"
+      )
+    })
+
+    observeEvent(input$patient_example_target, {
+      req(input$patient_example_target)
+      observeExampleDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_input_examples,
+        "patient_example_target",
+        "yamlEditorIdPrefixes"
       )
     })
 
@@ -1228,9 +1334,9 @@ mod_patient_mode_server <- function(
         input,
         output,
         db_conn,
-        rv_patient, 
+        rv_patient,
         rv_sim,
-        "patient_sim_reference", 
+        "patient_sim_reference",
         "yamlEditorIdPrefixes",
         expectedRowCount
       )
@@ -1247,8 +1353,8 @@ mod_patient_mode_server <- function(
         output,
         db_conn,
         rv_patient,
-        rv_sim, 
-        "patient_sim_target", 
+        rv_sim,
+        "patient_sim_target",
         "yamlEditorIdPrefixes",
         expectedRowCount
       )
@@ -1331,6 +1437,46 @@ mod_patient_mode_server <- function(
         paste0(rv_conversion$id, "/"),
         rv_conversion$id,
         ".target.json"
+      )
+      file.create(targetFilePath)
+
+      fileConn <- file(
+        targetFilePath,
+        open = "w"
+      )
+      writeLines(
+        toJSON(
+          jsonObj,
+          pretty = TRUE,
+          auto_unbox = TRUE
+        ),
+        con = fileConn
+      )
+      close(fileConn)
+      return(targetFilePath)
+    }
+
+    generate_target_based_on_example_data <- function(rv, rv_input_examples, exampleDataPath) {
+      print("generate_target_based_on_example_data")
+
+      targetFilePath <- exampleDataPath
+      print("targetFilePath")
+      print(targetFilePath)
+
+      jsonArray <- fromJSON(
+        normalizePath(
+          file.path(
+            targetFilePath
+          )
+        ),
+        simplifyDataFrame = FALSE,
+      )
+      jsonObj <- jsonArray[[1]]
+
+      targetFilePath <- paste0(
+        get_golem_options("inputExamplesOutputFolder"),
+        rv_input_examples$retrievalId,
+        ".target.pxf.json"
       )
       file.create(targetFilePath)
 
