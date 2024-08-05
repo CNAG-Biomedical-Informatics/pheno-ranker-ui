@@ -22,11 +22,6 @@ mode_input_examples_layout <- c(
   "1px      version     version version                        "
 )
 
-mod_json_viewer_ui <- function(id) {
-  ns <- NS(id)
-  uiOutput(ns("json_viewer"))
-}
-
 mod_input_examples_page_ui <- function(id) {
   ns <- NS(id)
   grid_container(
@@ -86,7 +81,7 @@ mod_input_examples_page_ui <- function(id) {
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("retrievalId"),
-        mod_json_viewer_ui(ns("json_viewer"))
+        mod_json_viewer_ui(ns("json_viewer_input_examples"))
       ),
       height = "890px"
     ),
@@ -256,7 +251,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       number_of_individuals <- input$arraySizeInput
 
       mod_json_viewer_server(
-        ns("json_viewer"),
+        ns("json_viewer_input_examples"),
         selectedOutputFormats,
         rv_input_examples$inputExamples,
         rv_input_examples$inputExamples,
@@ -309,41 +304,5 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       dbExecute(db_conn, query)
       click("InputExamplesRetrievalHistorySidebar-btn_show_history")
     })
-  })
-}
-
-mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
-  moduleServer(id, function(input, output, session) {
-    if (arraySizeInput <= 1000) {
-      output$json_viewer <- renderUI({
-        if (length(checkboxes) > 1) {
-          fluidRow(
-            generateJsonView(bff_out, "BFF", 6),
-            generateJsonView(pxf_out, "PXF", 6)
-          )
-        } else if (checkboxes == "BFF") {
-          fluidRow(
-            generateJsonView(bff_out, "BFF")
-          )
-        } else if (checkboxes == "PXF") {
-          fluidRow(
-            generateJsonView(pxf_out, "PXF")
-          )
-        }
-      })
-    } else {
-      print("The data is too large to be displayed here. ")
-      output$json_viewer <- renderUI({
-        fluidRow(
-          column(
-            width = 12,
-            height = "85vh",
-            span(
-              "No preview available for more than 1000 individuals."
-            )
-          )
-        )
-      })
-    }
   })
 }

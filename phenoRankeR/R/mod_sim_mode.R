@@ -22,11 +22,6 @@ mode_sim_layout <- c(
   "1px      version     version version             "
 )
 
-mod_json_viewer_ui <- function(id) {
-  ns <- NS(id)
-  uiOutput(ns("json_viewer"))
-}
-
 mod_sim_mode_ui <- function(id) {
   ns <- NS(id)
   grid_container(
@@ -192,7 +187,7 @@ mod_sim_mode_ui <- function(id) {
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("simulationId"),
-        mod_json_viewer_ui(ns("json_viewer"))
+        mod_json_viewer_ui(ns("json_viewer_sim_mode"))
       ),
       height = "890px"
     ),
@@ -653,7 +648,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
       print("input$arraySizeInput")
       print(input$arraySizeInput)
       mod_json_viewer_server(
-        ns("json_viewer"),
+        ns("json_viewer_sim_mode"),
         selectedOutputFormats,
         rv_sim$simResult_bff,
         rv_sim$simResult_pxf,
@@ -716,41 +711,5 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
       dbExecute(db_conn, query)
       click("SimulateHistorySidebar-btn_show_history")
     })
-  })
-}
-
-mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
-  moduleServer(id, function(input, output, session) {
-    if (arraySizeInput <= 1000) {
-      output$json_viewer <- renderUI({
-        if (length(checkboxes) > 1) {
-          fluidRow(
-            generateJsonView(bff_out, "BFF", 6),
-            generateJsonView(pxf_out, "PXF", 6)
-          )
-        } else if (checkboxes == "BFF") {
-          fluidRow(
-            generateJsonView(bff_out, "BFF")
-          )
-        } else if (checkboxes == "PXF") {
-          fluidRow(
-            generateJsonView(pxf_out, "PXF")
-          )
-        }
-      })
-    } else {
-      print("The data is too large to be displayed here. ")
-      output$json_viewer <- renderUI({
-        fluidRow(
-          column(
-            width = 12,
-            height = "85vh",
-            span(
-              "No preview available for more than 1000 individuals."
-            )
-          )
-        )
-      })
-    }
   })
 }

@@ -91,6 +91,9 @@ generateJsonView <- function(jsonOutput, title, width = 12) {
   # figure out how to give the div the heigh 85vh
   print("generateJsonView")
 
+  print("jsonOutput")
+  print(jsonOutput)
+
   column(
     width,
     height = "85vh",

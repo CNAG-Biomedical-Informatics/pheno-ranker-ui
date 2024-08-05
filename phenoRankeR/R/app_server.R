@@ -239,7 +239,7 @@ app_server <- function(input, output, session) {
       file_type <- "pxf"
 
       mod_json_viewer_server(
-        "input_examples-json_viewer",
+        "input_examples-json_viewer_input_examples",
         toupper(file_type),
         rv_input_examples$inputExamples,
         rv_input_examples$inputExamples,
@@ -309,13 +309,8 @@ app_server <- function(input, output, session) {
           toupper(file_type)
         )
 
-        # TODO
-        # get the arraySizeInput from the database
-        # and pass it to the mod_json_viewer_server
-        # because at the moment the history is failing
-
         mod_json_viewer_server(
-          "sim_mode-json_viewer",
+          "sim_mode-json_viewer_sim_mode",
           selectedOutputFormats,
           rv_sim$simResult_bff,
           rv_sim$simResult_pxf,
