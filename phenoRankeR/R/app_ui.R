@@ -31,7 +31,7 @@ app_ui <- function(request) {
       theme = bs_theme(version = 5, bootswatch = "default"),
       # theme = bs_theme(version = 5, bootswatch = "darkly"),
 
-      # the title works as placeholder otherwise the logo 
+      # the title works as placeholder otherwise the logo
       # will overlay the navbar elements
       title = "placeholder",
       icon(
@@ -70,7 +70,12 @@ app_ui <- function(request) {
         tabPanel(
           title = "Get example input",
           value = "input_examples",
-          mod_input_examples_page_ui("input_examples")
+          mod_history_sidebar_ui(
+            "InputExamplesRetrievalHistorySidebar"
+          ),
+          mod_input_examples_page_ui(
+            "input_examples"
+          )
         ),
         tabPanel(
           title = "Simulate BFF/PXF",

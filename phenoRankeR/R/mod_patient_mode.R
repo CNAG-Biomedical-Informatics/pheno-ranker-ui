@@ -22,14 +22,14 @@ mod_patient_mode_layout <- c(
   "1px      version version       version                 "
 )
 
-patient_opts_layout = c(
+patient_opts_layout <- c(
   "         520px      ",
   "380px    rankerInput",
   "350px    configYamls",
   "350px    variables  "
 )
 
-mod_patient_mode_ui <- function(id){
+mod_patient_mode_ui <- function(id) {
   ns <- NS(id)
   grid_container(
     layout = mod_patient_mode_layout,
@@ -95,9 +95,6 @@ mod_patient_mode_ui <- function(id){
                         # )
                       )
                     ),
-
-
-
                     tabPanel(
                       title = "Simulated data",
                       grid_container(
@@ -223,7 +220,7 @@ mod_patient_mode_ui <- function(id){
               title = "Weights",
               card_body(
                 fileInput(
-                  ns("weightsFile"), 
+                  ns("weightsFile"),
                   "Upload a weights yaml file",
                   multiple = FALSE,
                   accept = c(
@@ -245,7 +242,7 @@ mod_patient_mode_ui <- function(id){
               title = "Extra Config",
               card_body(
                 fileInput(
-                  ns("configFile"), 
+                  ns("configFile"),
                   "Upload a config yaml file",
                   multiple = FALSE,
                   accept = c(
@@ -319,7 +316,7 @@ mod_patient_mode_ui <- function(id){
     grid_place(
       area = "version",
       card_body(
-        style = "text-align: right;", 
+        style = "text-align: right;",
         p("Version 0.0.0.9016")
       )
     )
@@ -339,18 +336,17 @@ incl_excl_criteria <- fromJSON(
 )
 
 mod_patient_mode_server <- function(
-  id, 
-  session,
-  db_conn,
-  rv_patient,
-  rv_input_examples,
-  rv_sim,
-  rv_conversion){
+    id,
+    session,
+    db_conn,
+    rv_patient,
+    rv_input_examples,
+    rv_sim,
+    rv_conversion) {
   # NOTE somehow this function is only working with the
   # namespace defined here
-  ns <-session$ns
-  moduleServer(id,function(input, output, session){
-
+  ns <- session$ns
+  moduleServer(id, function(input, output, session) {
     mod_show_history_button_server(
       "PatientHistorySidebar",
       "patient",
@@ -425,7 +421,7 @@ mod_patient_mode_server <- function(
       targetDir <- paste0(rank_input_dir, targetDir)
       file_path <- file.path(targetDir, fn)
       file.copy(file$datapath, file_path)
-      
+
       if (grepl("references", targetDir)) {
         rv$uploadedReferenceFile <- fn
       } else {
@@ -519,17 +515,17 @@ mod_patient_mode_server <- function(
       "patientRankerTabsetPanel",
       "Target",
       function() {
-        is.null(rv_patient$uploadedReferenceFile) && 
-        rv_patient$useExampleReference == FALSE &&
-        rv_patient$useSimulatedReference == FALSE && 
-        rv_patient$useConvertedReference == FALSE
+        is.null(rv_patient$uploadedReferenceFile) &&
+          rv_patient$useExampleReference == FALSE &&
+          rv_patient$useSimulatedReference == FALSE &&
+          rv_patient$useConvertedReference == FALSE
       },
       "Please upload/select the reference(s) first",
       "Reference(s)"
     )
 
     # TODO
-    # put all these functions 
+    # put all these functions
     # in a module called
     # mod_patients_options_sidebar.R
 
@@ -559,7 +555,7 @@ mod_patient_mode_server <- function(
       for (i in 1:nrow(input$referenceFiles)) {
         uploaded_file <- input$referenceFiles[i, ]
 
-        file_con <- file(uploaded_file$datapath, "r")   
+        file_con <- file(uploaded_file$datapath, "r")
         individual_counts <- as.numeric(jq(file_con, "length"))
         close(file_con)
 
@@ -820,7 +816,7 @@ mod_patient_mode_server <- function(
 
       convDataPath <- paste0(
         get_golem_options("conversionOutputFolder"),
-        paste0(rv_conversion$id,"/"),
+        paste0(rv_conversion$id, "/"),
         rv_conversion$id,
         ".json"
       )
@@ -830,7 +826,7 @@ mod_patient_mode_server <- function(
         mode,
         "/"
       )
-      
+
       file_paths <- c(
         "reference_file_path" = paste0(
           upload_dir,
@@ -912,8 +908,8 @@ mod_patient_mode_server <- function(
       # TODO
       # it should fail when the user tries to rank
       # while include/exclude are both filled
-      
-      # Explain to the user that include/exclude 
+
+      # Explain to the user that include/exclude
       # are mutually exclusive
 
       paths <- set_input_paths(
@@ -951,15 +947,15 @@ mod_patient_mode_server <- function(
       rv_patient$runId <- timestamp
 
       session$sendCustomMessage(
-        type = "changeURL", 
-        message = list(mode="patient",id=timestamp)
+        type = "changeURL",
+        message = list(mode = "patient", id = timestamp)
       )
 
       runId <- paste0(
         "RUN ID: ",
         timestamp
       )
-        
+
       output$phenoBlastRunId <- renderText(runId)
 
       outDir <- paste0(
@@ -1006,10 +1002,9 @@ mod_patient_mode_server <- function(
 
       extra_config_file_path <- NULL
       if (input$yamlEditor_config != "") {
-
         extra_config_file_path <- file.path(
           get_golem_options("extraConfigsUploadFolder"),
-          paste0(timestamp,"_config.yaml")
+          paste0(timestamp, "_config.yaml")
         )
 
         print("extra_config_file_path")
@@ -1017,7 +1012,7 @@ mod_patient_mode_server <- function(
 
         print("input$yamlEditor_config")
         print(input$yamlEditor_config)
-        
+
         writeLines(
           input$yamlEditor_config,
           extra_config_file_path
@@ -1064,7 +1059,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if(!is.null(extra_config_file_path)) {
+      if (!is.null(extra_config_file_path)) {
         settings <- paste0(
           settings,
           " -config ",
@@ -1116,7 +1111,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      phenoRankBin <- get_golem_options("PHENO_RANK_BIN") 
+      phenoRankBin <- get_golem_options("PHENO_RANK_BIN")
 
       cmd <- paste0(
         phenoRankBin,
@@ -1165,11 +1160,11 @@ mod_patient_mode_server <- function(
       # note that dnd_incl and dnd_excl are mutually exclusive
       label <- "all toplevel terms"
       if (length(dnd_incl) > 0) {
-        label <- paste("included toplevels:",paste(dnd_incl, collapse = ", "))
+        label <- paste("included toplevels:", paste(dnd_incl, collapse = ", "))
       }
 
       if (length(dnd_excl) > 0) {
-        label <- paste("excluded toplevels:",paste(dnd_excl, collapse = ", "))
+        label <- paste("excluded toplevels:", paste(dnd_excl, collapse = ", "))
       }
 
       print("label")
@@ -1177,8 +1172,15 @@ mod_patient_mode_server <- function(
 
       userId <- 1
       settings <- list()
-      store_job_in_db(timestamp,userId,"patient",label, settings, db_conn)
-      
+      store_job_in_db(
+        timestamp,
+        userId,
+        "patient",
+        label,
+        settings,
+        db_conn
+      )
+
       click("PatientHistorySidebar-btn_show_history")
 
       rv_patient$pastRunIds <- c(rv_patient$pastRunIds, timestamp)
@@ -1186,14 +1188,14 @@ mod_patient_mode_server <- function(
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
-        "phenoBlastTable", 
+        "phenoBlastTable",
         runId = timestamp,
         rv_patient = rv_patient
       )
 
       # TabHeader: Ranking
       rv_patient$rankingDf <- mod_table_phenoRanking_server(
-        "phenoRankingTable", 
+        "phenoRankingTable",
         runId = timestamp,
         rv_patient = rv_patient
       )
@@ -1201,7 +1203,7 @@ mod_patient_mode_server <- function(
       # TabHeader: Hamming Distances Heatmap
       mod_heatmap_server(
         "heatmap",
-        timestamp, 
+        timestamp,
         rv_patient,
         "patient"
       )
@@ -1209,17 +1211,17 @@ mod_patient_mode_server <- function(
       # TabHeader: Multidimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "mds_scatter",
-        runId = timestamp, 
+        runId = timestamp,
         rv = rv_patient,
         mode = "patient"
       )
-      
+
 
       # blast_data <- renderPhenoBlastTable(timestamp)
       # ranking_df <- renderRankingTable(timestamp)
       # CardHeader: Target vs a selected reference individual
       # renderPhenoHeadsUpTable(timestamp, blast_data, ranking_df)
-      
+
       # renderPlots(timestamp, rv_patient)
     })
 

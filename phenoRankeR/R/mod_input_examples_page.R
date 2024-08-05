@@ -27,7 +27,7 @@ mod_json_viewer_ui <- function(id) {
   uiOutput(ns("json_viewer"))
 }
 
-mod_input_examples_page_ui <- function(id){
+mod_input_examples_page_ui <- function(id) {
   ns <- NS(id)
   grid_container(
     layout = mode_input_examples_layout,
@@ -92,7 +92,7 @@ mod_input_examples_page_ui <- function(id){
     ),
     grid_place(
       area = "btn_show_retrieval_history",
-      mod_show_history_button_ui(ns("RetrievalHistorySidebar"))
+      mod_show_history_button_ui(ns("InputExamplesRetrievalHistorySidebar"))
     ),
     grid_place(
       area = "version",
@@ -136,7 +136,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
   # namespace defined here
   ns <- session$ns
 
-  moduleServer(id, function(input, output, session){
+  moduleServer(id, function(input, output, session) {
     loader_inline <- addLoader$new(
       target_selector = "getCohort",
       color = "white",
@@ -147,7 +147,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
     mod_show_history_button_server(
       "InputExamplesRetrievalHistorySidebar",
       "input_examples",
-      "InputEamplesRetrievalHistorySidebar",
+      "InputExamplesRetrievalHistorySidebar",
       db_conn
     )
 
@@ -159,8 +159,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
       "inputExamplesOutputFolder"
     )
 
-    # simulationOutputFolder <- get_golem_options("simulationOutputFolder")
-
     observe({
       req(rv_input_examples$retrievalId)
 
@@ -168,104 +166,14 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
         retrieved_examples_folder,
         rv_input_examples$retrievalId
       )
-      # bffOutputFn <- paste0(path, ".bff.json")
       pxfOutputFn <- paste0(path, ".pxf.json")
 
-      # output$bffDl <- outputDownloadHandler(bffOutputFn, "phenoRankerSim.bff")
       output$pxfDl <- outputDownloadHandler(
         pxfOutputFn,
         "phenoRankerInputExamples.pxf"
       )
-      # output$allDl <- outputDownloadHandler(
-      #   list(bffOutputFn, pxfOutputFn), 
-      #   list("phenoRankerSim.bff", "phenoRankerSim.pxf"),
-      #   output_name = "phenoRankerSim.zip",
-      #   zip_download = TRUE
-      # )
     })
 
-    # observeEvent(input$ontologiesFile, {
-    #   req(input$ontologiesFile)
-
-    #   allowed_types <- c("yaml", "yml")
-    #   if (!(get_file_ext(input$ontologiesFile$name) %in% allowed_types)) {
-    #     showNotification("Invalid file type!", type = "error")
-    #     reset("ontologiesFile")
-    #     return()
-    #   }
-
-    #   file_data <- paste(
-    #     readLines(
-    #       input$ontologiesFile$datapath
-    #     ),
-    #     collapse = "\n"
-    #   )
-
-    #   yamlValid <- validateYAML(file_data)
-    #   if (yamlValid != "YAML is valid") {
-    #     showNotification(yamlValid, type = "error")
-    #     output$errorOutput <- renderText(yamlValid)
-    #     updateAceEditor(session, "yamlEditor_diseases", value = "")
-    #     updateAceEditor(session, "yamlEditor_phenos", value = "")
-    #     updateAceEditor(session, "yamlEditor_treatments", value = "")
-    #     updateAceEditor(session, "yamlEditor_procedures", value = "")
-    #     updateAceEditor(session, "yamlEditor_expos", value = "")
-    #     return()
-    #   }
-    #   output$errorOutput <- renderText(yamlValid)
-
-    #   # update the ace editor
-    #   yaml_data <- yaml.load(file_data)
-    #   updateAceEditor(
-    #     session,
-    #     "yamlEditor_diseases",
-    #     value = as.yaml(yaml_data$diseases)
-    #   )
-
-    #   updateAceEditor(
-    #     session,
-    #     "yamlEditor_phenos",
-    #     value = as.yaml(yaml_data$phenotypicFeatures)
-    #   )
-
-    #   updateAceEditor(
-    #     session,
-    #     "yamlEditor_treatments",
-    #     value = as.yaml(yaml_data$treatments)
-    #   )
-
-    #   updateAceEditor(
-    #     session,
-    #     "yamlEditor_procedures",
-    #     value = as.yaml(yaml_data$procedures)
-    #   )
-
-    #   updateAceEditor(
-    #     session,
-    #     "yamlEditor_expos",
-    #     value = as.yaml(yaml_data$exposures)
-    #   )
-    # })
-
-    # editors <- c(
-    #   "yamlEditor_diseases",
-    #   "yamlEditor_phenos",
-    #   "yamlEditor_treatments",
-    #   "yamlEditor_procedures",
-    #   "yamlEditor_expos"
-    # )
-
-    # TODO
-    # add to rv_sim a yaml is valid flag
-    # set it to false if one of the yaml is not valid
-    # and display an error message
-    # lapply(editors, function(editor) {
-    #   observeEvent(input$editor, {
-    #     result <- validateYAML(input$editor)
-    #     output$errorOutput <- renderText(result)
-    #   })
-    # })
-    
     observeEvent(input$getExampleCohorts, {
       print("observeEvent(input$getExampleCohorts")
       loader_inline$show()
@@ -284,10 +192,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
       loader_inline$hide()
       removeModal()
     })
-
-    # observeEvent(input$inputs, {
-    #   rv_sim$dtInputs <- input$inputs
-    # })
 
     observeEvent(input$retrieveExampleCohorts, {
       print("observeEvent(input$retrieveExampleCohorts")
@@ -311,8 +215,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
             text = "root"
           )
         )
-      }
-      else {
+      } else {
         session$sendCustomMessage(
           type = "triggerWaitForElement",
           message = list(
@@ -322,103 +225,28 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
         )
       }
 
-      output$retrievalId <- renderText(paste0("RUN ID: ",retrievalId))
-      
-      # selectedOutputFormats <- input$checkboxes
-
-      
-      # create the external ontology setting string
-
-      # maybe better get it from a config file
-      # flags <- c(
-      #   "diseases", 
-      #   "exposures", 
-      #   "phenotypicFeatures", 
-      #   "procedures", 
-      #   "treatments"
-      # )
-
-      # external_ontologies_settings <- unlist(
-      #   lapply(
-      #     flags, 
-      #     function(flag) 
-      #     c(
-      #       paste0("-", flag), 
-      #       paste0("-max-", flag, "-pool")
-      #     )
-      #   )
-      # )
-
-      # indices <- seq(1, length(external_ontologies_settings))
-
-      # Loop through the settings and add them
-      # ext_onts_settings_mapping <- list()
-      # ext_onts_settings_string <- ""
-      # for (i in seq(1, length(indices), by = 2)) {
-      #   ontology <- external_ontologies_settings[i]
-      #   max_pool <- external_ontologies_settings[i + 1]
-
-      #   ontology_count <- simSettings[indices[i]]
-      #   max_pool_size <- simSettings[indices[i + 1]]
-
-      #   ext_onts_settings_string <- paste0(
-      #     ext_onts_settings_string, ontology, " ", ontology_count, " ",
-      #     max_pool, " ", max_pool_size, " ")
-
-      #   ext_onts_settings_mapping[[ontology]] <- ontology_count
-      #   ext_onts_settings_mapping[[max_pool]] <- max_pool_size
-      # }
-
-      # number_of_individuals <- simSettings[11]
+      output$retrievalId <- renderText(paste0("RUN ID: ", retrievalId))
 
       rv_input_examples$inputExamples <- get_input_examples(
         retrievalId,
         input$arraySizeInput
       )
-      
-
-      # print("ext_onts_settings_string")
-      # print(ext_onts_settings_string)
-
-      # lapply(selectedOutputFormats, function(option) {
-      #   if (option == "BFF") {
-      #     rv_sim$simResult_bff <- simulate_data(
-      #       "bff", 
-      #       simulationId, 
-      #       ext_onts_settings_string,
-      #       number_of_individuals
-      #     )
-      #   } else if (option == "PXF") {
-      #     rv_sim$simResult_pxf <- simulate_data(
-      #       "pxf", 
-      #       simulationId, 
-      #       ext_onts_settings_string,
-      #       number_of_individuals
-      #     )
-      #   }
-      # })
 
       selectedOutputFormats <- "PXF"
+      number_of_individuals <- input$arraySizeInput
 
-      print("input$arraySizeInput")
-      print(input$arraySizeInput)
       mod_json_viewer_server(
         ns("json_viewer"),
         selectedOutputFormats,
         rv_input_examples$inputExamples,
         rv_input_examples$inputExamples,
-        # rv_sim$simResult_bff,
-        # rv_sim$simResult_pxf,
-        input$arraySizeInput
+        number_of_individuals
       )
 
-      # rv_sim$simulationId <- simulationId
       rv_input_examples$retrievalId <- retrievalId
 
       settings <- list(
-        # outputFormats = tolower(selectedOutputFormats),
-        # externalOntologies = ext_onts_settings_mapping,
-        numberOfIndividuals = input$arraySizeInput
+        numberOfIndividuals = number_of_individuals
       )
 
       # TODO
@@ -426,21 +254,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
       # ids more self explanatory
       # simulationId <- paste0("sim",simulationId)
 
-      # print("insert into db")
-      # print("simulationId")
-      # print(simulationId)
-      # print("settings")
-      # print(settings)
-      # print("toJSON(settings)")
-      # print(toJSON(settings))
-
-      # label <- paste0("Simulation ID: ",simulationId)
       label <- paste0("Retrieval ID: ", retrievalId)
-      # print("label")
-      # print(label)
-
-      # print ("db_driver")
-      # print (db_driver)
 
       #* NOTE
       # JSONB is only available in sqlite > 3.45.0
@@ -451,19 +265,19 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
       print(settings_json)
 
       query_string <- "
-        INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+        INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
         VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
       "
 
       # if (db_driver == "SQLite") {
       #   query_string <- "
-      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
       #     VALUES (%s,%s,'%s','%s','%s','%s')
       #   "
       # }
       query <- sprintf(
         query_string,
-        retrievalId, 1,"input_examples",label,settings_json,"success"
+        retrievalId, 1, "input_examples", label, settings_json, "success"
       )
       print("query")
       print(query)
@@ -476,10 +290,9 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
 
 # TODO
 # put this in fct_helpers.R
-generateJsonView <- function(jsonOutput, title, width=12) {
+generateJsonView <- function(jsonOutput, title, width = 12) {
   # TODO
   # figure out how to give the div the heigh 85vh
-
   print("generateJsonView")
 
   column(
@@ -521,7 +334,7 @@ mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeIn
             generateJsonView(pxf_out, "PXF")
           )
         }
-      }) 
+      })
     } else {
       print("The data is too large to be displayed here. ")
       output$json_viewer <- renderUI({

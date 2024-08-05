@@ -352,7 +352,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         timestamp, 1, "conv",label,toJSON(settings),"success"
       )
       dbExecute(db_conn, query)
-      
+
       # rerender the history sidebar
       click("ConvertHistorySidebar-btn_show_history")
 
