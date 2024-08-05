@@ -36,7 +36,6 @@ parseQueryString <- function(s) {
 }
 
 app_server <- function(input, output, session) {
-
   # unsetting the LD_LIBRARY_PATH resolves
   # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
   Sys.unsetenv("LD_LIBRARY_PATH")
@@ -107,6 +106,7 @@ app_server <- function(input, output, session) {
     "input_examples",
     session,
     db_conn,
+    db_driver,
     rv_input_examples
   )
 
@@ -149,7 +149,8 @@ app_server <- function(input, output, session) {
     "SimulateHistorySidebar",
     "ConvertHistorySidebar",
     "PatientHistorySidebar",
-    "CohortHistorySidebar"
+    "CohortHistorySidebar",
+    "InputExamplesRetrievalHistorySidebar"
   )
 
   lapply(historySidebars, function(sidebar) {
@@ -167,7 +168,7 @@ app_server <- function(input, output, session) {
   # cohort mode: coh42553
   # convert mode: conv42554
 
-  if(get_golem_options("runWithDocker") == "True") {
+  if (get_golem_options("runWithDocker") == "True") {
     print("running with docker")
     Sys.setenv(LD_LIBRARY_PATH = paste(
       get_golem_options("LD_LIB_PATH"),
@@ -183,19 +184,76 @@ app_server <- function(input, output, session) {
   phenoRankBin <- get_golem_options("phenoRankBin")
 
   # maybe better to put this in a separate module(?)
-  getPastRunResults <- function(mode,runId) {
+  getPastRunResults <- function(mode, runId) {
     print("inside getPastRunResults")
+    print("mode")
+    print(mode)
 
     # TODO
     # maybe better to put this in the simulation module
     # with a flag
     # if history=True then run below
+
+    if (mode == "input_examples") {
+      print("inside getPastRunResults input_examples")
+      rv_input_examples$retrievalId <- runId
+      output$retrievalId <- renderText(paste0("RETRIEVAL ID: ", runId))
+
+      print("runId")
+      print(runId)
+
+      # query the database
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'input_examples'",
+        runId
+      )
+
+      res <- dbGetQuery(db_conn, query)
+
+      print("res")
+      print(res)
+
+      settings <- fromJSON(res$settings)
+
+      print("settings")
+      print(settings)
+
+      number_of_individuals <- as.numeric(settings$numberOfIndividuals)
+      print("number_of_individuals")
+      print(number_of_individuals)
+
+      inputExamplesOutputFolder <- get_golem_options("inputExamplesOutputFolder")
+      files <- list.files(
+        inputExamplesOutputFolder,
+        pattern = paste0(runId, "*.(bff|pxf).json")
+      )
+
+      print("files")
+      print(files)
+
+      if (length(files) == 0) {
+        print("no files found")
+        return()
+      }
+
+      file_type <- "pxf"
+
+      mod_json_viewer_server(
+        "input_examples-json_viewer",
+        toupper(file_type),
+        rv_input_examples$inputExamples,
+        rv_input_examples$inputExamples,
+        number_of_individuals
+      )
+    }
+
+
     if (mode == "sim") {
       print("inside getPastRunResults sim")
       rv_sim$simulationId <- runId
-      output$simulationId <- renderText(paste0("RUN ID: ",runId))
+      output$simulationId <- renderText(paste0("RUN ID: ", runId))
 
-      # query the database 
+      # query the database
       query <- sprintf(
         "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'sim'",
         runId
@@ -219,7 +277,7 @@ app_server <- function(input, output, session) {
       print(simulationOutputFolder)
       files <- list.files(
         simulationOutputFolder,
-        pattern = paste0(runId,"*.(bff|pxf).json")
+        pattern = paste0(runId, "*.(bff|pxf).json")
       )
       print("files")
       print(files)
@@ -266,7 +324,7 @@ app_server <- function(input, output, session) {
       }
     } else if (mode == "patient") {
       rv_patient$runId <- runId
-      output$phenoBlastRunId <- renderText(paste0("RUN ID: ",runId))
+      output$phenoBlastRunId <- renderText(paste0("RUN ID: ", runId))
 
       outDir <- get_golem_options("patientModeOutputFolder")
       print("outDir")
@@ -333,7 +391,7 @@ app_server <- function(input, output, session) {
       )
     } else if (mode == "cohort") {
       rv_cohort$runId <- runId
-      output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ",runId))
+      output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ", runId))
 
       outDir <- get_golem_options("cohortModeOutputFolder")
       dirs <- list.dirs(outDir)
@@ -397,7 +455,7 @@ app_server <- function(input, output, session) {
       )
     } else if (mode == "conv") {
       rv_conversion$id <- runId
-      output$conversionId <- renderText(paste0("RUN ID: ",runId))
+      output$conversionId <- renderText(paste0("RUN ID: ", runId))
 
       outDir <- paste0(
         get_golem_options("conversionOutputFolder")
@@ -434,7 +492,7 @@ app_server <- function(input, output, session) {
         readLines(
           file.path(
             dir,
-            paste0(runId,"_config.yaml")
+            paste0(runId, "_config.yaml")
           )
         ),
         collapse = "\n"
@@ -459,7 +517,7 @@ app_server <- function(input, output, session) {
     # TODO
     # try to get rid of the lubridate package
     if ("mode" %in% names(query)) {
-      if ( "id" %in% names(query)) {
+      if ("id" %in% names(query)) {
         date_time <- ymd_hms(query[["id"]], quiet = TRUE)
         mode <- query[["mode"]]
         currentId <- NULL
@@ -487,14 +545,13 @@ app_server <- function(input, output, session) {
           updateNavbarPage(session, "nav", query[["mode"]])
           print("after updateNavbarPage")
           print(query[["mode"]])
-          getPastRunResults(query[["mode"]],query[["id"]])
+          getPastRunResults(query[["mode"]], query[["id"]])
         } else {
           # TODO
-          # update the run ID field with information 
+          # update the run ID field with information
           # that the ID is not valid
         }
-      }
-      else {
+      } else {
         updateNavbarPage(
           session, "nav", query[["mode"]]
         )
@@ -511,7 +568,7 @@ app_server <- function(input, output, session) {
     } else if (input$nav == "cohort") {
       id <- rv_cohort$runId
     }
-    #check
+    # check
     runId <- id
     if (is.null(id)) {
       runId <- ""
@@ -557,7 +614,7 @@ app_server <- function(input, output, session) {
       input,
       output,
       session,
-      ht_list=rv_patient$ht,
+      ht_list = rv_patient$ht,
       output_id = "patient_mode-patient_heatmap",
       close_button = FALSE,
       layout = "1|23",
@@ -577,7 +634,7 @@ app_server <- function(input, output, session) {
       input,
       output,
       session,
-      ht_list=rv_cohort$ht,
+      ht_list = rv_cohort$ht,
       output_id = "cohort_mode-cohort_heatmap",
       close_button = FALSE,
       layout = "1|23",

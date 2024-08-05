@@ -108,20 +108,40 @@ get_input_examples <- function(retrievalId, number_of_individuals) {
   inputFolder <- get_golem_options("inputExamplesInputFolder")
   ouputFolder <- get_golem_options("inputExamplesOutputFolder")
 
+  json_files <- list.files(
+    path = inputFolder,
+    pattern = "\\.json$",
+    recursive = TRUE,
+    full.names = TRUE
+  )
+
+  selected_files <- sample(
+    json_files,
+    number_of_individuals
+  )
+
   fn <- paste0(
     ouputFolder,
     retrievalId,
     ".pxf.json"
   )
 
+  # cmd <- paste0(
+  #   "jq -s '.' $(ls -1 ",
+  #   inputFolder,
+  #   "*/*json | sort -R | head -",
+  #   number_of_individuals,
+  #   ") > ",
+  #   fn
+  # )
+
   cmd <- paste0(
-    "jq -s '.' $(ls -1 ",
-    inputFolder,
-    "*/*json | sort -R | head -",
-    number_of_individuals,
-    ") > ",
+    "jq -s '.' ",
+    paste(selected_files, collapse = " "),
+    " > ",
     fn
   )
+
   print(cmd)
 
   script_status <- system(cmd, intern = TRUE)
@@ -131,7 +151,7 @@ get_input_examples <- function(retrievalId, number_of_individuals) {
   return(read_json(fn))
 }
 
-mod_input_examples_page_server <- function(id, session, db_conn, rv_input_examples) {
+mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_input_examples) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
@@ -249,6 +269,9 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
         numberOfIndividuals = number_of_individuals
       )
 
+      print("settings HERE")
+      print(settings)
+
       # TODO
       # it would be good to have the
       # ids more self explanatory
@@ -269,12 +292,14 @@ mod_input_examples_page_server <- function(id, session, db_conn, rv_input_exampl
         VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
       "
 
-      # if (db_driver == "SQLite") {
-      #   query_string <- "
-      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-      #     VALUES (%s,%s,'%s','%s','%s','%s')
-      #   "
-      # }
+      if (db_driver == "SQLite") {
+        print("db_driver SQLite")
+        query_string <- "
+          INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
+          VALUES (%s,%s,'%s','%s','%s','%s')
+        "
+      }
+
       query <- sprintf(
         query_string,
         retrievalId, 1, "input_examples", label, settings_json, "success"

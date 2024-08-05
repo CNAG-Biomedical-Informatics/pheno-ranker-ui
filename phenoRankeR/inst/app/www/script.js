@@ -1,9 +1,5 @@
 console.log("script.js loaded");
 
-// TODO
-// the function is missing a namespace
-// e.g. SimulateHistorySidebar
-
 function changeIcon(id, textboxId, linkId, sidebar) {
   console.log("changeIcon called")
 
