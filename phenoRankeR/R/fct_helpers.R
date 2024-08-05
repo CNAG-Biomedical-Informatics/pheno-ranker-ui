@@ -1,4 +1,4 @@
-#' helpers 
+#' helpers
 #'
 #' @description A fct function
 #'
@@ -13,7 +13,7 @@
 get_file_ext <- function(filepath) {
   ext <- sub(".*\\.", "", filepath)
   if (ext == filepath) {
-    return(NULL)  # Return NULL if there is no file extension
+    return(NULL) # Return NULL if there is no file extension
   }
   return(ext)
 }
@@ -23,13 +23,12 @@ get_file_ext <- function(filepath) {
 #' @noRd
 
 readTxt <- function(
-  path,
-  fileName_suffix = NULL,
-  runId = NULL,
-  sep = "",
-  header = TRUE,
-  row_names = NULL
-) {
+    path,
+    fileName_suffix = NULL,
+    runId = NULL,
+    sep = "",
+    header = TRUE,
+    row_names = NULL) {
   # examples for path
   # data/output/rankedPatients/
   # data/output/rankedCohortMatrixes/
@@ -86,6 +85,34 @@ readTxt <- function(
   return(txtData)
 }
 
+
+generateJsonView <- function(jsonOutput, title, width = 12) {
+  # TODO
+  # figure out how to give the div the heigh 85vh
+  print("generateJsonView")
+
+  column(
+    width,
+    height = "85vh",
+    div(
+      card_header(title),
+      renderReactjson({
+        reactjson(
+          jsonOutput,
+          onEdit = FALSE,
+          onAdd = FALSE,
+          onDelete = FALSE,
+        )
+      }),
+      # reactjsonOutput(
+      #   outputId = outputId,
+      #   height = "85vh"
+      # )
+    )
+  )
+}
+
+
 ### Validators ###
 
 #' Validate YAML input
@@ -119,8 +146,7 @@ validateYAML <- function(yaml_input) {
 #' @noRd
 
 outputDownloadHandler <- function(
-  data_sources, file_names, mode, output_name = "", zip_download = FALSE) {
-  
+    data_sources, file_names, mode, output_name = "", zip_download = FALSE) {
   downloadHandler(
     filename = function() {
       ext <- ".json"
@@ -144,7 +170,6 @@ outputDownloadHandler <- function(
         # Initialize a vector to hold the full filenames with extensions
         full_file_names <- c()
         for (i in seq_along(data_sources)) {
-          
           # check if the file is a yaml file
           fn <- file_names[[i]]
           print("fn")
@@ -158,7 +183,7 @@ outputDownloadHandler <- function(
           new_file_name <- paste0(file_names[i], ext)
           temp_file <- file.path(temp_dir, new_file_name)
           file.copy(
-            normalizePath(data_sources[[i]]), 
+            normalizePath(data_sources[[i]]),
             temp_file
           )
 
@@ -187,11 +212,11 @@ outputDownloadHandler <- function(
 
           #   print("file.path(temp_dir, file_names[i])")
           #   print(file.path(temp_dir, file_names[i]))
-            
+
           #   new_file_name <- paste0(file_names[i], ".json")
           #   temp_file <- file.path(temp_dir, new_file_name)
           #   file.copy(
-          #     normalizePath(data_sources[[i]]), 
+          #     normalizePath(data_sources[[i]]),
           #     temp_file
           #   )
 
@@ -232,27 +257,29 @@ outputDownloadHandler <- function(
 #' Database helper'
 #' @noRd
 
-store_job_in_db <- function(runId,userId, mode,label, settings, db_conn) {
+store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   query <- sprintf(
     "
-      INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+      INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
       VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
     ",
-    runId, userId, mode,label, toJSON(settings), "success"
+    runId, userId, mode, label, toJSON(settings), "success"
   )
-  tryCatch({
-    rows_affected <- dbExecute(db_conn, query)
-    print("Rows affected:")
-    print(rows_affected)
-  }, 
-  error = function(e) {
-    print("Error occurred:")
-    print(e)
-  })
+  tryCatch(
+    {
+      rows_affected <- dbExecute(db_conn, query)
+      print("Rows affected:")
+      print(rows_affected)
+    },
+    error = function(e) {
+      print("Error occurred:")
+      print(e)
+    }
+  )
 }
 
 
-### Listeners for the patient/cohort mode ###  
+### Listeners for the patient/cohort mode ###
 
 #' Observe tab change events
 #' @importFrom shiny observeEvent updateSelectInput
@@ -260,14 +287,13 @@ store_job_in_db <- function(runId,userId, mode,label, settings, db_conn) {
 #' @noRd
 
 observeTabChangeEvent <- function(
-  input,
-  session,
-  panel_id, 
-  condition, 
-  conditionCheckFun, 
-  notificationText, 
-  updateValue) {
-
+    input,
+    session,
+    panel_id,
+    condition,
+    conditionCheckFun,
+    notificationText,
+    updateValue) {
   observeEvent(input[[panel_id]], {
     if (input[[panel_id]] == condition) {
       if (conditionCheckFun()) {
@@ -279,20 +305,18 @@ observeTabChangeEvent <- function(
           session,
           panel_id,
           updateValue
-        ) 
+        )
       }
     }
   })
 }
 
-observeTabChangeToExampleData <- function (
-  input,
-  session,
-  db_conn,
-  panel_id,
-  dropdown_id
-  ) {
-
+observeTabChangeToExampleData <- function(
+    input,
+    session,
+    db_conn,
+    panel_id,
+    dropdown_id) {
   # should not be hardcoded
   user_id <- 1
 
@@ -326,16 +350,14 @@ observeTabChangeToExampleData <- function (
 
 
 observeTabChangeToSimulateData <- function(
-  input,
-  session,
-  db_conn, 
-  panel_id, 
-  dropdown_id
-  ) {
-  
+    input,
+    session,
+    db_conn,
+    panel_id,
+    dropdown_id) {
   # should not be hardcoded
   user_id <- 1
-  
+
   query <- sprintf(
     "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'sim' AND status = 'success' ORDER BY submitted_at DESC",
     user_id
@@ -365,11 +387,11 @@ observeTabChangeToSimulateData <- function(
 }
 
 observeTabChangeToConvertedData <- function(
-  input,
-  session,
-  db_conn,
-  panel_id, 
-  dropdown_id) {
+    input,
+    session,
+    db_conn,
+    panel_id,
+    dropdown_id) {
   # TODO
   # get user id from the database
   user_id <- 1
@@ -379,7 +401,7 @@ observeTabChangeToConvertedData <- function(
     user_id
   )
   res <- dbGetQuery(db_conn, query)
-  choices <- setNames(res$run_id, res$label)  
+  choices <- setNames(res$run_id, res$label)
 
   updateSelectInput(
     session,
@@ -396,7 +418,7 @@ observeTabChangeToConvertedData <- function(
     function() {
       nrow(res) == 0
     },
-  "Please run CSV Conversion first",
+    "Please run CSV Conversion first",
     "Upload"
   )
 }
@@ -420,15 +442,15 @@ create_new_mapping_df <- function() {
 # The function below is not doing what it is supposed to do
 
 observeSimulatedDataChange <- function(
-  session,
-  input,
-  output,
-  db_conn,
-  rv,
-  rv_sim,
-  input_id, 
-  yaml_editor_id, 
-  expected_row_count) {
+    session,
+    input,
+    output,
+    db_conn,
+    rv,
+    rv_sim,
+    input_id,
+    yaml_editor_id,
+    expected_row_count) {
   # possible values:
   # input_id <-
   # "patient_sim_reference",
@@ -436,7 +458,7 @@ observeSimulatedDataChange <- function(
   # "patient_sim_cohort"
 
   observeEvent(input[[input_id]], {
-    if(length(input[[input_id]]) == 0) {
+    if (length(input[[input_id]]) == 0) {
       rv$inputFormat <- NULL
       return()
     }
@@ -476,7 +498,7 @@ observeSimulatedDataChange <- function(
     }
 
     # get the possible radio button choices from the database
-    if (length(input[[input_id]]) == 1){
+    if (length(input[[input_id]]) == 1) {
       query <- sprintf(
         "
           SELECT settings FROM jobs
@@ -487,7 +509,7 @@ observeSimulatedDataChange <- function(
           GROUP BY settings
           HAVING COUNT(*) = %d
         ",
-        input[[input_id]],1,expected_row_count
+        input[[input_id]], 1, expected_row_count
       )
     } else {
       query <- sprintf(
@@ -505,7 +527,7 @@ observeSimulatedDataChange <- function(
     print("query")
     print(query)
 
-    res <- dbGetQuery(db_conn,query)
+    res <- dbGetQuery(db_conn, query)
     print("res")
     print(res)
 
@@ -559,7 +581,7 @@ observeSimulatedDataChange <- function(
     print(input[[input_id]])
 
     # !BUG
-    # switching the target overwrites the whole 
+    # switching the target overwrites the whole
     # mapping_df to both values having the prefix: T
     # e.g.
     # 20230804144608.bff.json:T
@@ -575,7 +597,7 @@ observeSimulatedDataChange <- function(
 
         print("rv_sim$simulationId")
         print(rv_sim$simulationId)
-        
+
         row <- data.frame(
           file_info = file_info,
           original_fn = paste0(
@@ -605,7 +627,7 @@ observeSimulatedDataChange <- function(
 
         print("rv_sim$simulationId")
         print(rv_sim$simulationId[i])
-        
+
         row <- data.frame(
           file_info = file_info,
           original_fn = paste0(
@@ -678,15 +700,15 @@ observeSimulatedDataChange <- function(
     # 2          C2          TRUE
 
     # CHATGPT:
-    # Your output is being duplicated because 
-    # file_info, rv_sim$simulationId, and rv$inputFormat are all vectors. 
-    # This is causing the data.frame function to create a data frame with rows 
+    # Your output is being duplicated because
+    # file_info, rv_sim$simulationId, and rv$inputFormat are all vectors.
+    # This is causing the data.frame function to create a data frame with rows
     # for each element of these vectors for each iteration of the loop.
 
-    # To fix this, you should iterate over the length of one of these vectors 
-    # (e.g., file_info) instead of expected_row_count, 
+    # To fix this, you should iterate over the length of one of these vectors
+    # (e.g., file_info) instead of expected_row_count,
     # and then generate a single row for each iteration
-    
+
     # put this into a general function
     editor_val <- ""
     for (j in 1:nrow(rv$mappingDf)) {
@@ -711,13 +733,13 @@ observeSimulatedDataChange <- function(
 }
 
 observeExampleDataChange <- function(
-  session,
-  input,
-  output,
-  rv,
-  rv_input_examples,
-  input_id,
-  yaml_editor_id) {
+    session,
+    input,
+    output,
+    rv,
+    rv_input_examples,
+    input_id,
+    yaml_editor_id) {
   # possible values:
   # input_id <-
   # "patient_example"
@@ -810,21 +832,20 @@ observeExampleDataChange <- function(
 
 
 observeConvertedDataChange <- function(
-  session,
-  input,
-  output,
-  rv,
-  rv_conversion,
-  input_id,
-  yaml_editor_id,
-  yaml_cfg_editor_id) {
+    session,
+    input,
+    output,
+    rv,
+    rv_conversion,
+    input_id,
+    yaml_editor_id,
+    yaml_cfg_editor_id) {
   # possible values:
   # input_id <-
   # "patient_conv_reference"
 
   print("observeConvertedDataChange")
   observeEvent(input[[input_id]], {
-
     convertedId <- input[[input_id]]
     rv_conversion$id <- convertedId
     print(convertedId)
@@ -841,13 +862,13 @@ observeConvertedDataChange <- function(
     }
 
     file_info <- "Cohort"
-    if(grepl("reference", input_id)) {
+    if (grepl("reference", input_id)) {
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useExampleReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- TRUE
-      
+
       mapping_df <- create_new_mapping_df()
     } else if (grepl("target", input_id)) {
       id_prefix <- "T"
@@ -864,7 +885,7 @@ observeConvertedDataChange <- function(
       id_prefix <- "C"
       mapping_df <- create_new_mapping_df()
     }
-    
+
     convertedDataInputDir <- get_golem_options("conversionOutputFolder")
     print("convertedDataInputDir")
     print(convertedDataInputDir)
@@ -872,13 +893,13 @@ observeConvertedDataChange <- function(
     row <- data.frame(
       file_info = file_info,
       original_fn = paste0(
-        convertedId ,
+        convertedId,
         ".json"
       ),
       new_fn = normalizePath(
         paste0(
           convertedDataInputDir,
-          paste0(convertedId,"/"),
+          paste0(convertedId, "/"),
           convertedId,
           ".json"
         )
@@ -921,7 +942,7 @@ observeConvertedDataChange <- function(
       ),
     )
 
-    # update the extra config 
+    # update the extra config
     updateAceEditor(
       session,
       yaml_cfg_editor_id,

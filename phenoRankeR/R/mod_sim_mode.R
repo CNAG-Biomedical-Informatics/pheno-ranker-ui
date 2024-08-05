@@ -719,36 +719,6 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
   })
 }
 
-
-# TODO
-# put this in fct_helpers.R
-generateJsonView <- function(jsonOutput, title, width = 12) {
-  # TODO
-  # figure out how to give the div the heigh 85vh
-
-  print("generateJsonView")
-
-  column(
-    width,
-    height = "85vh",
-    div(
-      card_header(title),
-      renderReactjson({
-        reactjson(
-          jsonOutput,
-          onEdit = FALSE,
-          onAdd = FALSE,
-          onDelete = FALSE,
-        )
-      }),
-      # reactjsonOutput(
-      #   outputId = outputId,
-      #   height = "85vh"
-      # )
-    )
-  )
-}
-
 mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
   moduleServer(id, function(input, output, session) {
     if (arraySizeInput <= 1000) {
