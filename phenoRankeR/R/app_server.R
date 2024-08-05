@@ -238,6 +238,14 @@ app_server <- function(input, output, session) {
 
       file_type <- "pxf"
 
+      rv_input_examples$inputExamples <- read_json(
+        paste0(
+          inputExamplesOutputFolder,
+          "/",
+          files[1]
+        )
+      )
+
       mod_json_viewer_server(
         "input_examples-json_viewer_input_examples",
         toupper(file_type),
