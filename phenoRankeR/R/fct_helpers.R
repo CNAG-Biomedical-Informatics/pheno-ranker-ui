@@ -750,10 +750,6 @@ observeExampleDataChange <- function(
   observeEvent(input[[input_id]], {
     rv_input_examples$retrievalId <- input[[input_id]]
 
-    print("HERE 2")
-    print("rv_input_examples$retrievalId")
-    print(rv_input_examples$retrievalId)
-
     # if (input[[input_id]] == "") {
     #   rv$inputFormat <- NULL
     #   return()

@@ -1001,9 +1001,7 @@ mod_cohort_mode_server <- function(
 
     observeEvent(input$cohort_input_examples, {
       req(input$cohort_input_examples)
-      print("input$cohort_input_examples")
-      print(input$cohort_input_examples)
-      print("HERE")
+      rv_cohort$inputFormat <- "pxf"
 
       observeExampleDataChange(
         session,

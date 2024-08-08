@@ -444,6 +444,9 @@ mod_patient_mode_server <- function(
       print(input$patientRankerReferenceTabsetPanel)
 
       if (input$patientRankerReferenceTabsetPanel == "Example data") {
+        req(rv_patient$inputFormat)
+        rv_patient$inputFormat <- "pxf"
+
         observeTabChangeToExampleData(
           input,
           session,
@@ -479,6 +482,20 @@ mod_patient_mode_server <- function(
       print(input$patientRankerTargetTabsetPanel)
 
       if (input$patientRankerTargetTabsetPanel == "Example data") {
+        req(rv_patient$inputFormat)
+        if (rv_patient$inputFormat == "bff") {
+          showNotification(
+            "Example data is only available for PXF format",
+            type = "error"
+          )
+          updateTabsetPanel(
+            session,
+            "patientRankerTargetTabsetPanel",
+            "Simulated data"
+          )
+          return()
+        }
+
         observeTabChangeToExampleData(
           input,
           session,
@@ -933,6 +950,9 @@ mod_patient_mode_server <- function(
       }
       inputTargetFilePath <- paths["target_file_path"]
 
+      print("HERE - inputTargetFilePath")
+      print(inputTargetFilePath)
+
       # TODO
       # put it in a extra files called errorHandlers.R
       if (is.null(inputReferenceFilePath[[1]]) || is.null(inputTargetFilePath[[1]])) {
@@ -1371,6 +1391,7 @@ mod_patient_mode_server <- function(
 
       print("observeEvent input$simulatedRefsInputFormatRadio")
       rv_patient$inputFormat <- input$simulatedRefsInputFormatRadio
+      print(rv_patient$inputFormat)
 
       # simulatedData_input_dir <- "./data/output/simulatedData/"
       simulatedData_input_dir <- get_golem_options("simulationOutputFolder")

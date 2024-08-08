@@ -311,9 +311,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
         numberOfIndividuals = number_of_individuals
       )
 
-      print("settings HERE")
-      print(settings)
-
       # TODO
       # it would be good to have the
       # ids more self explanatory

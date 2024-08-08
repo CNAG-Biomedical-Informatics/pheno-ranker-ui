@@ -17,3 +17,12 @@ Frequently Asked Questions
     If you still have troubles, please [open an issue](https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui/issues/new) and we will try to help you.
 
     ##### last change 2023-04-12 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)
+
+## Usage of the Pheno-Ranker-UI playground
+
+??? faq "How long do you store uploaded files or the analyses results?"
+
+    The storage time is depending on our resources and the current usage of the playground.
+    Our current history is set to 3 months. After this time, the uploaded files and results will be deleted.
+
+    ##### last change 2024-08-08 by Ivo Leist [:fontawesome-brands-github:](https://github.com/ivoleist)
