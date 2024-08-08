@@ -72,6 +72,7 @@ app_server <- function(input, output, session) {
     id = NULL,
     mdsPlot = NULL,
     useExampleReference = FALSE,
+    useExampleTarget = FALSE,
     useSimulatedReference = FALSE,
     useSimulatedTarget = FALSE,
     useConvertedReference = FALSE,

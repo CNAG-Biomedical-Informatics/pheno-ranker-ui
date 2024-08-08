@@ -957,7 +957,7 @@ mod_patient_mode_server <- function(
       # put it in a extra files called errorHandlers.R
       if (is.null(inputReferenceFilePath[[1]]) || is.null(inputTargetFilePath[[1]])) {
         showNotification(
-          "Please upload or select a simulated reference and target file!",
+          "Please upload or select a example/simulated reference and target file!",
           type = "error"
         )
         return()
