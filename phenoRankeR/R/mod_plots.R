@@ -9,10 +9,9 @@
 #' @importFrom shiny NS need validate
 #' @importFrom plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom ggplot2 ggplot aes geom_point labs theme element_text scale_color_discrete
-#' @importFrom ggrepel geom_text_repel
 #' @importFrom stats cmdscale
 
-mod_plot_mds_ui <- function(id){
+mod_plot_mds_ui <- function(id) {
   ns <- NS(id)
   card_body(
     plotlyOutput(
@@ -22,8 +21,7 @@ mod_plot_mds_ui <- function(id){
   )
 }
 
-renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
-
+renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
   if (mode == "patient") {
     filePath <- paste0(
       get_golem_options("patientModeOutputFolder"),
@@ -33,7 +31,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       ".txt"
     )
 
-    if(!file.exists(filePath)) {
+    if (!file.exists(filePath)) {
       print("file does not exist")
       return()
     }
@@ -47,12 +45,12 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     )
 
     print("try to draw patient MDS scatter plot")
-    #d <- dist(merged_data)
+    # d <- dist(merged_data)
 
     # TODO
-    # !BUG cmdscale runs into 
+    # !BUG cmdscale runs into
     # Error in cmdscale: 'k' must be in {1, 2, ..  n - 1}
-    # when running it with converted patient data (the example data from pheno-ranker) 
+    # when running it with converted patient data (the example data from pheno-ranker)
 
     # TODO
     # !BUG cmdscale runs into
@@ -69,13 +67,13 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     y <- fit$points[, 2]
 
     df <- data.frame(
-      x, y, 
+      x, y,
       label = row.names(merged_data)
     )
     df$prefix <- substr(df$label, 1, regexpr("_", df$label) - 1)
     # BUG when the from the docker container created files are used
     # the prefix is not correctly extracted
-    
+
     # in the newest version of phenoRanker
     # the prefix no longer contains the underscore
     # need to mannually add it
@@ -99,34 +97,34 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
     rv$mdsPlot <- ggplot(
       df_merged,
       aes(
-        x, y, 
-        color = .data[["original_fn"]], 
+        x, y,
+        color = .data[["original_fn"]],
         label = label
       )
     ) +
-    geom_point() +
-    geom_text_repel(
-      size = 5,
-      box.padding = 0.2,
-      max.overlaps = 10
-    ) +
-    labs(
-      title = "Multidimensional Scaling Results",
-      x = "Hamming Distance MDS Coordinate 1",
-      y = "Hamming Distance MDS Coordinate 2"
-    ) +
-    theme(
-      plot.title = element_text(
-        size = 30, 
-        face = "bold", 
-        hjust = 0.5
-      ),
-      axis.title = element_text(size = 25),
-      axis.text = element_text(size = 15)
-    ) +
-    scale_color_discrete(
-      name = "Cohort"
-    )
+      geom_point() +
+      # geom_text_repel(
+      #   size = 5,
+      #   box.padding = 0.2,
+      #   max.overlaps = 10
+      # ) +
+      labs(
+        title = "Multidimensional Scaling Results",
+        x = "Hamming Distance MDS Coordinate 1",
+        y = "Hamming Distance MDS Coordinate 2"
+      ) +
+      theme(
+        plot.title = element_text(
+          size = 30,
+          face = "bold",
+          hjust = 0.5
+        ),
+        axis.title = element_text(size = 25),
+        axis.text = element_text(size = 15)
+      ) +
+      scale_color_discrete(
+        name = "Cohort"
+      )
   } else {
     # copy cohort plotting here
     filePath <- paste0(
@@ -138,7 +136,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       ".txt"
     )
 
-    if(!file.exists(filePath)) {
+    if (!file.exists(filePath)) {
       print("file does not exist")
       return()
     }
@@ -150,7 +148,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
         row_names = 1
       )
     )
-  
+
     # ---- multi dimensional scaling results ----
     fit <- cmdscale(data, eig = TRUE, k = 2)
 
@@ -187,44 +185,41 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count=NULL) {
       df,
       aes_func,
     ) +
-    geom_point() +
-    geom_text_repel(
-      size = 5,
-      box.padding = 0.2,
-      max.overlaps = 10
-    ) +
-    labs(
-      title = "Multidimensional Scaling Results",
-      x = "Hamming Distance MDS Coordinate 1",
-      y = "Hamming Distance MDS Coordinate 2"
-    ) +
-    theme(
-      plot.title = element_text(size = 30, face = "bold", hjust = 0.5),
-      axis.title = element_text(size = 25),
-      axis.text = element_text(size = 15)
-    ) +
-    scale_color_discrete(
-      name = "Cohort"
-    )
+      geom_point() +
+      geom_text_repel(
+        size = 5,
+        box.padding = 0.2,
+        max.overlaps = 10
+      ) +
+      labs(
+        title = "Multidimensional Scaling Results",
+        x = "Hamming Distance MDS Coordinate 1",
+        y = "Hamming Distance MDS Coordinate 2"
+      ) +
+      theme(
+        plot.title = element_text(size = 30, face = "bold", hjust = 0.5),
+        axis.title = element_text(size = 25),
+        axis.text = element_text(size = 15)
+      ) +
+      scale_color_discrete(
+        name = "Cohort"
+      )
   }
 }
 
 mod_plot_mds_server <- function(
-  id,
-  runId=NULL, 
-  rv=NULL,
-  mode=NULL,
-  uploaded_files_count=NULL
-  ){
-
-  moduleServer(id, function(input, output, session){  
-    
+    id,
+    runId = NULL,
+    rv = NULL,
+    mode = NULL,
+    uploaded_files_count = NULL) {
+  moduleServer(id, function(input, output, session) {
     if (!is.null(runId)) {
       renderPlots(
-        runId, 
-        rv, 
-        mode, 
-        uploaded_files_count=uploaded_files_count
+        runId,
+        rv,
+        mode,
+        uploaded_files_count = uploaded_files_count
       )
 
       output$plot_mds <- renderPlotly({

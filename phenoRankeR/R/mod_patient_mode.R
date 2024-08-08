@@ -106,7 +106,7 @@ mod_patient_mode_ui <- function(id) {
                           area = "dropdown",
                           selectInput(
                             ns("patient_sim_reference"),
-                            "Select a simulated cohort",
+                            "Select a/multiple simulated cohort(s)",
                             choices = NULL
                           )
                         ),
