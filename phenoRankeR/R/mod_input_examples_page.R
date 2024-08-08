@@ -42,9 +42,39 @@ mod_input_examples_page_ui <- function(id) {
         grid_container(
           layout = c(
             "       1fr           ",
+            "85px   exampleSource ",
+            "85px   sourceInfo     ",
+            "85px   textInput     ",
             "85px   arraySizeInput"
           ),
           gap_size = "0px",
+          grid_place(
+            area = "exampleSource",
+            selectInput(
+              ns("exampleSource"),
+              "Example source:",
+              c("phenopacket-store")
+            )
+          ),
+          grid_place(
+            area = "sourceInfo",
+            div(
+              p("Info about the selected example source:"),
+              a("
+                Phenopacket store",
+                href = "https://monarch-initiative.github.io/phenopacket-store/collections",
+                target = "_blank"
+              )
+            )
+          ),
+          grid_place(
+            area = "textInput",
+            textInput(
+              ns("textInput"),
+              "Cohort names of interest:",
+              value = "CWC27,DHCR24"
+            )
+          ),
           grid_place(
             area = "arraySizeInput",
             numericInput(
@@ -99,7 +129,7 @@ mod_input_examples_page_ui <- function(id) {
   )
 }
 
-get_input_examples <- function(retrievalId, number_of_individuals) {
+get_input_examples <- function(retrievalId, number_of_individuals, cohort_names) {
   inputFolder <- get_golem_options("inputExamplesInputFolder")
   ouputFolder <- get_golem_options("inputExamplesOutputFolder")
 
@@ -109,6 +139,23 @@ get_input_examples <- function(retrievalId, number_of_individuals) {
     recursive = TRUE,
     full.names = TRUE
   )
+
+  if (length(cohort_names) > 0) {
+    cohort_names <- strsplit(cohort_names, ",")[[1]]
+    json_files <- json_files[grep(paste(cohort_names, collapse = "|"), json_files)]
+    print("json_files")
+    print(json_files)
+  }
+
+  files_count <- length(json_files)
+
+  if (files_count == 0) {
+    return()
+  }
+
+  if (files_count < number_of_individuals) {
+    number_of_individuals <- files_count
+  }
 
   selected_files <- sample(
     json_files,
@@ -199,7 +246,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
           footer = NULL
         )
       )
-      js$getInputs()
     })
 
     observeEvent(input$elementFound, {
@@ -244,7 +290,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
 
       rv_input_examples$inputExamples <- get_input_examples(
         retrievalId,
-        input$arraySizeInput
+        input$arraySizeInput,
+        input$textInput
       )
 
       selectedOutputFormats <- "PXF"
