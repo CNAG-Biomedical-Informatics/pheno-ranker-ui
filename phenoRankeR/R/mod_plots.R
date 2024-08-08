@@ -186,11 +186,11 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
       aes_func,
     ) +
       geom_point() +
-      geom_text_repel(
-        size = 5,
-        box.padding = 0.2,
-        max.overlaps = 10
-      ) +
+      # geom_text_repel(
+      #   size = 5,
+      #   box.padding = 0.2,
+      #   max.overlaps = 10
+      # ) +
       labs(
         title = "Multidimensional Scaling Results",
         x = "Hamming Distance MDS Coordinate 1",

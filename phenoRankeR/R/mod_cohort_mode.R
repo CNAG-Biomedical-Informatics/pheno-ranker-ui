@@ -169,45 +169,23 @@ mod_cohort_mode_ui <- function(id){
                   theme = "github",
                   height = "60px"
                 ),
-                # TODO
-                # below has no server side function yet
                 verbatimTextOutput("configYamlCohortsErrorOutput")
               )
             )
           )
         ),
-        # grid_card(
-        #   area = "weightsUpload",
-        #   card_body(
-        #     fileInput("weightsCohortFile", "Upload a weights yaml file",
-        #       multiple = FALSE,
-        #       accept = c(
-        #         ".yaml"
-        #       )
-        #     ),
-        #     p("or add the weights below:"),
-        #     aceEditor(
-        #       "yamlCohortEditor_weights",
-        #       value = weights_defaults,
-        #       mode = "yaml",
-        #       theme = "github",
-        #       height = "60px"
-        #     ),
-        #     verbatimTextOutput("weightsYamlCohortsErrorOutput")
-        #   )
-        # ),
         grid_place(
           area = "variables",
           mod_dnd_ui(ns("cohort_incl_excl_list"))
         )
-      ) 
-    ),  
+      )
+    ),
     grid_card(
       area = "tabbedView",
       card_header("Cohort Comparisons"),
       full_screen = TRUE,
       verbatimTextOutput(ns("phenoBlastCohortRunId")),
-      
+
       tabsetPanel(
         selected = "Hamming Distances Heatmap",
         tabPanel(
@@ -243,13 +221,13 @@ weights_defaults <- paste(
 )
 
 create_settings_mapping_cohort_mode <- function(
-  ns,
-  weights_file_path,
-  extra_config_file_path,
-  input,
-  outDir,
-  timestamp,
-  rv_cohort) {
+ns,
+weights_file_path,
+extra_config_file_path,
+input,
+outDir,
+timestamp,
+rv_cohort) {
 
   settings <- list()
 
@@ -1003,6 +981,9 @@ mod_cohort_mode_server <- function(
       req(input$cohort_input_examples)
       rv_cohort$inputFormat <- "pxf"
 
+      expectedRowCount <- length(input$cohort_input_examples)
+      print("expectedRowCount")
+
       observeExampleDataChange(
         session,
         input,
@@ -1010,7 +991,8 @@ mod_cohort_mode_server <- function(
         rv_cohort,
         rv_input_examples,
         "cohort_input_examples",
-        "yamlCohortEditorIdPrefixes"
+        "yamlCohortEditorIdPrefixes",
+        expectedRowCount
       )
     })
 
