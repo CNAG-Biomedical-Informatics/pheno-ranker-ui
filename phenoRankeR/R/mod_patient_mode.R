@@ -1310,6 +1310,7 @@ mod_patient_mode_server <- function(
 
     observeEvent(input$patient_example_reference, {
       req(input$patient_example_reference)
+      expectedRowCount <- length(input$patient_example_reference)
       observeExampleDataChange(
         session,
         input,
@@ -1317,12 +1318,14 @@ mod_patient_mode_server <- function(
         rv_patient,
         rv_input_examples,
         "patient_example_reference",
-        "yamlEditorIdPrefixes"
+        "yamlEditorIdPrefixes",
+        expectedRowCount
       )
     })
 
     observeEvent(input$patient_example_target, {
       req(input$patient_example_target)
+      expectedRowCount <- length(input$patient_sim_target)
       observeExampleDataChange(
         session,
         input,
@@ -1330,7 +1333,8 @@ mod_patient_mode_server <- function(
         rv_patient,
         rv_input_examples,
         "patient_example_target",
-        "yamlEditorIdPrefixes"
+        "yamlEditorIdPrefixes",
+        expectedRowCount
       )
     })
 

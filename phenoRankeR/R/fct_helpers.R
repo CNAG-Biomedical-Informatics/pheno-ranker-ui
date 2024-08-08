@@ -593,68 +593,104 @@ observeSimulatedDataChange <- function(
     # simulatedData_input_dir <- "./data/output/simulatedData/"
     simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
 
+    rows <- lapply(1:expected_row_count, function(i) {
+      id_prefix_new <- paste0(id_prefix, i)
+
+      # Use ifelse to handle the different cases for simulationId
+      simulationId <- ifelse(expected_row_count == 1, rv_sim$simulationId, rv_sim$simulationId[i])
+
+      print("expected_row_count")
+      print(expected_row_count)
+
+      print("rv_sim$simulationId")
+      print(simulationId)
+
+      row <- data.frame(
+        file_info = file_info,
+        original_fn = paste0(
+          simulationId,
+          ".",
+          rv$inputFormat,
+          ".json"
+        ),
+        new_fn = normalizePath(
+          paste0(
+            simulatedData_input_dir,
+            simulationId,
+            ".",
+            rv$inputFormat,
+            ".json"
+          )
+        ),
+        id_prefixes = id_prefix_new,
+        simulatedData = TRUE,
+        stringsAsFactors = FALSE
+      )
+      return(row)
+    })
+
     # Create a list of rows using lapply
-    if (expected_row_count == 1) {
-      rows <- lapply(1:expected_row_count, function(i) {
-        id_prefix_new <- paste0(id_prefix, i)
+    # if (expected_row_count == 1) {
+    #   rows <- lapply(1:expected_row_count, function(i) {
+    #     id_prefix_new <- paste0(id_prefix, i)
 
-        print("rv_sim$simulationId")
-        print(rv_sim$simulationId)
+    #     print("rv_sim$simulationId")
+    #     print(rv_sim$simulationId)
 
-        row <- data.frame(
-          file_info = file_info,
-          original_fn = paste0(
-            rv_sim$simulationId,
-            ".",
-            rv$inputFormat,
-            ".json"
-          ),
-          new_fn = normalizePath(
-            paste0(
-              simulatedData_input_dir,
-              rv_sim$simulationId,
-              ".",
-              rv$inputFormat,
-              ".json"
-            )
-          ),
-          id_prefixes = id_prefix_new,
-          simulatedData = TRUE,
-          stringsAsFactors = FALSE
-        )
-        return(row)
-      })
-    } else {
-      rows <- lapply(1:expected_row_count, function(i) {
-        id_prefix_new <- paste0(id_prefix, i)
+    #     row <- data.frame(
+    #       file_info = file_info,
+    #       original_fn = paste0(
+    #         rv_sim$simulationId,
+    #         ".",
+    #         rv$inputFormat,
+    #         ".json"
+    #       ),
+    #       new_fn = normalizePath(
+    #         paste0(
+    #           simulatedData_input_dir,
+    #           rv_sim$simulationId,
+    #           ".",
+    #           rv$inputFormat,
+    #           ".json"
+    #         )
+    #       ),
+    #       id_prefixes = id_prefix_new,
+    #       simulatedData = TRUE,
+    #       stringsAsFactors = FALSE
+    #     )
+    #     return(row)
+    #   })
+    # } else {
+    #   rows <- lapply(1:expected_row_count, function(i) {
+    #     id_prefix_new <- paste0(id_prefix, i)
 
-        print("rv_sim$simulationId")
-        print(rv_sim$simulationId[i])
+    #     print("rv_sim$simulationId")
+    #     print(rv_sim$simulationId[i])
 
-        row <- data.frame(
-          file_info = file_info,
-          original_fn = paste0(
-            rv_sim$simulationId[i],
-            ".",
-            rv$inputFormat,
-            ".json"
-          ),
-          new_fn = normalizePath(
-            paste0(
-              simulatedData_input_dir,
-              rv_sim$simulationId[i],
-              ".",
-              rv$inputFormat,
-              ".json"
-            )
-          ),
-          id_prefixes = id_prefix_new,
-          simulatedData = TRUE,
-          stringsAsFactors = FALSE
-        )
-        return(row)
-      })
-    }
+    #     row <- data.frame(
+    #       file_info = file_info,
+    #       original_fn = paste0(
+    #         rv_sim$simulationId[i],
+    #         ".",
+    #         rv$inputFormat,
+    #         ".json"
+    #       ),
+    #       new_fn = normalizePath(
+    #         paste0(
+    #           simulatedData_input_dir,
+    #           rv_sim$simulationId[i],
+    #           ".",
+    #           rv$inputFormat,
+    #           ".json"
+    #         )
+    #       ),
+    #       id_prefixes = id_prefix_new,
+    #       simulatedData = TRUE,
+    #       stringsAsFactors = FALSE
+    #     )
+    #     return(row)
+    #   })
+    # }
 
     # Bind rows into data frame
     rows_df <- do.call(rbind, rows)
@@ -742,7 +778,8 @@ observeExampleDataChange <- function(
     rv,
     rv_input_examples,
     input_id,
-    yaml_editor_id) {
+    yaml_editor_id,
+    expected_row_count) {
   # possible values:
   # input_id <-
   # "patient_example"
@@ -787,28 +824,70 @@ observeExampleDataChange <- function(
 
     exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
 
-    row <- data.frame(
-      file_info = file_info,
-      original_fn = paste0(
-        input[[input_id]],
-        ".pxf.json"
-      ),
-      new_fn = normalizePath(
-        paste0(
-          exampleDataInputDir,
-          input[[input_id]],
-          ".pxf.json"
-        )
-      ),
-      id_prefixes = id_prefix,
-      simulatedData = FALSE,
-      stringsAsFactors = FALSE
-    )
+    rows <- lapply(1:expected_row_count, function(i) {
+      id_prefix_new <- paste0(id_prefix, i)
 
-    print("row")
-    print(row)
+      # Use ifelse to handle the different cases for simulationId
+      retrievalId <- ifelse(expected_row_count == 1, rv_input_examples$retrievalId, rv_input_examples$retrievalId[i])
 
-    rv$mappingDf <- rbind(mapping_df, row)
+      print("expected_row_count")
+      print(expected_row_count)
+
+      print(" rv_input_examples$retrievalId ")
+      print(retrievalId)
+
+      row <- data.frame(
+        file_info = file_info,
+        original_fn = paste0(
+          retrievalId,
+          ".",
+          rv$inputFormat,
+          ".json"
+        ),
+        new_fn = normalizePath(
+          paste0(
+            exampleDataInputDir,
+            retrievalId,
+            ".",
+            rv$inputFormat,
+            ".json"
+          )
+        ),
+        id_prefixes = id_prefix_new,
+        simulatedData = TRUE,
+        stringsAsFactors = FALSE
+      )
+      return(row)
+    })
+
+    rows_df <- do.call(rbind, rows)
+    print("rows_df")
+    print(rows_df)
+    rv$mappingDf <- rbind(mapping_df, rows_df)
+
+
+    # row <- data.frame(
+    #   file_info = file_info,
+    #   original_fn = paste0(
+    #     input[[input_id]],
+    #     ".pxf.json"
+    #   ),
+    #   new_fn = normalizePath(
+    #     paste0(
+    #       exampleDataInputDir,
+    #       input[[input_id]],
+    #       ".pxf.json"
+    #     )
+    #   ),
+    #   id_prefixes = id_prefix,
+    #   simulatedData = FALSE,
+    #   stringsAsFactors = FALSE
+    # )
+
+    # print("row")
+    # print(row)
+
+    # rv$mappingDf <- rbind(mapping_df, row)
 
     # put this into a general function
     editor_val <- ""
