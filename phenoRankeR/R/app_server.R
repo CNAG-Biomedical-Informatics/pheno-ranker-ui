@@ -54,7 +54,7 @@ app_server <- function(input, output, session) {
     dtInputs = NULL,
     simResult_bff = NULL,
     simResult_pxf = NULL,
-    simulationId = NULL
+    simulationId = NULL #note this could be also multiple ids
   )
 
   rv_conversion <- reactiveValues(

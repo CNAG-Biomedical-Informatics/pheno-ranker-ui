@@ -85,14 +85,11 @@ mod_patient_mode_ui <- function(id) {
                           area = "dropdown",
                           selectInput(
                             ns("patient_example_reference"),
-                            "Select an example cohort",
-                            choices = NULL
+                            "Select example cohort(s)",
+                            choices = NULL,
+                            multiple = TRUE
                           )
                         )
-                        # grid_place(
-                        #   area = "radio",
-                        #   uiOutput(ns("simulatedRefsInputFormats"))
-                        # )
                       )
                     ),
                     tabPanel(
@@ -106,8 +103,9 @@ mod_patient_mode_ui <- function(id) {
                           area = "dropdown",
                           selectInput(
                             ns("patient_sim_reference"),
-                            "Select a/multiple simulated cohort(s)",
-                            choices = NULL
+                            "Select simulated cohort(s)",
+                            choices = NULL,
+                            multiple = TRUE
                           )
                         ),
                         grid_place(
@@ -611,7 +609,7 @@ mod_patient_mode_server <- function(
         str_references <- paste0(
           str_references,
           uploaded_file$name,
-          ":C",
+          ":R",
           i,
           "\n"
         )
@@ -640,7 +638,7 @@ mod_patient_mode_server <- function(
         row <- data.frame(
           original_fn = uploaded_file$name,
           new_fn = normalizePath(paste0(rank_input_dir, "/", fn)),
-          id_prefixes = paste0("C", i),
+          id_prefixes = paste0("R", i),
           simulatedData = FALSE,
           file_info = "Reference",
           stringsAsFactors = FALSE
@@ -937,21 +935,12 @@ mod_patient_mode_server <- function(
         "patientMode"
       )
 
-      print("paths")
-      print(paths)
-
-      print("names(paths)")
-      print(names(paths))
-
       if ("reference_file_path1" %in% names(paths)) {
         inputReferenceFilePath <- paths["reference_file_path1"]
       } else {
         inputReferenceFilePath <- paths["reference_file_path"]
       }
       inputTargetFilePath <- paths["target_file_path"]
-
-      print("HERE - inputTargetFilePath")
-      print(inputTargetFilePath)
 
       # TODO
       # put it in a extra files called errorHandlers.R
@@ -1395,6 +1384,10 @@ mod_patient_mode_server <- function(
 
       # simulatedData_input_dir <- "./data/output/simulatedData/"
       simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+
+      print("rv_sim$simulationId")
+      print(rv_sim$simulationId)
+
       row <- data.frame(
         file_info = "Reference",
         original_fn = paste0(
@@ -1412,7 +1405,7 @@ mod_patient_mode_server <- function(
             ".json"
           )
         ),
-        id_prefixes = "R",
+        id_prefixes = rv_patient$mappingDf$id_prefixes,
         simulatedData = TRUE,
         stringsAsFactors = FALSE
       )
