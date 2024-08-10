@@ -854,7 +854,7 @@ observeExampleDataChange <- function(
           )
         ),
         id_prefixes = id_prefix_new,
-        simulatedData = TRUE,
+        simulatedData = FALSE,
         stringsAsFactors = FALSE
       )
       return(row)
@@ -865,31 +865,6 @@ observeExampleDataChange <- function(
     print(rows_df)
     rv$mappingDf <- rbind(mapping_df, rows_df)
 
-
-    # row <- data.frame(
-    #   file_info = file_info,
-    #   original_fn = paste0(
-    #     input[[input_id]],
-    #     ".pxf.json"
-    #   ),
-    #   new_fn = normalizePath(
-    #     paste0(
-    #       exampleDataInputDir,
-    #       input[[input_id]],
-    #       ".pxf.json"
-    #     )
-    #   ),
-    #   id_prefixes = id_prefix,
-    #   simulatedData = FALSE,
-    #   stringsAsFactors = FALSE
-    # )
-
-    # print("row")
-    # print(row)
-
-    # rv$mappingDf <- rbind(mapping_df, row)
-
-    # put this into a general function
     editor_val <- ""
     for (i in 1:nrow(rv$mappingDf)) {
       editor_val <- paste0(
@@ -917,7 +892,8 @@ observeConvertedDataChange <- function(
     rv_conversion,
     input_id,
     yaml_editor_id,
-    yaml_cfg_editor_id) {
+    yaml_cfg_editor_id,
+    expected_row_count) {
   # possible values:
   # input_id <-
   # "patient_conv_reference"
@@ -926,12 +902,13 @@ observeConvertedDataChange <- function(
   observeEvent(input[[input_id]], {
     convertedId <- input[[input_id]]
     rv_conversion$id <- convertedId
+    print("convertedId")
     print(convertedId)
 
-    if (convertedId == "") {
-      rv$inputFormat <- NULL
-      return()
-    }
+    # if (convertedId == "") {
+    #   rv$inputFormat <- NULL
+    #   return()
+    # }
 
     if (is.null(rv$mappingDf)) {
       mapping_df <- create_new_mapping_df()
@@ -968,28 +945,71 @@ observeConvertedDataChange <- function(
     print("convertedDataInputDir")
     print(convertedDataInputDir)
 
-    row <- data.frame(
-      file_info = file_info,
-      original_fn = paste0(
-        convertedId,
-        ".json"
-      ),
-      new_fn = normalizePath(
-        paste0(
-          convertedDataInputDir,
-          paste0(convertedId, "/"),
+    rows <- lapply(1:expected_row_count, function(i) {
+      id_prefix_new <- paste0(id_prefix, i)
+
+      # Use ifelse to handle the different cases for simulationId
+      convertedId <- ifelse(expected_row_count == 1, rv_conversion$id, rv_conversion$id[i])
+
+      print("expected_row_count")
+      print(expected_row_count)
+
+      print("rv_input_examples$convertedId")
+      print(convertedId)
+
+      row <- data.frame(
+        file_info = file_info,
+        original_fn = paste0(
           convertedId,
           ".json"
-        )
-      ),
-      id_prefixes = id_prefix,
-      simulatedData = FALSE,
-      stringsAsFactors = FALSE
-    )
-    rv$mappingDf <- rbind(mapping_df, row)
+          # rv$inputFormat,
+          # ".json"
+        ),
+        new_fn = normalizePath(
+          paste0(
+            convertedDataInputDir,
+            convertedId,
+            "/",
+            convertedId,
+            ".json"
+            # rv$inputFormat,
+            # ".json"
+          )
+        ),
+        id_prefixes = id_prefix_new,
+        simulatedData = FALSE,
+        stringsAsFactors = FALSE
+      )
+      return(row)
+    })
 
-    print("rv$mappingDf")
-    print(rbind(mapping_df, row))
+    # row <- data.frame(
+    #   file_info = file_info,
+    #   original_fn = paste0(
+    #     convertedId,
+    #     ".json"
+    #   ),
+    #   new_fn = normalizePath(
+    #     paste0(
+    #       convertedDataInputDir,
+    #       paste0(convertedId, "/"),
+    #       convertedId,
+    #       ".json"
+    #     )
+    #   ),
+    #   id_prefixes = id_prefix,
+    #   simulatedData = FALSE,
+    #   stringsAsFactors = FALSE
+    # )
+
+    rows_df <- do.call(rbind, rows)
+    print("rows_df")
+    print(rows_df)
+
+    rv$mappingDf <- rbind(mapping_df, rows_df)
+
+    # print("rv$mappingDf")
+    # print(rbind(mapping_df, row))
 
     # put this into a general function
     editor_val <- ""
@@ -1008,17 +1028,26 @@ observeConvertedDataChange <- function(
       value = editor_val
     )
 
-    # read the config file
-    yamlCfg <- readLines(
+    print("before yamlCfg")
+
+    yaml_path <- normalizePath(
       paste0(
-        get_golem_options("conversionOutputFolder"),
-        # "./data/output/convertedData/",
+        convertedDataInputDir,
         convertedId,
         "/",
         convertedId,
         "_config.yaml"
-      ),
+      )
     )
+
+    print("yaml_path")
+    print(yaml_path)
+
+    # read the config file
+    yamlCfg <- readLines(yaml_path[1])
+
+    print("yamlCfg")
+    print(yamlCfg)
 
     # update the extra config
     updateAceEditor(

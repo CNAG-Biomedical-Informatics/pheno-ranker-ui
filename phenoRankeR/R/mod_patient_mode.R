@@ -120,7 +120,8 @@ mod_patient_mode_ui <- function(id) {
                         selectInput(
                           ns("patient_conv_reference"),
                           "Select a converted cohort",
-                          choices = NULL
+                          choices = NULL,
+                          multiple = TRUE
                         )
                       )
                     )
@@ -1281,6 +1282,9 @@ mod_patient_mode_server <- function(
     # put these two in a function
     observeEvent(input$patient_conv_reference, {
       req(input$patient_conv_reference)
+
+      expectedRowCount <- length(input$patient_conv_reference)
+
       observeConvertedDataChange(
         session,
         input,
@@ -1289,13 +1293,15 @@ mod_patient_mode_server <- function(
         rv_conversion,
         "patient_conv_reference",
         "yamlEditorIdPrefixes",
-        "yamlEditor_config"
+        "yamlEditor_config",
+        expectedRowCount
       )
     })
 
     # merge it with the one above
     observeEvent(input$patient_conv_target, {
       req(input$patient_conv_target)
+      expectedRowCount <- length(input$patient_conv_target)
       observeConvertedDataChange(
         session,
         input,
@@ -1304,7 +1310,8 @@ mod_patient_mode_server <- function(
         rv_conversion,
         "patient_conv_target",
         "yamlEditorIdPrefixes",
-        "yamlEditor_config"
+        "yamlEditor_config",
+        expectedRowCount
       )
     })
 
