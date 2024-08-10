@@ -94,6 +94,13 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
     # print("df_merged")
     # print(df_merged)
 
+    # TODO
+
+    # renderPlots: no visible binding for global variable ‘.data’
+    #  renderPlots: no visible binding for global variable ‘label’
+    #  Undefined global functions or variables:
+    #  .data label
+
     rv$mdsPlot <- ggplot(
       df_merged,
       aes(
