@@ -107,7 +107,8 @@ mod_cohort_mode_ui <- function(id){
                 card_body(
                   selectInput(
                     ns("cohort_conv"),
-                    "Select a converted cohort",
+                    "Select converted cohort(s)",
+                    multiple = TRUE,
                     choices = NULL
                   )
                 )
@@ -1021,6 +1022,7 @@ mod_cohort_mode_server <- function(
 
     observeEvent(input$cohort_conv, {
       req(input$cohort_conv)
+      expectedRowCount <- length(input$cohort_conv)
       observeConvertedDataChange(
         session,
         input,
@@ -1029,7 +1031,8 @@ mod_cohort_mode_server <- function(
         rv_conversion,
         "cohort_conv",
         "yamlCohortEditorIdPrefixes",
-        "yamlCohortEditor_config"
+        "yamlCohortEditor_config",
+        expectedRowCount
       )
     })
   })
