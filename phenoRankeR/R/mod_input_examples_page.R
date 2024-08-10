@@ -123,7 +123,7 @@ mod_input_examples_page_ui <- function(id) {
       area = "version",
       card_body(
         style = "text-align: right;",
-        p("Version 0.0.0.9016")
+        p("Version 0.0.0.9017")
       )
     )
   )
@@ -167,30 +167,15 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names)
     retrievalId,
     ".pxf.json"
   )
-
-  # cmd <- paste0(
-  #   "jq -s '.' $(ls -1 ",
-  #   inputFolder,
-  #   "*/*json | sort -R | head -",
-  #   number_of_individuals,
-  #   ") > ",
-  #   fn
-  # )
-
-  cmd <- paste0(
-    "jq -s '.' ",
-    paste(selected_files, collapse = " "),
-    " > ",
-    fn
+  
+  json_list <- lapply(selected_files, function(x) fromJSON(x))
+  combined_json <- toJSON(
+    json_list,
+    pretty = TRUE,
+    auto_unbox = TRUE
   )
-
-  print(cmd)
-
-  script_status <- system(cmd, intern = TRUE)
-  if (length(script_status) > 0 && script_status != 0) {
-    stop("bash script execution failed.")
-  }
-  return(read_json(fn))
+  write(combined_json, file = fn)
+  return(combined_json)
 }
 
 mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_input_examples) {

@@ -1,4 +1,4 @@
-library(phenoRankeR)
+# library(phenoRankeR)
 options(shiny.port = 3838, shiny.host = "0.0.0.0")
 
 # A function to parse arguments into a named list

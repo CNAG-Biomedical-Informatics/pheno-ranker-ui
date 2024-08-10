@@ -209,7 +209,7 @@ mod_cohort_mode_ui <- function(id){
       area = "version",
       card_body(
         style = "text-align: right;", 
-        p("Version 0.0.0.9016")
+        p("Version 0.0.0.9017")
       )
     )
   )
@@ -417,7 +417,7 @@ mod_cohort_mode_server <- function(
         print("uploaded_file$datapath")
         print(uploaded_file$datapath)
 
-        file_con <- file(uploaded_file$datapath, "r")   
+        file_con <- file(uploaded_file$datapath, "r")
         print("file_con")
         print(file_con)
         individual_counts <- as.numeric(jq(file_con, "length"))
