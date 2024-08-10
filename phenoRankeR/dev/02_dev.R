@@ -20,15 +20,17 @@ attachment::att_amend_desc()
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module("headerbar",with_test = FALSE)
-golem::add_module("landing_page",with_test = FALSE)
-golem::add_module("about_page",with_test = FALSE)
-golem::add_module("db",with_test = FALSE)
-golem::add_module("history_sidebar",with_test = FALSE)
-golem::add_module("sim_mode",with_test = FALSE)
-golem::add_module("conv_mode",with_test = FALSE)
-golem::add_module("patient_mode",with_test = FALSE)
-golem::add_module("cohort_mode",with_test = FALSE)
+golem::add_module("headerbar", with_test = FALSE)
+golem::add_module("landing_page", with_test = FALSE)
+golem::add_module("about_page", with_test = FALSE)
+golem::add_module("db", with_test = FALSE)
+golem::add_module("history_sidebar", with_test = FALSE)
+golem::add_module("example_input_page", with_test = FALSE)
+golem::add_module("json_viewer", with_test = FALSE)
+golem::add_module("sim_mode", with_test = FALSE)
+golem::add_module("conv_mode", with_test = FALSE)
+golem::add_module("patient_mode", with_test = FALSE)
+golem::add_module("cohort_mode", with_test = FALSE)
 golem::add_module("dnd", with_test = FALSE)
 golem::add_module("tables", with_test = FALSE)
 golem::add_module("plots", with_test = FALSE)
@@ -58,7 +60,7 @@ usethis::use_test("app")
 
 ## Vignette ----
 usethis::use_vignette("phenoRankeR")
-#devtools::build_vignettes()
+# devtools::build_vignettes()
 
 ## Code Coverage----
 ## Set the code coverage service ("codecov" or "coveralls")
@@ -73,35 +75,35 @@ covr::report()
 ## service for your application
 ##
 ## (You'll need GitHub there)
-#usethis::use_github()
+# usethis::use_github()
 
 # GitHub Actions
-#usethis::use_github_action()
+# usethis::use_github_action()
 # Chose one of the three
 # See https://usethis.r-lib.org/reference/use_github_action.html
-#usethis::use_github_action_check_release()
-#usethis::use_github_action_check_standard()
-#usethis::use_github_action_check_full()
+# usethis::use_github_action_check_release()
+# usethis::use_github_action_check_standard()
+# usethis::use_github_action_check_full()
 # Add action for PR
-#usethis::use_github_action_pr_commands()
+# usethis::use_github_action_pr_commands()
 
 # Travis CI
-#usethis::use_travis()
-#usethis::use_travis_badge()
+# usethis::use_travis()
+# usethis::use_travis_badge()
 
 # AppVeyor
-#usethis::use_appveyor()
-#usethis::use_appveyor_badge()
+# usethis::use_appveyor()
+# usethis::use_appveyor_badge()
 
 # Circle CI
-#usethis::use_circleci()
-#usethis::use_circleci_badge()
+# usethis::use_circleci()
+# usethis::use_circleci_badge()
 
 # Jenkins
-#usethis::use_jenkins()
+# usethis::use_jenkins()
 
 # GitLab CI
-#usethis::use_gitlab_ci()
+# usethis::use_gitlab_ci()
 
 # You're now set! ----
 # go to dev/03_deploy.R

@@ -8,7 +8,7 @@
 #' @importFrom sortable bucket_list add_rank_list
 #' @importFrom jsonlite fromJSON
 
- # TODO
+# TODO
 # include/exclude are mutually exclusive
 # meaning when the include list is populated, the exclude list should be empty
 # and vice versa
@@ -18,7 +18,7 @@
 # e.g. include (deactivated because exclude is populated)
 # e.g. exclude (deactivated because include is populated)
 
-mod_dnd_ui <- function(id){
+mod_dnd_ui <- function(id) {
   ns <- NS(id)
   uiOutput(ns("incl_excl_list"))
 }
@@ -29,21 +29,21 @@ incl_excl_criteria <- fromJSON(
   )
 )
 
-render_dnd <- function(ns,inputFormat=NULL, allowedTerms=NULL) {
+render_dnd <- function(ns, inputFormat = NULL, allowedTerms = NULL) {
   print("render_dnd")
-  labels = c ("")
-  if (!is.null(inputFormat)){
-    labels = incl_excl_criteria[[inputFormat]]
+  labels <- c("")
+  if (!is.null(inputFormat)) {
+    labels <- incl_excl_criteria[[inputFormat]]
   }
 
-  if (!is.null(allowedTerms)){
-    labels = allowedTerms
+  if (!is.null(allowedTerms)) {
+    labels <- allowedTerms
   }
   print("labels")
   print(labels)
 
   print(ns("dnd_target_incl"))
-  
+
   renderUI({
     bucket_list(
       header = "Drag and drop variables to include or exclude them from the comparison",
@@ -67,32 +67,30 @@ render_dnd <- function(ns,inputFormat=NULL, allowedTerms=NULL) {
   })
 }
 
-mod_dnd_server <- function(id, rv){
-  moduleServer(id,function(input, output, session){
+mod_dnd_server <- function(id, rv) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
     print("mod_dnd_server")
     output$incl_excl_list <- render_dnd(ns)
 
-    observeEvent(rv$inputFormat,{
-      if (!is.null(rv$allowedTerms)){
+    observeEvent(rv$inputFormat, {
+      if (!is.null(rv$allowedTerms)) {
         return()
       }
 
-      print("rv$inputFormat changed")
       output$incl_excl_list <- render_dnd(
         ns,
-        inputFormat=rv$inputFormat      
+        inputFormat = rv$inputFormat
       )
-      print("output$incl_excl_list")
     })
 
     # if the user uploads a config file
     # the labels should be extracted from the file
-    observeEvent(rv$allowedTerms,{
+    observeEvent(rv$allowedTerms, {
       print("rv$allowedTerms changed")
       output$incl_excl_list <- render_dnd(
         ns,
-        allowedTerms=rv$allowedTerms
+        allowedTerms = rv$allowedTerms
       )
       print("output$incl_excl_list")
     })
@@ -101,7 +99,7 @@ mod_dnd_server <- function(id, rv){
     # add observeEvent for dnd_target_incl and dnd_target_excl
     # to throw an error when both are populated
 
-    observeEvent(input$dnd_target_incl,{
+    observeEvent(input$dnd_target_incl, {
       print("dnd_target_incl changed")
 
       # TODO
@@ -110,12 +108,12 @@ mod_dnd_server <- function(id, rv){
       # better deactivate the other list as drop target
     })
 
-    observeEvent(input$dnd_target_excl,{
+    observeEvent(input$dnd_target_excl, {
       print("dnd_target_excl changed")
 
       # TODO
       # check current state of dnd_target_excl
-      # or 
+      # or
       # better deactivate the other list as drop target
     })
   })

@@ -1,5 +1,5 @@
 #' History Sidebar Module
-#'#'
+#' #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @importFrom gridlayout grid_container grid_card
@@ -21,22 +21,31 @@
 mod_show_history_button_ui <- function(id) {
   ns <- NS(id)
   actionButton(
-    ns("btn_show_history"), 
+    ns("btn_show_history"),
     icon("history")
   )
 }
 
-mod_history_sidebar_ui <- function(id){
+mod_history_sidebar_ui <- function(id) {
   ns <- NS(id)
 
   id_mode_mapping <- list(
     ConvertHistorySidebar = "conv_mode",
     SimulateHistorySidebar = "sim_mode",
     PatientHistorySidebar = "patient_mode",
-    CohortHistorySidebar = "cohort_mode"
+    CohortHistorySidebar = "cohort_mode",
+    InputExamplesRetrievalHistorySidebar = "input_examples"
   )
+
   mode <- id_mode_mapping[id]
-  content_id = paste0(c(mode,id,"content"),collapse = "-")
+  content_id <- paste0(
+    c(
+      mode,
+      id,
+      "content"
+    ),
+    collapse = "-"
+  )
 
   grid_container(
     id = id,
@@ -64,7 +73,7 @@ mod_history_sidebar_ui <- function(id){
           )
         ),
         uiOutput(content_id)
-      )   
+      )
     )
   )
 }
@@ -88,7 +97,7 @@ categorize_runs <- function(db_conn, user_id, mode) {
   past_runs <- dbGetQuery(db_conn, query)
   timestamps <- ymd_hms(past_runs$submitted_at)
 
-  #below should be a function
+  # below should be a function
   timestamp_mapping <- setNames(
     lapply(1:length(timestamps), function(i) {
       list(
@@ -121,16 +130,17 @@ categorize_runs <- function(db_conn, user_id, mode) {
   # Loop through each month from the current one back to January
   for (month_diff in 1:(current_month - 1)) {
     first_day_of_month <- ymd(paste(
-      current_year, 
-      current_month - month_diff, 
+      current_year,
+      current_month - month_diff,
       "01"
     ))
-    first_day_of_next_month <- ymd(paste(
-        current_year, 
+    first_day_of_next_month <- ymd(
+      paste(
+        current_year,
         ifelse(
           current_month - month_diff + 1 > 12, 1,
           current_month - month_diff + 1
-        ), 
+        ),
         "01"
       )
     )
@@ -151,24 +161,34 @@ categorize_runs <- function(db_conn, user_id, mode) {
   run_ids_vector_with_labels <- c()
   # TODO better rename "run_ids_vector_with_labels"
   # maybe better run_ids_vector_with_bucket_names
-  add_to_vector_if_not_empty <- function(bucket_name, bucket){
+  add_to_vector_if_not_empty <- function(bucket_name, bucket) {
     if (length(bucket) > 0) {
-
       # <<- operator is used to make sure that the vector is updated globally
       run_ids_vector_with_labels <<- c(run_ids_vector_with_labels, bucket_name)
       run_ids_vector_with_labels <<- c(run_ids_vector_with_labels, bucket)
-    } 
+    }
   }
 
-  add_to_vector_if_not_empty("Today:", timestamp_mapping[today_mask])
-  add_to_vector_if_not_empty("Yesterday:", timestamp_mapping[yesterday_mask])
-  add_to_vector_if_not_empty("Previous 7 days:", timestamp_mapping[previous_7days_mask])
-  add_to_vector_if_not_empty("Previous 30 days:", timestamp_mapping[previous_30days_mask])
+  add_to_vector_if_not_empty(
+    "Today:",
+    timestamp_mapping[today_mask]
+  )
+  add_to_vector_if_not_empty(
+    "Yesterday:",
+    timestamp_mapping[yesterday_mask]
+  )
+  add_to_vector_if_not_empty(
+    "Previous 7 days:",
+    timestamp_mapping[previous_7days_mask]
+  )
+  add_to_vector_if_not_empty(
+    "Previous 30 days:",
+    timestamp_mapping[previous_30days_mask]
+  )
 
   for (month_name in names(month_buckets)) {
     # Get the timestamps for the current month bucket
     month_bucket <- month_buckets[[month_name]]
-
     add_to_vector_if_not_empty(month_name, month_bucket)
   }
 
@@ -177,20 +197,17 @@ categorize_runs <- function(db_conn, user_id, mode) {
 }
 
 return_link_or_label <- function(
-  run_ids_vector_with_labels,
-  mode, 
-  sidebar, 
-  session) {
-  
+    run_ids_vector_with_labels,
+    mode,
+    sidebar,
+    session) {
   links <- lapply(run_ids_vector_with_labels, function(link_text) {
-    if (length(link_text)==1) {
-
+    if (length(link_text) == 1) {
       # If it's a label, create a simple text element
       link <- div(
         h6(link_text),
         style = "margin-top: 15px;"
       )
-
     } else {
       query <- parseQueryString(session$clientData$url_search)
       link_id <- paste0("link-", link_text$run_id)
@@ -198,10 +215,12 @@ return_link_or_label <- function(
 
       linkStyle <- "margin-right: 10px; text-decoration: none; color: black;"
       if (query$mode == mode && query$id == link_text$run_id) {
-        linkStyle <- paste0("margin-right: 10px; text-decoration: none; color: blue;")
+        linkStyle <- paste0(
+          "margin-right: 10px; text-decoration: none; color: blue;"
+        )
       }
 
-      link <- div (
+      link <- div(
         div(
           style = "display: flex; align-items: center;",
           a(
@@ -221,16 +240,16 @@ return_link_or_label <- function(
             ),
             onclick = sprintf(
               "event.preventDefault();Shiny.setInputValue('%s', {runId:%s,mode:'%s'});",
-              paste0(sidebar,"-old_run_id_clicked"),
+              paste0(sidebar, "-old_run_id_clicked"),
               link_text$run_id,
               mode
             ),
             style = linkStyle
           ),
           tags$input(
-            id = textbox_id, 
-            type = "text", 
-            value = link_text$label, 
+            id = textbox_id,
+            type = "text",
+            value = link_text$label,
             style = "display: none; width: 80%; float-left; margin-right: 10px;"
           ),
           a(
@@ -253,7 +272,7 @@ return_link_or_label <- function(
             href = "#",
             onclick = sprintf(
               "Shiny.setInputValue('%s', %s, {priority: 'event'});",
-              paste0(sidebar,"-old_run_id_trash_clicked"),
+              paste0(sidebar, "-old_run_id_trash_clicked"),
               paste0("{'runId': ", link_text$run_id, ", 'label': '", link_text$label, "'}")
             )
           )
@@ -268,27 +287,26 @@ return_link_or_label <- function(
 }
 
 mod_show_history_button_server <- function(
-  id,
-  mode,
-  sidebar,
-  db_conn) {
+    id,
+    mode,
+    sidebar,
+    db_conn) {
   moduleServer(id, function(input, output, session) {
-    
     observeEvent(input$btn_show_history, {
       showElement(
         animType = "slide",
         time = 0.5,
-        selector = paste0("#",sidebar)
+        selector = paste0("#", sidebar)
       )
 
       # TODO
       # below should be not hardcoded
       userId <- 1
 
-      run_ids_vector_with_labels <- categorize_runs(db_conn,userId, mode)
+      run_ids_vector_with_labels <- categorize_runs(db_conn, userId, mode)
       links <- return_link_or_label(
-        run_ids_vector_with_labels, 
-        mode, 
+        run_ids_vector_with_labels,
+        mode,
         sidebar,
         session
       )
@@ -300,21 +318,20 @@ mod_show_history_button_server <- function(
   })
 }
 
-mod_history_sidebar_server <- function(id, db_conn){
-  moduleServer(id,function(input, output, session){
+mod_history_sidebar_server <- function(id, db_conn) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     observeEvent(input$btnClose, {
       print("close history")
       hideElement(
-        selector = paste0("#",id),
+        selector = paste0("#", id),
         animType = "slide",
         time = 0.5
       )
     })
 
-    observeEvent(input$check_icon_clicked, {  
- 
+    observeEvent(input$check_icon_clicked, {
       clicked_icon_id <- input$check_icon_clicked$id
       textbox_value <- input$check_icon_clicked$value
 
@@ -324,22 +341,23 @@ mod_history_sidebar_server <- function(id, db_conn){
         ConvertHistorySidebar = "conv",
         SimulateHistorySidebar = "sim",
         PatientHistorySidebar = "patient",
-        CohortHistorySidebar = "cohort"
+        CohortHistorySidebar = "cohort",
+        InputExamplesRetrievalHistorySidebar = "input_examples"
       )
-      
+
       mode <- namespace_to_mode_mapping[namespace]
 
       user_id <- 1
       query <- sprintf(
         "UPDATE jobs SET label = '%s' WHERE run_id = '%s' and mode = '%s' and user_id = %d",
-        textbox_value, 
+        textbox_value,
         str_remove(clicked_icon_id, "edit-"),
         mode,
         user_id
       )
       dbExecute(db_conn, query)
 
-      outer_namespace <- paste0(mode,"_mode")
+      outer_namespace <- paste0(mode, "_mode")
       btn_id <- paste(
         outer_namespace,
         namespace,
@@ -352,7 +370,6 @@ mod_history_sidebar_server <- function(id, db_conn){
     })
 
     observeEvent(input$old_run_id_clicked, {
-
       runIdObject <- input$old_run_id_clicked
       run_id <- runIdObject$runId
       mode <- runIdObject$mode
@@ -362,13 +379,13 @@ mod_history_sidebar_server <- function(id, db_conn){
 
       # URL change should trigger get PastRunResults in app_server.R
       session$sendCustomMessage(
-        type = "changeURL", 
-        message = list(mode=mode,id=clicked_link_id)
+        type = "changeURL",
+        message = list(mode = mode, id = clicked_link_id)
       )
 
       namespace <- strsplit(ns("old_run_id_clicked"), "-")[[1]][1]
 
-      outer_namespace <- paste0(mode,"_mode")
+      outer_namespace <- paste0(mode, "_mode")
       btn_id <- paste(
         outer_namespace,
         namespace,
@@ -381,16 +398,16 @@ mod_history_sidebar_server <- function(id, db_conn){
     })
 
     observeEvent(input$btn_delete_run, {
-
       namespace <- strsplit(ns("btn_delete_run"), "-")[[1]][1]
 
       namespace_to_mode_mapping <- list(
         ConvertHistorySidebar = "conv",
         SimulateHistorySidebar = "sim",
         PatientHistorySidebar = "patient",
-        CohortHistorySidebar = "cohort"
+        CohortHistorySidebar = "cohort",
+        InputExamplesRetrievalHistorySidebar = "input_examples"
       )
-      
+
       mode <- namespace_to_mode_mapping[namespace]
 
       user_id <- 1
@@ -403,7 +420,7 @@ mod_history_sidebar_server <- function(id, db_conn){
       dbExecute(db_conn, query)
       removeModal()
 
-      outer_namespace <- paste0(mode,"_mode")
+      outer_namespace <- paste0(mode, "_mode")
       btn_id <- paste(
         outer_namespace,
         namespace,
@@ -420,8 +437,8 @@ mod_history_sidebar_server <- function(id, db_conn){
       label <- input$old_run_id_trash_clicked$label
 
       showModal(modalDialog(
-        title = paste("Delete run",runId,"?"),
-        paste("This will delete the run with the label:",label),
+        title = paste("Delete run", runId, "?"),
+        paste("This will delete the run with the label:", label),
         footer = tagList(
           modalButton("Cancel"),
           actionButton(ns("btn_delete_run"), "Delete run")

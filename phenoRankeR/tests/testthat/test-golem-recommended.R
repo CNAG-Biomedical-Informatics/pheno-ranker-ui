@@ -24,21 +24,23 @@ set_testing_golem_options <-
 
 set_testing_golem_options(
   list(
-    rankInputFolder= "../../../data/uploads/rankInput/",
-    patientRankInputRefsFolder="../../../data/uploads/rankInput/patientMode/references",
+    rankInputFolder = "../../../data/uploads/rankInput/",
+    patientRankInputRefsFolder = "../../../data/uploads/rankInput/patientMode/references",
 
-    cohortRankInputFolder="../../../data/uploads/rankInput/cohortMode/cohorts",
+    cohortRankInputFolder = "../../../data/uploads/rankInput/cohortMode/cohorts",
+
+    weightsUploadFolder = "../../../data/uploads/weights",
+    extraConfigsUploadFolder = "../../../data/uploads/config",
+    ontologyUploadFolder = "../../../data/uploads/ontologies/",
     
-    weightsUploadFolder="../../../data/uploads/weights",
-    extraConfigsUploadFolder="../../../data/uploads/config",
-    ontologyUploadFolder="../../../data/uploads/ontologies/",
+    inputExamplesInputFolder = "../../../data/input_examples/phenopacket_store/0.1.16/",
+    inputExamplesOutputFolder = "../../../data/output/inputExamples/",
+    simulationOutputFolder = "../../../data/output/simulatedData/",
+    conversionOutputFolder = "../../../data/output/convertedData/",
+    patientModeOutputFolder = "../../../data/output/rankedPatients/",
+    cohortModeOutputFolder = "../../../data/output/rankedCohortMatrixes/",
 
-    simulationOutputFolder="../../../data/output/simulatedData/",
-    conversionOutputFolder="../../../data/output/convertedData/",
-    patientModeOutputFolder="../../../data/output/rankedPatients/",
-    cohortModeOutputFolder="../../../data/output/rankedCohortMatrixes/",
-
-    tempFolder="../../../data/temp/", # no longer needed?
+    tempFolder = "../../../data/temp/", # no longer needed?
 
     runWithDocker = FALSE,
     PHENO_SIM_BIN = "bff-pxf-simulator",

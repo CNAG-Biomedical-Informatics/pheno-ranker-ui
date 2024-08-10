@@ -8,6 +8,9 @@ uploads/ontologies/*.yaml
 uploads/weights/*.yaml
 uploads/config/*.yaml
 
+output/inputExamples/*
+!output/inputExamples/README.md
+
 output/simulatedData/*.json
 output/tmp/*.json
 
@@ -19,9 +22,6 @@ output/rankedCohortMatrixes/*
 
 output/convertedData/*
 !output/convertedData/README.md
-
-output/inputExamples/*
-!output/inputExamples/README.md
 
 input_examples/*
 !input_examples/README.md

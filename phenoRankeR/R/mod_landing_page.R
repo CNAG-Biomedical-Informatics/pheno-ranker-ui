@@ -14,7 +14,7 @@
 # because it was not possible to run updateNavbarPage from this module
 # the function is called from the app_server.R file
 
-mod_landing_page_ui <- function(id){
+mod_landing_page_ui <- function(id) {
   ns <- NS(id)
 
   grid_container(
@@ -28,9 +28,12 @@ mod_landing_page_ui <- function(id){
     grid_place(
       area = "welcome",
       card_body(
-        style = "text-align: center;", 
+        style = "text-align: center;",
         h1("Welcome to Pheno-Ranker"),
-        p("Your interactive tool for semantic similarity analyses of Phenotypic Data Stored in GA4GH Standards and Beyond")
+        p(
+          "Your interactive tool for semantic similarity analyses
+          of Phenotypic Data Stored in GA4GH Standards and Beyond"
+        )
       )
     ),
     grid_card(
@@ -38,44 +41,69 @@ mod_landing_page_ui <- function(id){
       card_header("Obtain input data"),
       card_body(
         p("
-          If you do not have Phenotypic data stored in Beacon-friendly format (BFF) or Phenopackets v2(PXF), 
-          you can use the following utilities to get started:"
-        ),
+          If you do not have Phenotypic data stored in
+          Beacon-friendly format (BFF) or Phenopackets v2(PXF),
+          you can use the following utilities to get started:"),
         h6("Option 1: Simulate a BFF/PXF using our sample data generator "),
         p("
-          Generate a json array of up to 5000 patient with random phenotypic data.
-          In order to obtain data that is more similar to your own, you can also provide a list of
-          diseases, phenotypic features and treatments that you would like to be included in the simulated data.
+          Generate a json array of up to 5000 patient
+          with random phenotypic data.
+          In order to obtain data that is more similar to your own,
+          you can also provide a list of
+          diseases, phenotypic features and treatments that you would like
+          to be included in the simulated data.
         "),
         actionButton(
-          ns("navigateToSimulator"), 
-          "Simulate BFF/PXF", 
+          ns("navigateToSimulator"),
+          "Simulate BFF/PXF",
+          style = "width: 100%;"
+        ),
+        hr(),
+        h6("Option 2: Use example data from public sources"),
+        p("
+          Use example data from public sources like the
+        "),
+        a("
+          Phenopacket store",
+          href = "https://monarch-initiative.github.io/phenopacket-store",
+          target = "_blank"
+        ),
+        actionButton(
+          ns("navigateToExamples"),
+          "Use example data",
           style = "width: 100%;"
         ),
         hr(),
         h6(
-          "Option 2: Convert your own csv data to a json format understandable by Pheno-Ranker"
+          "Option 3: Convert your own csv data
+          to a json format understandable by Pheno-Ranker"
         ),
         p("
-          Upload your own csv file and convert it to a json array that can be used as input for Pheno-Ranker.
-          This utility is designed to handle both simple CSV files without nested fields in columns, 
-          as well as more complex ones with nested fields 
+          Upload your own csv file and convert it
+          to a json array that can be used as input for Pheno-Ranker.
+          This utility is designed to handle both
+          simple CSV files without nested fields in columns,
+          as well as more complex ones with nested fields
         "),
         actionButton(
-          ns("navigateToConverter"), 
-          "ConvertCSVs", 
+          ns("navigateToConverter"),
+          "ConvertCSVs",
           style = "width: 100%;"
         ),
         hr(),
-        h6("Option 3: Convert your phenotypic data to BFF/PXF"),
+        h6("Option 4: Convert your phenotypic data to BFF/PXF"),
         p("
-          Below you find a software toolkit that allows your own phenotypic data stored in other common formats like RedCap, OMOP, etc. to BFF/PXF.
+          Below you find a software toolkit that allows
+          your own phenotypic data stored in other
+          common formats like RedCap, OMOP, etc. to BFF/PXF.
         "),
         div(
           icon("github"),
           a(
-            "Convert-Pheno: A software toolkit for the interconversion of standard data models for phenotypic data",
+            "Convert-Pheno: A software toolkit for the
+            interconversion of standard data models for phenotypic data",
             href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
+            target = "_blank"
           )
         )
       )
@@ -89,12 +117,12 @@ mod_landing_page_ui <- function(id){
         ),
         h6("Mode 1: Compare your patient to one or multiple reference cohorts"),
         p("
-          Rank all the individuals in your 
+          Rank all the individuals in your
           reference cohort according to their similarity to your patient.
         "),
         actionButton(
-          ns("navigateToPatientMode"), 
-          "Patient vs Reference Cohort(s)", 
+          ns("navigateToPatientMode"),
+          "Patient vs Reference Cohort(s)",
           style = "width: 100%;"
         ),
         hr(),
@@ -109,7 +137,7 @@ mod_landing_page_ui <- function(id){
             card_header("Intra-cohort comparison"),
             card_body(
               p("
-                Rank all the individuals in your 
+                Rank all the individuals in your
                 reference cohort according to their similarity to each other.
               ")
             )
@@ -125,8 +153,8 @@ mod_landing_page_ui <- function(id){
           )
         ),
         actionButton(
-          ns("navigateToCohortMode"), 
-          "Intra-/Inter-cohort comparison", 
+          ns("navigateToCohortMode"),
+          "Intra-/Inter-cohort comparison",
           style = "width: 100%;"
         )
       )
@@ -134,7 +162,7 @@ mod_landing_page_ui <- function(id){
     grid_place(
       area = "version",
       card_body(
-        style = "text-align: right;", 
+        style = "text-align: right;",
         p("Version 0.0.0.9016")
       )
     )

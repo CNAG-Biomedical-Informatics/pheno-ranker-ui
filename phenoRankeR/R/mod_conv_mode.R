@@ -11,7 +11,7 @@
 #' @importFrom jsonlite read_json fromJSON toJSON
 #' @import shiny
 
-conv_mode_layout = c(
+conv_mode_layout <- c(
   "           500px       1fr      40px",
   "30px       btn         convRes  btn_show_conv_history",
   "600px      opts        convRes  btn_show_conv_history",
@@ -19,37 +19,37 @@ conv_mode_layout = c(
   "1px        version     version  version              "
 )
 
-conv_mode_note = tagList(
+conv_mode_note <- tagList(
   tags$p("Note:"),
-  tags$p("if your csv file is coming from RedCap, 
-    we suggest you to use the following software 
-    to create the BFF or PXF input files for Pheno-Ranker:"
-  )
+  tags$p("if your csv file is coming from RedCap,
+    we suggest you to use the following software
+    to create the BFF or PXF input files for Pheno-Ranker:")
 )
 
-convert_pheno_icon = tags$div(
+convert_pheno_icon <- tags$div(
   icon("github"),
   tags$a(
     "Convert-Pheno: A software toolkit for the interconversion of standard data models for phenotypic data",
     href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
+    target = "_blank"
   )
 )
 
-dl_explanation = tags$p(
-  "Here you can download after the conversion 
-  the generated JSON file and 
+dl_explanation <- tags$p(
+  "Here you can download after the conversion
+  the generated JSON file and
   the configuration file for Pheno-Ranker"
 )
 
-mod_conv_mode_ui <- function(id){
+mod_conv_mode_ui <- function(id) {
   ns <- NS(id)
   grid_container(
     layout = conv_mode_layout,
     grid_place(
       area = "btn",
       actionButton(
-        ns("startConversion"), 
-        "Convert", 
+        ns("startConversion"),
+        "Convert",
         class = "btn btn-primary"
       )
     ),
@@ -58,7 +58,7 @@ mod_conv_mode_ui <- function(id){
       card_header("Options"),
       card_body(
         fileInput(
-          ns("csv"), 
+          ns("csv"),
           "Upload a csv file",
           multiple = FALSE,
           accept = c(
@@ -88,7 +88,7 @@ mod_conv_mode_ui <- function(id){
         grid_container(
           layout = c(
             "      1fr          1fr          1fr          ",
-            "75px  explanation  explanation  explanation  " ,
+            "75px  explanation  explanation  explanation  ",
             "25px  output       cfg          both         "
           ),
           gap_size = "5px",
@@ -118,12 +118,12 @@ mod_conv_mode_ui <- function(id){
       mod_show_history_button_ui(ns("ConvertHistorySidebar"))
     ),
     grid_place(
-        area = "version",
-        card_body(
-          style = "text-align: right;", 
-          p("Version 0.0.0.9016")
-        )
+      area = "version",
+      card_body(
+        style = "text-align: right;",
+        p("Version 0.0.0.9016")
       )
+    )
   )
 }
 
@@ -136,9 +136,8 @@ mod_conv_output_viewer_ui <- function(id) {
 
 mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
   moduleServer(id, function(input, output, session) {
-
-    #print ("conv_out")
-    #print (conv_out)
+    # print ("conv_out")
+    # print (conv_out)
 
     print("cfg_out")
     print(cfg_out)
@@ -166,11 +165,11 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
   })
 }
 
-mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
+mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
   # NOTE somehow this function is only working with the
   # namespace defined here
-  ns <-session$ns
-  moduleServer(id,function(input, output, session){
+  ns <- session$ns
+  moduleServer(id, function(input, output, session) {
     mod_show_history_button_server(
       "ConvertHistorySidebar",
       "conv",
@@ -206,12 +205,12 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
 
       conv_output_fn <- file.path(
         path,
-        paste0(rv_conversion$id,".json")
+        paste0(rv_conversion$id, ".json")
       )
 
       config_fn <- file.path(
         path,
-        paste0(rv_conversion$id,"_config.yaml")
+        paste0(rv_conversion$id, "_config.yaml")
       )
 
       print("conv_output_fn")
@@ -221,17 +220,17 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       print(config_fn)
 
       output$output <- outputDownloadHandler(
-        conv_output_fn, 
+        conv_output_fn,
         "conversionOutput"
       )
 
       output$cfg <- outputDownloadHandler(
-        config_fn, 
+        config_fn,
         "conversionConfig"
       )
 
       output$both <- outputDownloadHandler(
-        list(conv_output_fn, config_fn), 
+        list(conv_output_fn, config_fn),
         list("conversionOutput", "conversionConfig"),
         output_name = "phenoRankerConv.zip",
         zip_download = TRUE
@@ -239,20 +238,20 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
     })
 
     output$output <- outputDownloadHandler(
-      rv_conversion$outputJson, 
+      rv_conversion$outputJson,
       "conversionOutput"
     )
 
     # TODO
     # the output should not be a json but a yaml file
     output$cfg <- outputDownloadHandler(
-      rv_conversion$configYaml, 
+      rv_conversion$configYaml,
       "conversionConfig"
     )
 
     output$both <- outputDownloadHandler(
-      list(rv_conversion$outputJson, rv_conversion$configYaml), 
-      list("conversionOutput", "conversionConfig"), 
+      list(rv_conversion$outputJson, rv_conversion$configYaml),
+      list("conversionOutput", "conversionConfig"),
       zip_download = TRUE
     )
 
@@ -265,24 +264,24 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       )
 
       timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
-      output$conversionId <- renderText(paste0("RUN ID: ",timestamp))
+      output$conversionId <- renderText(paste0("RUN ID: ", timestamp))
 
       session$sendCustomMessage(
-        type = "changeURL", 
-        message = list(mode="conv",id=timestamp)
+        type = "changeURL",
+        message = list(mode = "conv", id = timestamp)
       )
 
       csvConvBin <- get_golem_options("PHENO_CSV_CONV_BIN")
-      outputFolder <-get_golem_options("conversionOutputFolder")
+      outputFolder <- get_golem_options("conversionOutputFolder")
 
       # create folder for the conversion output
       dir.create(file.path(outputFolder, timestamp))
 
       # copy the uploaded file to the conversion output folder
       new_path <- file.path(
-        outputFolder, 
-        timestamp, 
-        paste0(timestamp,".csv")
+        outputFolder,
+        timestamp,
+        paste0(timestamp, ".csv")
       )
       file.copy(
         input$csv$datapath,
@@ -293,9 +292,9 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         csvConvBin,
         "--input",
         file.path(
-          outputFolder, 
-          timestamp, 
-          paste0(timestamp,".csv")
+          outputFolder,
+          timestamp,
+          paste0(timestamp, ".csv")
         )
       )
 
@@ -312,7 +311,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       )
 
       line_split <- strsplit(firstLine, input$delimiter)
-      if(!(input$primaryKey %in% line_split[[1]])){
+      if (!(input$primaryKey %in% line_split[[1]])) {
         print("primary key not in data")
         cmd <- paste(
           cmd,
@@ -333,12 +332,12 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       )
 
       script_status <- system(cmd, intern = TRUE)
-      if(length(script_status) > 0) {
+      if (length(script_status) > 0) {
         # showNotification(script_status, type = "error")
         stop("Perl script failed")
       }
 
-      label <- paste0("file: ",input$csv$name)
+      label <- paste0("file: ", input$csv$name)
 
       # TODO
       # it would be nice to have the used primary key in the label
@@ -346,13 +345,13 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
       settings <- list()
       query <- sprintf(
         "
-          INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+          INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
           VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
         ",
-        timestamp, 1, "conv",label,toJSON(settings),"success"
+        timestamp, 1, "conv", label, toJSON(settings), "success"
       )
       dbExecute(db_conn, query)
-      
+
       # rerender the history sidebar
       click("ConvertHistorySidebar-btn_show_history")
 
@@ -361,11 +360,11 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         file.path(
           outputFolder,
           timestamp,
-          paste0(timestamp,".json")
+          paste0(timestamp, ".json")
         )
       )
 
-      #print(jsonData)
+      # print(jsonData)
 
       # value <- paste(
       #   readLines(
@@ -383,7 +382,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion){
         file.path(
           outputFolder,
           timestamp,
-          paste0(timestamp,"_config.yaml")
+          paste0(timestamp, "_config.yaml")
         )
       )
 

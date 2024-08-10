@@ -72,12 +72,12 @@ mod_heatmap_server <- function(
           runId = runId,
           row_names = 1
         )
-      ) 
+      )
 
       merged_df <- as.data.frame(merged_data)
       targetId <- tail(row.names(merged_df), 1)
       row_cols_labels <- make_bold_names(
-        merged_data, 
+        merged_data,
         c(targetId)
       )
 
@@ -114,6 +114,9 @@ mod_heatmap_server <- function(
         return()
       }
 
+      print("filePath")
+      print(filePath)
+
       data <- as.matrix(
         readTxt(
           get_golem_options("cohortModeOutputFolder"),
@@ -122,7 +125,7 @@ mod_heatmap_server <- function(
         )
       )
       cohort_row_names <- rownames(data)
-      
+
       #---- heatmap ----
       if (uploaded_files_count == 1) {
         ht <- pheatmap(data)

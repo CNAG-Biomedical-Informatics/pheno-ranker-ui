@@ -14,7 +14,8 @@
 # here is how it might be possible to get the currently logged in user
 # https://www.shinyproxy.io/documentation/configuration/#environment-variables
 # SHINYPROXY_USERNAME: the name of the user, as used when logging in
-# SHINYPROXY_USERGROUPS: the groups the authenticated user is a member of, as a comma-separated value
+# SHINYPROXY_USERGROUPS: the groups the authenticated
+#                        user is a member of, as a comma-separated value
 
 # Function to parse URL parameters
 parseQueryString <- function(s) {
@@ -35,21 +36,25 @@ parseQueryString <- function(s) {
 }
 
 app_server <- function(input, output, session) {
-
   # unsetting the LD_LIBRARY_PATH resolves
   # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
   Sys.unsetenv("LD_LIBRARY_PATH")
-  
+
   # TODO
   # reactlog should be conditionally enabled
   # reactlog_enable()
 
   # initialize reactive values
+  rv_input_examples <- reactiveValues(
+    retrievalId = NULL,
+    inputExamples = NULL
+  )
+
   rv_sim <- reactiveValues(
     dtInputs = NULL,
     simResult_bff = NULL,
     simResult_pxf = NULL,
-    simulationId = NULL
+    simulationId = NULL #note this could be also multiple ids
   )
 
   rv_conversion <- reactiveValues(
@@ -66,6 +71,8 @@ app_server <- function(input, output, session) {
     alignmentDf = NULL,
     id = NULL,
     mdsPlot = NULL,
+    useExampleReference = FALSE,
+    useExampleTarget = FALSE,
     useSimulatedReference = FALSE,
     useSimulatedTarget = FALSE,
     useConvertedReference = FALSE,
@@ -96,6 +103,14 @@ app_server <- function(input, output, session) {
   print("dbDriver")
   print(db_driver)
 
+  mod_input_examples_page_server(
+    "input_examples",
+    session,
+    db_conn,
+    db_driver,
+    rv_input_examples
+  )
+
   mod_sim_mode_server(
     "sim_mode",
     session,
@@ -116,6 +131,7 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     rv_patient,
+    rv_input_examples,
     rv_sim,
     rv_conversion
   )
@@ -125,6 +141,7 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     rv_cohort,
+    rv_input_examples,
     rv_sim,
     rv_conversion
   )
@@ -133,16 +150,17 @@ app_server <- function(input, output, session) {
     "SimulateHistorySidebar",
     "ConvertHistorySidebar",
     "PatientHistorySidebar",
-    "CohortHistorySidebar"
+    "CohortHistorySidebar",
+    "InputExamplesRetrievalHistorySidebar"
   )
 
   lapply(historySidebars, function(sidebar) {
     mod_history_sidebar_server(
-      sidebar, 
+      sidebar,
       db_conn
     )
   })
- 
+
   # TODO
   # it would be good to have the used
   # mode inside the ID
@@ -151,14 +169,13 @@ app_server <- function(input, output, session) {
   # cohort mode: coh42553
   # convert mode: conv42554
 
-  if(get_golem_options("runWithDocker") == "True") {
+  if (get_golem_options("runWithDocker") == "True") {
     print("running with docker")
     Sys.setenv(LD_LIBRARY_PATH = paste(
       get_golem_options("LD_LIB_PATH"),
-      Sys.getenv("LD_LIBRARY_PATH"), 
-      sep=":"
-      )
-    )
+      Sys.getenv("LD_LIBRARY_PATH"),
+      sep = ":"
+    ))
     print(Sys.getenv("LD_LIBRARY_PATH"))
   } else {
     print("running without docker")
@@ -166,26 +183,91 @@ app_server <- function(input, output, session) {
 
   phenoSimBin <- get_golem_options("phenoSimBin")
   phenoRankBin <- get_golem_options("phenoRankBin")
-  
+
   # maybe better to put this in a separate module(?)
-  getPastRunResults <- function(mode,runId) {
+  getPastRunResults <- function(mode, runId) {
     print("inside getPastRunResults")
+    print("mode")
+    print(mode)
 
     # TODO
     # maybe better to put this in the simulation module
     # with a flag
     # if history=True then run below
+
+    if (mode == "input_examples") {
+      print("inside getPastRunResults input_examples")
+      rv_input_examples$retrievalId <- runId
+      output$retrievalId <- renderText(paste0("RETRIEVAL ID: ", runId))
+
+      print("runId")
+      print(runId)
+
+      # query the database
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'input_examples'",
+        runId
+      )
+
+      res <- dbGetQuery(db_conn, query)
+
+      print("res")
+      print(res)
+
+      settings <- fromJSON(res$settings)
+
+      print("settings")
+      print(settings)
+
+      number_of_individuals <- as.numeric(settings$numberOfIndividuals)
+      print("number_of_individuals")
+      print(number_of_individuals)
+
+      inputExamplesOutputFolder <- get_golem_options("inputExamplesOutputFolder")
+      files <- list.files(
+        inputExamplesOutputFolder,
+        pattern = paste0(runId, "*.(bff|pxf).json")
+      )
+
+      print("files")
+      print(files)
+
+      if (length(files) == 0) {
+        print("no files found")
+        return()
+      }
+
+      file_type <- "pxf"
+
+      rv_input_examples$inputExamples <- read_json(
+        paste0(
+          inputExamplesOutputFolder,
+          "/",
+          files[1]
+        )
+      )
+
+      mod_json_viewer_server(
+        "input_examples-json_viewer_input_examples",
+        toupper(file_type),
+        rv_input_examples$inputExamples,
+        rv_input_examples$inputExamples,
+        number_of_individuals
+      )
+    }
+
+
     if (mode == "sim") {
       print("inside getPastRunResults sim")
       rv_sim$simulationId <- runId
-      output$simulationId <- renderText(paste0("RUN ID: ",runId))
+      output$simulationId <- renderText(paste0("RUN ID: ", runId))
 
-      # query the database 
+      # query the database
       query <- sprintf(
         "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'sim'",
         runId
       )
-      
+
       res <- dbGetQuery(db_conn, query)
       settings <- fromJSON(res$settings)
       print("settings")
@@ -204,7 +286,7 @@ app_server <- function(input, output, session) {
       print(simulationOutputFolder)
       files <- list.files(
         simulationOutputFolder,
-        pattern = paste0(runId,"*.(bff|pxf).json")
+        pattern = paste0(runId, "*.(bff|pxf).json")
       )
       print("files")
       print(files)
@@ -218,7 +300,7 @@ app_server <- function(input, output, session) {
         print("file_name")
         print(file_name)
         # check if the file is a bff or pxf file
-        
+
         file_type <- gsub("\\d+\\.|\\.json", "", file_name)
         print("file_type")
         print(file_type)
@@ -232,28 +314,22 @@ app_server <- function(input, output, session) {
         )
 
         selectedOutputFormats <- c(
-          selectedOutputFormats, 
+          selectedOutputFormats,
           toupper(file_type)
         )
-      
-        # TODO
-        # get the arraySizeInput from the database
-        # and pass it to the mod_json_viewer_server
-        # because at the moment the history is failing
 
         mod_json_viewer_server(
-          "sim_mode-json_viewer", 
+          "sim_mode-json_viewer_sim_mode",
           selectedOutputFormats,
           rv_sim$simResult_bff,
           rv_sim$simResult_pxf,
           number_of_individuals
         )
       }
-    }
-    else if (mode == "patient") {
+    } else if (mode == "patient") {
       rv_patient$runId <- runId
-      output$phenoBlastRunId <- renderText(paste0("RUN ID: ",runId))
-      
+      output$phenoBlastRunId <- renderText(paste0("RUN ID: ", runId))
+
       outDir <- get_golem_options("patientModeOutputFolder")
       print("outDir")
       print(outDir)
@@ -266,7 +342,7 @@ app_server <- function(input, output, session) {
       print("dir_bools")
       print(dir_bools)
       dirs <- dirs[dir_bools]
-      
+
       print("dirs2")
       print(dirs)
       if (length(dirs) != 1) {
@@ -292,7 +368,7 @@ app_server <- function(input, output, session) {
         rv_patient = rv_patient
       )
 
-      # TabHeader: Hamming Distances Heatmap 
+      # TabHeader: Hamming Distances Heatmap
       mod_heatmap_server(
         "patient_mode_heatmap",
         runId,
@@ -317,10 +393,9 @@ app_server <- function(input, output, session) {
         rv = rv_patient,
         mode = "patient"
       )
-    }
-    else if (mode == "cohort") {
+    } else if (mode == "cohort") {
       rv_cohort$runId <- runId
-      output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ",runId))
+      output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ", runId))
 
       outDir <- get_golem_options("cohortModeOutputFolder")
       dirs <- list.dirs(outDir)
@@ -351,7 +426,7 @@ app_server <- function(input, output, session) {
 
       uploaded_files_count <- 1
 
-      if("append_prefixes" %in% names(settings)) {
+      if ("append_prefixes" %in% names(settings)) {
         uploaded_files_count <- length(settings$append_prefixes)
       }
 
@@ -382,10 +457,9 @@ app_server <- function(input, output, session) {
         mode = "cohort",
         uploaded_files_count = uploaded_files_count
       )
-    }
-    else if (mode == "conv") {
+    } else if (mode == "conv") {
       rv_conversion$id <- runId
-      output$conversionId <- renderText(paste0("RUN ID: ",runId))
+      output$conversionId <- renderText(paste0("RUN ID: ", runId))
 
       outDir <- paste0(
         get_golem_options("conversionOutputFolder")
@@ -422,7 +496,7 @@ app_server <- function(input, output, session) {
         readLines(
           file.path(
             dir,
-            paste0(runId,"_config.yaml")
+            paste0(runId, "_config.yaml")
           )
         ),
         collapse = "\n"
@@ -430,7 +504,7 @@ app_server <- function(input, output, session) {
       # for what is that needed?
       rv_conversion$outputJson <- jsonData
       rv_conversion$configYaml <- as.yaml(yaml.load(configVal))
- 
+
       mod_conv_output_viewer_server(
         "conv_mode-conv_output_viewer",
         jsonData,
@@ -438,7 +512,7 @@ app_server <- function(input, output, session) {
       )
     }
   }
-  
+
   # TODO
   # maybe better to put this in a separate module(?)
   observe({
@@ -447,7 +521,7 @@ app_server <- function(input, output, session) {
     # TODO
     # try to get rid of the lubridate package
     if ("mode" %in% names(query)) {
-      if ( "id" %in% names(query)) {
+      if ("id" %in% names(query)) {
         date_time <- ymd_hms(query[["id"]], quiet = TRUE)
         mode <- query[["mode"]]
         currentId <- NULL
@@ -467,7 +541,7 @@ app_server <- function(input, output, session) {
         if (!is.na(date_time)) {
           print("id is in the expected format")
           # !BUG
-          # when running the application with Shinyproxy 
+          # when running the application with Shinyproxy
           # the following error occurs:
           # "Link clicked with ID: 20231113121900"
           # [1] "id is in the expected format"
@@ -475,15 +549,16 @@ app_server <- function(input, output, session) {
           updateNavbarPage(session, "nav", query[["mode"]])
           print("after updateNavbarPage")
           print(query[["mode"]])
-          getPastRunResults(query[["mode"]],query[["id"]])
+          getPastRunResults(query[["mode"]], query[["id"]])
         } else {
           # TODO
-          # update the run ID field with information 
+          # update the run ID field with information
           # that the ID is not valid
         }
-      }
-      else {
-        updateNavbarPage(session, "nav", query[["mode"]])
+      } else {
+        updateNavbarPage(
+          session, "nav", query[["mode"]]
+        )
       }
     }
   })
@@ -497,51 +572,53 @@ app_server <- function(input, output, session) {
     } else if (input$nav == "cohort") {
       id <- rv_cohort$runId
     }
-    #check 
+    # check
     runId <- id
     if (is.null(id)) {
       runId <- ""
     }
     session$sendCustomMessage(
-      type = 'changeURL', 
+      type = "changeURL",
       message = list(
-        mode=input$nav, 
-        id=runId)
+        mode = input$nav,
+        id = runId
       )
+    )
   })
 
   #*  Note: the  redirection from the landing page buttons
   # is done here because it was not possible to run updateNavbarPage
   # from the landing page module
   observeEvent(input[["landing_page-navigateToSimulator"]], {
-    print("Navigate to simulator")
     updateNavbarPage(session, "nav", "sim")
   })
 
+  observeEvent(input[["landing_page-navigateToExamples"]], {
+    print("navigate to input examples")
+    updateNavbarPage(session, "nav", "input_examples")
+  })
+
   observeEvent(input[["landing_page-navigateToConverter"]], {
-    print("Navigate to converter")
     updateNavbarPage(session, "nav", "conv")
   })
 
   observeEvent(input[["landing_page-navigateToPatientMode"]], {
-    print("Navigate to patient mode")
     updateNavbarPage(session, "nav", "patient")
   })
 
   observeEvent(input[["landing_page-navigateToCohortMode"]], {
-    print("Navigate to cohort mode")
     updateNavbarPage(session, "nav", "cohort")
   })
 
 
   observeEvent(rv_patient$ht, {
     print("before rendering the heatmap")
-    
+
     InteractiveComplexHeatmapWidget(
       input,
       output,
       session,
-      ht_list=rv_patient$ht,
+      ht_list = rv_patient$ht,
       output_id = "patient_mode-patient_heatmap",
       close_button = FALSE,
       layout = "1|23",
@@ -561,7 +638,7 @@ app_server <- function(input, output, session) {
       input,
       output,
       session,
-      ht_list=rv_cohort$ht,
+      ht_list = rv_cohort$ht,
       output_id = "cohort_mode-cohort_heatmap",
       close_button = FALSE,
       layout = "1|23",

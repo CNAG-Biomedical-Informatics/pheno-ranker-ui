@@ -22,12 +22,7 @@ mode_sim_layout <- c(
   "1px      version     version version             "
 )
 
-mod_json_viewer_ui <- function(id) {
-  ns <- NS(id)
-  uiOutput(ns("json_viewer"))
-}
-
-mod_sim_mode_ui <- function(id){
+mod_sim_mode_ui <- function(id) {
   ns <- NS(id)
   grid_container(
     layout = mode_sim_layout,
@@ -35,8 +30,8 @@ mod_sim_mode_ui <- function(id){
     grid_place(
       area = "btn",
       actionButton(
-        ns("simulateCohort"), 
-        " Simulate", 
+        ns("simulateCohort"),
+        " Simulate",
         class = "btn btn-primary"
       )
     ),
@@ -54,7 +49,7 @@ mod_sim_mode_ui <- function(id){
           grid_place(
             area = "checkboxes",
             checkboxGroupInput(
-              ns("checkboxes"), 
+              ns("checkboxes"),
               "Select output(s):",
               choices = c("BFF", "PXF"),
               selected = c("BFF", "PXF"),
@@ -86,7 +81,7 @@ mod_sim_mode_ui <- function(id){
                 )
               ),
               fileInput(
-                ns("ontologiesFile"), 
+                ns("ontologiesFile"),
                 "Either upload an ontologies yaml file",
                 multiple = FALSE,
                 accept = c(
@@ -154,7 +149,7 @@ mod_sim_mode_ui <- function(id){
                 functions = c("getInputs")
               ),
               div(
-                class = "grid-item-table", 
+                class = "grid-item-table",
                 dataTableOutput(ns("simulationSettings"))
               )
             )
@@ -192,7 +187,7 @@ mod_sim_mode_ui <- function(id){
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("simulationId"),
-        mod_json_viewer_ui(ns("json_viewer"))
+        mod_json_viewer_ui(ns("json_viewer_sim_mode"))
       ),
       height = "890px"
     ),
@@ -203,7 +198,7 @@ mod_sim_mode_ui <- function(id){
     grid_place(
       area = "version",
       card_body(
-        style = "text-align: right;", 
+        style = "text-align: right;",
         p("Version 0.0.0.9016")
       )
     )
@@ -249,13 +244,11 @@ onts_defaults_exposures <- loadOntologyDefaults(
 )
 
 writeYAMLDataToFile <- function(
-  yaml_diseases,
-  yaml_expos, 
-  yaml_phenos, 
-  yaml_procedures,
-  yaml_treatments
-  ) {
-  
+    yaml_diseases,
+    yaml_expos,
+    yaml_phenos,
+    yaml_procedures,
+    yaml_treatments) {
   yaml_data <- list()
   yaml_data$diseases <- yaml.load(yaml_diseases)
   yaml_data$exposures <- yaml.load(yaml_expos)
@@ -266,7 +259,7 @@ writeYAMLDataToFile <- function(
   timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
   # file_path <- file.path("./data/uploads/ontologies", paste0(timestamp, "_ontologies.yaml"))
   file_path <- file.path(
-    get_golem_options("ontologyUploadFolder"), 
+    get_golem_options("ontologyUploadFolder"),
     paste0(timestamp, "_ontologies.yaml")
   )
   writeLines(as.yaml(yaml_data), file_path)
@@ -276,7 +269,7 @@ writeYAMLDataToFile <- function(
 simulate_data <- function(outputFormat, simulationId, ext_onts_settings_string, number_of_individuals) {
   phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
   ouputFolder <- get_golem_options("simulationOutputFolder")
-  ontologyUploadFolder <- get_golem_options("ontologyUploadFolder") 
+  ontologyUploadFolder <- get_golem_options("ontologyUploadFolder")
 
   fn <- paste0(
     ouputFolder,
@@ -297,19 +290,19 @@ simulate_data <- function(outputFormat, simulationId, ext_onts_settings_string, 
 
   # # maybe better get it from a config file
   # flags <- c(
-  #   "diseases", 
-  #   "exposures", 
-  #   "phenotypicFeatures", 
-  #   "procedures", 
+  #   "diseases",
+  #   "exposures",
+  #   "phenotypicFeatures",
+  #   "procedures",
   #   "treatments"
   # )
 
   # external_ontologies_settings <- unlist(
   #   lapply(
-  #     flags, 
-  #     function(flag) 
+  #     flags,
+  #     function(flag)
   #     c(
-  #       paste0("-", flag), 
+  #       paste0("-", flag),
   #       paste0("-max-", flag, "-pool")
   #     )
   #   )
@@ -360,11 +353,11 @@ simulate_data <- function(outputFormat, simulationId, ext_onts_settings_string, 
   return(read_json(fn))
 }
 
-mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
+mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
   # NOTE somehow this function is only working with the
   # namespace defined here
-  ns <-session$ns
-  moduleServer(id,function(input, output, session){
+  ns <- session$ns
+  moduleServer(id, function(input, output, session) {
     loader_inline <- addLoader$new(
       target_selector = "simulateCohort",
       color = "white",
@@ -425,11 +418,11 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
 
       print("bffOutputFn")
       print(bffOutputFn)
-    
+
       output$bffDl <- outputDownloadHandler(bffOutputFn, "phenoRankerSim.bff")
       output$pxfDl <- outputDownloadHandler(pxfOutputFn, "phenoRankerSim.pxf")
       output$allDl <- outputDownloadHandler(
-        list(bffOutputFn, pxfOutputFn), 
+        list(bffOutputFn, pxfOutputFn),
         list("phenoRankerSim.bff", "phenoRankerSim.pxf"),
         output_name = "phenoRankerSim.zip",
         zip_download = TRUE
@@ -517,7 +510,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         output$errorOutput <- renderText(result)
       })
     })
-    
+
     observeEvent(input$simulateCohort, {
       print("observeEvent(input$simulateCohort")
       loader_inline$show()
@@ -554,51 +547,57 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
         input$yamlEditor_treatments
       )
 
-      session$sendCustomMessage(type = "changeURL", message = list(mode="sim",id=simulationId))
+      session$sendCustomMessage(
+        type = "changeURL",
+        message = list(
+          mode = "sim",
+          id = simulationId
+        )
+      )
 
       if (input$arraySizeInput < 1000) {
         session$sendCustomMessage(
-          type = "triggerWaitForElement", 
+          type = "triggerWaitForElement",
           message = list(
-            element = "span", 
+            element = "span",
             text = "root"
           )
         )
-      }
-      else {
+      } else {
         session$sendCustomMessage(
-          type = "triggerWaitForElement", 
+          type = "triggerWaitForElement",
           message = list(
-            element = "span", 
+            element = "span",
             text = "No preview available for more than 1000 individuals."
           )
         )
       }
 
-      output$simulationId <- renderText(paste0("RUN ID: ",simulationId))
-      
+      output$simulationId <- renderText(paste0("RUN ID: ", simulationId))
+
       selectedOutputFormats <- input$checkboxes
 
-      
+
       # create the external ontology setting string
 
       # maybe better get it from a config file
       flags <- c(
-        "diseases", 
-        "exposures", 
-        "phenotypicFeatures", 
-        "procedures", 
+        "diseases",
+        "exposures",
+        "phenotypicFeatures",
+        "procedures",
         "treatments"
       )
 
       external_ontologies_settings <- unlist(
         lapply(
-          flags, 
-          function(flag) 
-          c(
-            paste0("-", flag), 
-            paste0("-max-", flag, "-pool")
-          )
+          flags,
+          function(flag) {
+            c(
+              paste0("-", flag),
+              paste0("-max-", flag, "-pool")
+            )
+          }
         )
       )
 
@@ -616,7 +615,8 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
 
         ext_onts_settings_string <- paste0(
           ext_onts_settings_string, ontology, " ", ontology_count, " ",
-          max_pool, " ", max_pool_size, " ")
+          max_pool, " ", max_pool_size, " "
+        )
 
         ext_onts_settings_mapping[[ontology]] <- ontology_count
         ext_onts_settings_mapping[[max_pool]] <- max_pool_size
@@ -630,15 +630,15 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       lapply(selectedOutputFormats, function(option) {
         if (option == "BFF") {
           rv_sim$simResult_bff <- simulate_data(
-            "bff", 
-            simulationId, 
+            "bff",
+            simulationId,
             ext_onts_settings_string,
             number_of_individuals
           )
         } else if (option == "PXF") {
           rv_sim$simResult_pxf <- simulate_data(
-            "pxf", 
-            simulationId, 
+            "pxf",
+            simulationId,
             ext_onts_settings_string,
             number_of_individuals
           )
@@ -648,7 +648,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       print("input$arraySizeInput")
       print(input$arraySizeInput)
       mod_json_viewer_server(
-        ns("json_viewer"), 
+        ns("json_viewer_sim_mode"),
         selectedOutputFormats,
         rv_sim$simResult_bff,
         rv_sim$simResult_pxf,
@@ -675,13 +675,13 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       print(settings)
       print("toJSON(settings)")
       print(toJSON(settings))
-  
-      label <- paste0("Simulation ID: ",simulationId)
+
+      label <- paste0("Simulation ID: ", simulationId)
       print("label")
       print(label)
 
-      print ("db_driver")
-      print (db_driver)
+      print("db_driver")
+      print(db_driver)
 
       #* NOTE
       # JSONB is only available in sqlite > 3.45.0
@@ -692,90 +692,24 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim){
       print(settings_json)
 
       query_string <- "
-        INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+        INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
         VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
       "
 
       if (db_driver == "SQLite") {
         query_string <- "
-          INSERT INTO jobs (run_id, user_id, mode, label, settings, status) 
+          INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
           VALUES (%s,%s,'%s','%s','%s','%s')
         "
       }
       query <- sprintf(
         query_string,
-        simulationId, 1,"sim",label,settings_json,"success"
+        simulationId, 1, "sim", label, settings_json, "success"
       )
       print("query")
       print(query)
       dbExecute(db_conn, query)
       click("SimulateHistorySidebar-btn_show_history")
     })
-  })
-}
-
-
-# TODO
-# put this in fct_helpers.R
-generateJsonView <- function(jsonOutput, title, width=12) {
-  # TODO
-  # figure out how to give the div the heigh 85vh
-
-  print("generateJsonView")
-
-  column(
-    width,
-    height = "85vh",
-    div(
-      card_header(title),
-      renderReactjson({
-        reactjson(
-          jsonOutput,
-          onEdit = FALSE,
-          onAdd = FALSE,
-          onDelete = FALSE,
-        )
-      }),
-      # reactjsonOutput(
-      #   outputId = outputId,
-      #   height = "85vh"
-      # )
-    )
-  )
-}
-
-mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
-  moduleServer(id, function(input, output, session) {
-    if (arraySizeInput <= 1000) {
-      output$json_viewer <- renderUI({
-        if (length(checkboxes) > 1) {
-          fluidRow(
-            generateJsonView(bff_out, "BFF", 6),
-            generateJsonView(pxf_out, "PXF", 6)
-          )
-        } else if (checkboxes == "BFF") {
-          fluidRow(
-            generateJsonView(bff_out, "BFF")
-          )
-        } else if (checkboxes == "PXF") {
-          fluidRow(
-            generateJsonView(pxf_out, "PXF")
-          )
-        }
-      }) 
-    } else {
-      print("The data is too large to be displayed here. ")
-      output$json_viewer <- renderUI({
-        fluidRow(
-          column(
-            width = 12,
-            height = "85vh",
-            span(
-              "No preview available for more than 1000 individuals."
-            ) 
-          )
-        )
-      })
-    }
   })
 }
