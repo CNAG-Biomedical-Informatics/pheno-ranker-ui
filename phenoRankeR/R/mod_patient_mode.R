@@ -691,7 +691,7 @@ mod_patient_mode_server <- function(
       print("row")
       print(row)
 
-      mapping_df <- subset(mapping_df, file_info != "Target")
+      mapping_df <- subset(mapping_df, mapping_df$file_info != "Target")
       print("mapping_df after subset")
       print(mapping_df)
 
