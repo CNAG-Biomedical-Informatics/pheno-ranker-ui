@@ -12,7 +12,6 @@ Imports:
     DBI,
     DT,
     ggplot2,
-    ggrepel,
     golem (>= 0.4.0),
     gridlayout,
     InteractiveComplexHeatmap,

@@ -391,9 +391,9 @@
     },
     "bslib": {
       "Package": "bslib",
-      "Version": "0.6.2",
+      "Version": "0.6.1",
       "Source": "Repository",
-      "Repository": "PPM",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "base64enc",
@@ -408,7 +408,7 @@
         "rlang",
         "sass"
       ],
-      "Hash": "7fb73102553e0c8e478bfaa0ccebe479"
+      "Hash": "c0d8599494bc7fb408cd206bbdd9cab0"
     },
     "cachem": {
       "Package": "cachem",
@@ -2110,9 +2110,14 @@
     },
     "spsComps": {
       "Package": "spsComps",
-      "Version": "0.3.3.0",
-      "Source": "Repository",
-      "Repository": "PPM",
+      "Version": "0.3.3.99",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "spsComps",
+      "RemoteUsername": "lz100",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e42770b17a99e3d931c4e8d45f26d25ecc8fcb4c",
       "Requirements": [
         "R",
         "R6",
@@ -2127,7 +2132,7 @@
         "stringr",
         "utils"
       ],
-      "Hash": "1f9ac2a55eb7ddc409e783f543991cb1"
+      "Hash": "16851d30c147e55b25fec807091dcaff"
     },
     "stringi": {
       "Package": "stringi",
