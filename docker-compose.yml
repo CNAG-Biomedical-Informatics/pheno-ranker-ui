@@ -2,9 +2,9 @@ version: '3.3'
 services:
   shiny:
     container_name: pheno-ranker-shiny
-    image: phenorankerui:${DOCKER_IMG_TAG}
+    # image: phenorankerui:${DOCKER_IMG_TAG}
     # image: phenorankerui:latest
-    # image: leistivo/pheno-ranker-ui:${DOCKER_IMG_TAG}
+    image: leistivo/pheno-ranker-ui:${DOCKER_IMG_TAG}
     # build:
     #   context: phenoRankeR/deploy
     #   args:
