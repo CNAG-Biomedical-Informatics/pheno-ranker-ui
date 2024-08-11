@@ -1,5 +1,5 @@
-FROM rocker/r-ver:4.3.3
-
+#latest tested version 4.4.1
+FROM rocker/r-ver:latest 
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/jammy/latest
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
