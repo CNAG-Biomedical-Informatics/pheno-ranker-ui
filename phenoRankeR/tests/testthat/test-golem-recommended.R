@@ -33,7 +33,7 @@ set_testing_golem_options(
     extraConfigsUploadFolder = "../../../data/uploads/config",
     ontologyUploadFolder = "../../../data/uploads/ontologies/",
     
-    inputExamplesInputFolder = "../../../data/input_examples/phenopacket_store/0.1.16/",
+    inputExamplesInputFolder = "../../../data/input_examples/phenopacket_store/0.1.18/",
     inputExamplesOutputFolder = "../../../data/output/inputExamples/",
     simulationOutputFolder = "../../../data/output/simulatedData/",
     conversionOutputFolder = "../../../data/output/convertedData/",

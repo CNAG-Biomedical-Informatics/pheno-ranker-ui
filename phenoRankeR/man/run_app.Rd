@@ -14,7 +14,7 @@ run_app(
     cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
     weightsUploadFolder = "../data/uploads/weights", extraConfigsUploadFolder =
     "../data/uploads/config", ontologyUploadFolder = "../data/uploads/ontologies/",
-    inputExamplesInputFolder = "../data/input_examples/phenopacket_store/0.1.16/",
+    inputExamplesInputFolder = "../data/input_examples/phenopacket_store/0.1.18/",
     inputExamplesOutputFolder = "../data/output/inputExamples/", 
     
     simulationOutputFolder = "../data/output/simulatedData/", conversionOutputFolder =
