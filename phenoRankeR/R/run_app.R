@@ -1,5 +1,6 @@
 #' Run the Shiny Application
 #'
+#' @param golem_opts A list of options to be passed to the `golem` framework.
 #' @param ... arguments to pass to golem_opts.
 #' See `?golem::get_golem_options` for more details.
 #' @inheritParams shiny::shinyApp
@@ -15,6 +16,7 @@ run_app <- function(
   ),
   enableBookmarking = NULL,
   uiPattern = "/",
+
   golem_opts = list(
     rankInputFolder = "../data/uploads/rankInput/",
     patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",

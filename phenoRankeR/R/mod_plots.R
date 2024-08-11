@@ -10,6 +10,10 @@
 #' @importFrom plotly plotlyOutput renderPlotly ggplotly
 #' @importFrom ggplot2 ggplot aes geom_point labs theme element_text scale_color_discrete
 #' @importFrom stats cmdscale
+#' @importFrom utils globalVariables
+
+# to prevent the linting error
+globalVariables(".data")
 
 mod_plot_mds_ui <- function(id) {
   ns <- NS(id)
@@ -91,30 +95,21 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
       by.y = "id_prefixes",
       all.x = TRUE
     )
-    # print("df_merged")
-    # print(df_merged)
-
-    # TODO
-
-    # renderPlots: no visible binding for global variable ‘.data’
-    #  renderPlots: no visible binding for global variable ‘label’
-    #  Undefined global functions or variables:
-    #  .data label
 
     rv$mdsPlot <- ggplot(
       df_merged,
       aes(
         x, y,
         color = .data[["original_fn"]],
-        label = label
+        label = .data[["label"]]
       )
+      # aes(
+      #   x, y,
+      #   color = df_merged[["original_fn"]],
+      #   label = df_merged[["label"]]
+      # )
     ) +
       geom_point() +
-      # geom_text_repel(
-      #   size = 5,
-      #   box.padding = 0.2,
-      #   max.overlaps = 10
-      # ) +
       labs(
         title = "Multidimensional Scaling Results",
         x = "Hamming Distance MDS Coordinate 1",
@@ -167,7 +162,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
     print(df)
     aes_func <- aes(
       x, y,
-      label = label
+      label = .data[["label"]]
     )
 
     if (uploaded_files_count > 1) {
@@ -183,8 +178,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
       )
       aes_func <- aes(
         x, y,
-        color = df$original_fn,
-        label = label
+        color = .data[["original_fn"]],
+        label = .data[["label"]]
       )
     }
 
@@ -193,11 +188,6 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
       aes_func,
     ) +
       geom_point() +
-      # geom_text_repel(
-      #   size = 5,
-      #   box.padding = 0.2,
-      #   max.overlaps = 10
-      # ) +
       labs(
         title = "Multidimensional Scaling Results",
         x = "Hamming Distance MDS Coordinate 1",
