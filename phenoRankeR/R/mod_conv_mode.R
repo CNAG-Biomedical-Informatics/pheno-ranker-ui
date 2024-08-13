@@ -43,6 +43,8 @@ dl_explanation <- tags$p(
 
 mod_conv_mode_ui <- function(id) {
   ns <- NS(id)
+  version <- get_golem_options("packageVersion")
+
   grid_container(
     layout = conv_mode_layout,
     grid_place(
@@ -121,7 +123,7 @@ mod_conv_mode_ui <- function(id) {
       area = "version",
       card_body(
         style = "text-align: right;",
-        p("Version 0.0.0.9017")
+        p("Version ", version)
       )
     )
   )

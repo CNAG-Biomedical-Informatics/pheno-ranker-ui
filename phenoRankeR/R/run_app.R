@@ -18,6 +18,8 @@ run_app <- function(
   uiPattern = "/",
 
   golem_opts = list(
+    packageVersion = "0.0.0.9017",
+
     rankInputFolder = "../data/uploads/rankInput/",
     patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",
 

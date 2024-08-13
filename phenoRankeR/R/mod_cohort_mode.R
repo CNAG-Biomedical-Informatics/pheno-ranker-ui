@@ -29,6 +29,7 @@ cohort_opts_layout = c(
 
 mod_cohort_mode_ui <- function(id){
   ns <- NS(id)
+  version <- get_golem_options("packageVersion")
 
   grid_container(
     layout = cohort_layout,
@@ -208,8 +209,8 @@ mod_cohort_mode_ui <- function(id){
     grid_place(
       area = "version",
       card_body(
-        style = "text-align: right;", 
-        p("Version 0.0.0.9017")
+        style = "text-align: right;",
+        p("Version ", version)
       )
     )
   )

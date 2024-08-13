@@ -26,6 +26,7 @@ mode_sim_layout <- c(
 mod_sim_mode_ui <- function(id) {
   ns <- NS(id)
   max_individuals <- get_golem_options("maxIndividuals")
+  version <- get_golem_options("packageVersion")
 
   grid_container(
     layout = mode_sim_layout,
@@ -202,7 +203,7 @@ mod_sim_mode_ui <- function(id) {
       area = "version",
       card_body(
         style = "text-align: right;",
-        p("Version 0.0.0.9017")
+        p("Version ", version)
       )
     )
   )

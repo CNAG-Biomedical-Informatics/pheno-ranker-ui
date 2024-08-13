@@ -31,6 +31,8 @@ patient_opts_layout <- c(
 
 mod_patient_mode_ui <- function(id) {
   ns <- NS(id)
+  version <- get_golem_options("packageVersion")
+
   grid_container(
     layout = mod_patient_mode_layout,
     gap_size = "5px",
@@ -316,7 +318,7 @@ mod_patient_mode_ui <- function(id) {
       area = "version",
       card_body(
         style = "text-align: right;",
-        p("Version 0.0.0.9017")
+        p("Version ", version)
       )
     )
   )

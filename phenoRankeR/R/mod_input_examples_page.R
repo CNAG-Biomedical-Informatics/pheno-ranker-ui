@@ -25,6 +25,7 @@ mode_input_examples_layout <- c(
 
 mod_input_examples_page_ui <- function(id) {
   ns <- NS(id)
+  version <- get_golem_options("packageVersion")
   max_individuals <- get_golem_options("maxIndividuals")
 
   grid_container(
@@ -134,7 +135,7 @@ mod_input_examples_page_ui <- function(id) {
       area = "version",
       card_body(
         style = "text-align: right;",
-        p("Version 0.0.0.9017")
+        p("Version ", version)
       )
     )
   )
