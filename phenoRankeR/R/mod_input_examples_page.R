@@ -197,11 +197,16 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
   max_individuals <- get_golem_options("maxIndividuals")
 
   moduleServer(id, function(input, output, session) {
-    loader_inline <- addLoader$new(
-      target_selector = "retrieveExampleCohorts",
-      color = "white",
-      type = "ring",
-      method = "inline"
+
+    submit_clicked <- reactive({
+      input$retrieveExampleCohorts
+    })
+
+    mod_loader_server(
+      ns("loader_example_retrieval"),
+      session,
+      submit_clicked,
+      input$arraySizeInput
     )
 
     mod_show_history_button_server(
@@ -234,26 +239,27 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       )
     })
 
-    observeEvent(input$retrieveExampleCohorts, {
-      showLoader(
-        loader_inline,
-        session,
-        input$arraySizeInput,
-        "Example retrieval in progress",
-        "Please wait while the retrieval is ongoing..."
-      )
-      js$exampleRequestTriggered()
-    })
+    # TODO
+    # both observeEvents in one function
+    # include the addLoader$new
+    # put all loader related stuff in one module
 
-    # observeEvent(input$getExampleInputClicked, {
-    #   print("CLICKED")
+    # observeEvent(input$retrieveExampleCohorts, {
+    #   showLoader(
+    #     loader_inline,
+    #     session,
+    #     input$arraySizeInput,
+    #     "Example retrieval in progress",
+    #     "Please wait while the retrieval is ongoing..."
+    #   )
+    #   js$exampleRequestTriggered()
     # })
 
-    observeEvent(input$elementFound, {
-      print("observeEvent(input$elementFound")
-      loader_inline$hide()
-      removeModal()
-    })
+    # observeEvent(input$elementFound, {
+    #   print("observeEvent(input$elementFound")
+    #   loader_inline$hide()
+    #   removeModal()
+    # })
 
     observeEvent(input$getExampleInputClicked, {
       print("observeEvent(input$retrieveExampleCohorts")

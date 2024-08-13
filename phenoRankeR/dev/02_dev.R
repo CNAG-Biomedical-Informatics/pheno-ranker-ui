@@ -35,6 +35,7 @@ golem::add_module("dnd", with_test = FALSE)
 golem::add_module("tables", with_test = FALSE)
 golem::add_module("plots", with_test = FALSE)
 golem::add_module("heatmap", with_test = FALSE)
+golem::add_module("loader", with_test = FALSE)
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
