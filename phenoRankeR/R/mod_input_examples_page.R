@@ -30,6 +30,7 @@ mod_input_examples_page_ui <- function(id) {
   grid_container(
     layout = mode_input_examples_layout,
     gap_size = "0px",
+
     grid_place(
       area = "btn",
       actionButton(
@@ -80,13 +81,20 @@ mod_input_examples_page_ui <- function(id) {
           ),
           grid_place(
             area = "arraySizeInput",
-            numericInput(
-              ns("arraySizeInput"),
-              "Number of individuals:",
-              value = 25,
-              min = 1,
-              max = max_individuals,
-              step = 1
+            div(
+              numericInput(
+                ns("arraySizeInput"),
+                "Number of individuals:",
+                value = 25,
+                min = 1,
+                max = max_individuals,
+                step = 1
+              ),
+              useShinyjs(),
+              extendShinyjs(
+                script = "www/handlers.js",
+                functions = c("exampleRequestTriggered")
+              )
             )
           )
         )
@@ -189,7 +197,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
 
   moduleServer(id, function(input, output, session) {
     loader_inline <- addLoader$new(
-      target_selector = "getCohort",
+      target_selector = "retrieveExampleCohorts",
       color = "white",
       type = "ring",
       method = "inline"
@@ -225,17 +233,20 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       )
     })
 
-    observeEvent(input$getExampleCohorts, {
-      print("observeEvent(input$getExampleCohorts")
-      loader_inline$show()
-      showModal(
-        modalDialog(
-          title = "Example retrieval in progress",
-          "Please wait while the retrieval is on going...",
-          footer = NULL
-        )
+    observeEvent(input$retrieveExampleCohorts, {
+      showLoader(
+        loader_inline,
+        session,
+        input$arraySizeInput,
+        "Example retrieval in progress",
+        "Please wait while the retrieval is ongoing..."
       )
+      js$exampleRequestTriggered()
     })
+
+    # observeEvent(input$getExampleInputClicked, {
+    #   print("CLICKED")
+    # })
 
     observeEvent(input$elementFound, {
       print("observeEvent(input$elementFound")
@@ -243,21 +254,11 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       removeModal()
     })
 
-    observeEvent(input$retrieveExampleCohorts, {
+    observeEvent(input$getExampleInputClicked, {
       print("observeEvent(input$retrieveExampleCohorts")
       req(iv$is_valid())
 
-      loader_inline$show()
-      showModal(
-        modalDialog(
-          title = "Example retrieval in progress",
-          "Please wait while the retrieval is ongoing...",
-          footer = NULL
-        )
-      )
-
       retrievalId <- format(Sys.time(), "%Y%m%d%H%M%S")
-
       session$sendCustomMessage(
         type = "changeURL",
         message = list(
@@ -265,24 +266,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
           id = retrievalId
         )
       )
-
-      if (input$arraySizeInput < 1000) {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "root"
-          )
-        )
-      } else {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "No preview available for more than 1000 individuals."
-          )
-        )
-      }
 
       output$retrievalId <- renderText(paste0("RUN ID: ", retrievalId))
 

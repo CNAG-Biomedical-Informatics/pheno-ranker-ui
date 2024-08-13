@@ -115,6 +115,41 @@ generateJsonView <- function(jsonOutput, title, width = 12) {
   )
 }
 
+showLoader <- function(
+  loader_inline,
+  session,
+  requested_individuals,
+  title,
+  sub_title
+  ) {
+  
+  loader_inline$show()
+  showModal(
+    modalDialog(
+      title = title,
+      sub_title,
+      footer = NULL
+    )
+  )
+
+  if (requested_individuals < 1000) {
+    session$sendCustomMessage(
+      type = "triggerWaitForElement",
+      message = list(
+        element = "span",
+        text = "root"
+      )
+    )
+  } else {
+    session$sendCustomMessage(
+      type = "triggerWaitForElement",
+      message = list(
+        element = "span",
+        text = "No preview available for more than 1000 individuals."
+      )
+    )
+  }
+}
 
 ### Validators ###
 

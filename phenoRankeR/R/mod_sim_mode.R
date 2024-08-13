@@ -518,13 +518,13 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
 
     observeEvent(input$simulateCohort, {
       print("observeEvent(input$simulateCohort")
-      loader_inline$show()
-      showModal(
-        modalDialog(
-          title = "Simulation in progress",
-          "Please wait while the simulation is running...",
-          footer = NULL
-        )
+
+      showLoader(
+        loader_inline,
+        session,
+        input$arraySizeInput,
+        "Simulation in progress",
+        "Please wait while the simulation is ongoing..."
       )
       js$getInputs()
     })
@@ -559,24 +559,6 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
           id = simulationId
         )
       )
-
-      if (input$arraySizeInput < 1000) {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "root"
-          )
-        )
-      } else {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "No preview available for more than 1000 individuals."
-          )
-        )
-      }
 
       output$simulationId <- renderText(paste0("RUN ID: ", simulationId))
 
