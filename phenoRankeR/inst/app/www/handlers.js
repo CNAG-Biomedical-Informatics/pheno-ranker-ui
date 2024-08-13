@@ -42,6 +42,7 @@ $(document).ready(function () {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
       Shiny.setInputValue("sim_mode-elementFound", Math.random());
+      Shiny.setInputvalue("example_input_page-elementFound", Math.random());
       // Actions to perform after the element is found, e.g., initializing a component or updating the UI
       console.log("Found element with text content:", element);
     });

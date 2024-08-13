@@ -247,6 +247,15 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       print("observeEvent(input$retrieveExampleCohorts")
       req(iv$is_valid())
 
+      loader_inline$show()
+      showModal(
+        modalDialog(
+          title = "Example retrieval in progress",
+          "Please wait while the retrieval is ongoing...",
+          footer = NULL
+        )
+      )
+
       retrievalId <- format(Sys.time(), "%Y%m%d%H%M%S")
 
       session$sendCustomMessage(
