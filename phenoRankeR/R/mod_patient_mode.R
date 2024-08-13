@@ -914,6 +914,10 @@ mod_patient_mode_server <- function(
     observeEvent(input$rankPatient, {
       print("rankPatient")
 
+      output$patient_heatmap <- renderUI({
+        p("Generating heatmap...")
+      })
+
       # TODO
       # when using simulated data
       # the yaml to change the id prefixes

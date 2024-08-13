@@ -33,14 +33,14 @@ make_bold_names <- function(mat, rc_names) {
 }
 
 mod_heatmap_server <- function(
-  id, 
-  runId, 
-  rv, 
+  id,
+  runId,
+  rv,
   mode,
-  uploaded_files_count=NULL
+  uploaded_files_count = NULL
   ) {
-  moduleServer(id,function(input, output, session){
-    
+  moduleServer(id, function(input, output, session){
+
     print("mod_heatmap_server")
     print("runId")
     print(runId)

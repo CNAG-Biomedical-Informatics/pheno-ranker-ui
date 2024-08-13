@@ -578,6 +578,10 @@ mod_cohort_mode_server <- function(
         return(NULL)
       }
 
+      output$cohort_heatmap <- renderUI({
+        p("Generating heatmap...")
+      })
+
       timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
       rv_cohort$runId <- timestamp
 

@@ -610,43 +610,52 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "cohort")
   })
 
+  renderInteractiveComplexHeatmap <- function(
+    ht_list,
+    output_id
+  ) {
 
+  default_opts <- list(
+    close_button = FALSE,
+    layout = "1|23",
+    width1 = "100%",
+    width2 = "700px",
+    width3 = "300px",
+    height1 = "500px",
+    height2 = "410px"
+  )
+
+  InteractiveComplexHeatmapWidget(
+    input,
+    output,
+    session,
+    ht_list = ht_list,
+    output_id = output_id,
+    close_button = default_opts$close_button,
+    layout = default_opts$layout,
+    width1 = default_opts$width1,
+    width2 = default_opts$width2,
+    width3 = default_opts$width3,
+    height1 = default_opts$height1,
+    height2 = default_opts$height2
+    )
+  }
+
+  # gets triggered by draw(ht) in mod_heatmap_server
   observeEvent(rv_patient$ht, {
-    print("before rendering the heatmap")
-
-    InteractiveComplexHeatmapWidget(
-      input,
-      output,
-      session,
-      ht_list = rv_patient$ht,
-      output_id = "patient_mode-patient_heatmap",
-      close_button = FALSE,
-      layout = "1|23",
-      width1 = "100%",
-      width2 = "700px",
-      width3 = "300px",
-      height1 = "500px",
-      height2 = "410px"
+    print("before rendering the patient heatmap")
+    renderInteractiveComplexHeatmap(
+      rv_patient$ht,
+      "patient_mode-patient_heatmap"
     )
   })
 
-  # TODO
-  # wrap below in a function
+  # gets triggered by draw(ht) in mod_heatmap_server
   observeEvent(rv_cohort$ht, {
     print("before rendering the cohort heatmap")
-    InteractiveComplexHeatmapWidget(
-      input,
-      output,
-      session,
-      ht_list = rv_cohort$ht,
-      output_id = "cohort_mode-cohort_heatmap",
-      close_button = FALSE,
-      layout = "1|23",
-      width1 = "100%",
-      width2 = "700px",
-      width3 = "300px",
-      height1 = "500px",
-      height2 = "410px"
+    renderInteractiveComplexHeatmap(
+      rv_cohort$ht,
+      "cohort_mode-cohort_heatmap"
     )
   })
 }

@@ -85,7 +85,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
     print("renderPlots rv$mappingDf")
     print(rv$mappingDf)
 
-    print("df")
+    # print("df")
     # print(str(df))
 
     df_merged <- merge(
@@ -158,8 +158,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
     y <- fit$points[, 2]
 
     df <- data.frame(x, y, label = row.names(data))
-    print("df")
-    print(df)
+    # print("df")
+    # print(df)
     aes_func <- aes(
       x, y,
       label = .data[["label"]]
