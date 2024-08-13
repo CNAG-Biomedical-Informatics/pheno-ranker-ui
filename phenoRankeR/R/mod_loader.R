@@ -11,20 +11,37 @@ mod_loader_ui <- function(id) {
     useShinyjs(),
     extendShinyjs(
       script = "www/handlers.js",
-      functions = c("exampleRequestTriggered")
+      functions = c(
+        "getInputs",
+        "exampleRequestTriggered"
+      )
     )
   )
 }
 
-mod_loader_server <- function(id, session, submit_clicked, requested_individuals) {
+send_custom_message <- function(session, text) {
+  session$sendCustomMessage(
+    type = "triggerWaitForElement",
+    message = list(
+      element = "span",
+      text = text
+    )
+  )
+}
+
+mod_loader_server <- function(
+  id,
+  session,
+  target_selector,
+  submit_clicked,
+  title,
+  sub_title,
+  requested_individuals) {
 
   moduleServer(id, function(input, output, session) {
 
-    title <- "Example Retrieval"
-    sub_title <- "Please wait while the retrieval is ongoing..."
-
     loader_inline <- addLoader$new(
-      target_selector = "retrieveExampleCohorts",
+      target_selector = target_selector,
       color = "white",
       type = "ring",
       method = "inline"
@@ -41,23 +58,19 @@ mod_loader_server <- function(id, session, submit_clicked, requested_individuals
       )
 
       if (requested_individuals < 1000) {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "root"
-          )
-        )
+        send_custom_message(session, "root")
       } else {
-        session$sendCustomMessage(
-          type = "triggerWaitForElement",
-          message = list(
-            element = "span",
-            text = "No preview available for more than 1000 individuals."
-          )
+        send_custom_message(
+          session,
+          "No preview available for more than 1000 individuals."
         )
       }
-      js$exampleRequestTriggered()
+
+      if (target_selector == "retrieveExampleCohorts") {
+        js$exampleRequestTriggered()
+      } else {
+        js$getInputs()
+      }
     })
 
     observeEvent(input$elementFound, {

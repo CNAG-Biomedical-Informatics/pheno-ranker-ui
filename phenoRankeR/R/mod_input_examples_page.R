@@ -91,10 +91,8 @@ mod_input_examples_page_ui <- function(id) {
                 max = max_individuals,
                 step = 1
               ),
-              useShinyjs(),
-              extendShinyjs(
-                script = "www/handlers.js",
-                functions = c("exampleRequestTriggered")
+              mod_loader_ui(
+                ns("loader_example_retrieval")
               )
             )
           )
@@ -205,7 +203,10 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
     mod_loader_server(
       ns("loader_example_retrieval"),
       session,
+      "retrieveExampleCohorts",
       submit_clicked,
+      "Example Retrieval",
+      "Please wait while the retrieval is ongoing...",
       input$arraySizeInput
     )
 
