@@ -43,13 +43,10 @@ $(document).ready(function () {
   };
 
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
-    // Example usage of waitForElement to perform an action when <span id="root"> is found
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
-      Shiny.setInputValue("sim_mode-elementFound", Math.random());
-      Shiny.setInputValue("input_examples-elementFound", Math.random());
-      Shiny.setInputValue("loader-elementFound", Math.random());
-      // Actions to perform after the element is found, e.g., initializing a component or updating the UI
+      Shiny.setInputValue("input_examples-loader_example_retrieval-elementFound", Math.random());
+      Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
       console.log("Found element with text content:", element);
     });
   })

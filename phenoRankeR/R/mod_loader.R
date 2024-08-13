@@ -44,6 +44,9 @@ mod_loader_server <- function(
 
   moduleServer(id, function(input, output, session) {
 
+    print("session$ns(elementFound)")
+    print(session$ns("elementFound"))
+
     loader_inline <- addLoader$new(
       target_selector = paste0("#", ns(target_selector)),
       isID = FALSE,
