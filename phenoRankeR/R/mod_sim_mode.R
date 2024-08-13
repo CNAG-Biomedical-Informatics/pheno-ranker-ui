@@ -14,6 +14,7 @@
 #' @import reactR
 #' @noRd
 
+
 mode_sim_layout <- c(
   "         500px       1fr     40px                ",
   "30px     btn         simRes  btn_show_sim_history",
@@ -24,6 +25,8 @@ mode_sim_layout <- c(
 
 mod_sim_mode_ui <- function(id) {
   ns <- NS(id)
+  max_individuals <- get_golem_options("maxIndividuals")
+
   grid_container(
     layout = mode_sim_layout,
     gap_size = "0px",
@@ -63,7 +66,7 @@ mod_sim_mode_ui <- function(id) {
               "Number of individuals:",
               value = 25,
               min = 1,
-              max = 5000,
+              max = max_individuals,
               step = 1
             )
           ),
@@ -357,6 +360,8 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
+  max_individuals <- get_golem_options("maxIndividuals")
+
   moduleServer(id, function(input, output, session) {
     loader_inline <- addLoader$new(
       target_selector = "simulateCohort",
@@ -373,7 +378,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
     )
 
     iv <- InputValidator$new()
-    iv$add_rule("arraySizeInput", sv_between(0, 5000))
+    iv$add_rule("arraySizeInput", sv_between(0, max_individuals))
     iv$enable()
 
     data <- data.frame(

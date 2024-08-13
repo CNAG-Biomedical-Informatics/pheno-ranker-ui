@@ -34,6 +34,8 @@ run_app <- function(
     patientModeOutputFolder = "../data/output/rankedPatients/",
     cohortModeOutputFolder = "../data/output/rankedCohortMatrixes/",
 
+    maxIndividuals = 2500,
+
     tempFolder = "../data/temp/", # no longer needed?
 
     runWithDocker = FALSE,

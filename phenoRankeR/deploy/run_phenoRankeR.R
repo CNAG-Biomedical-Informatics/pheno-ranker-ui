@@ -40,6 +40,8 @@ default_golem_opts <- list(
   patientModeOutputFolder = "/app/data/output/rankedPatients/",
   cohortModeOutputFolder = "/app/data/output/rankedCohortMatrixes/",
 
+  maxIndividuals = 2500,
+
   tempFolder = "/app/data/temp/",  # no longer needed?
 
   runWithDocker = "True",

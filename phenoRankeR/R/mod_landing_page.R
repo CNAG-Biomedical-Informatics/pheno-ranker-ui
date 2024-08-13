@@ -14,8 +14,10 @@
 # because it was not possible to run updateNavbarPage from this module
 # the function is called from the app_server.R file
 
+
 mod_landing_page_ui <- function(id) {
   ns <- NS(id)
+  max_individuals <- get_golem_options("maxIndividuals")
 
   grid_container(
     layout = c(
@@ -45,14 +47,15 @@ mod_landing_page_ui <- function(id) {
           Beacon-friendly format (BFF) or Phenopackets v2(PXF),
           you can use the following utilities to get started:"),
         h6("Option 1: Simulate a BFF/PXF using our sample data generator "),
-        p("
-          Generate a json array of up to 5000 patient
-          with random phenotypic data.
-          In order to obtain data that is more similar to your own,
-          you can also provide a list of
-          diseases, phenotypic features and treatments that you would like
-          to be included in the simulated data.
-        "),
+
+        p(paste(
+          "Generate a json array of up to", max_individuals,
+          "patient with random phenotypic data. In order to obtain data 
+          that is more similar to your own, 
+          you can also provide a list of diseases, phenotypic features 
+          and treatments that you would like to be included 
+          in the simulated data."
+        )),
         actionButton(
           ns("navigateToSimulator"),
           "Simulate BFF/PXF",

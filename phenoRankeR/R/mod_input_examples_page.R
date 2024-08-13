@@ -22,8 +22,11 @@ mode_input_examples_layout <- c(
   "1px      version     version version                        "
 )
 
+
 mod_input_examples_page_ui <- function(id) {
   ns <- NS(id)
+  max_individuals <- get_golem_options("maxIndividuals")
+
   grid_container(
     layout = mode_input_examples_layout,
     gap_size = "0px",
@@ -82,7 +85,7 @@ mod_input_examples_page_ui <- function(id) {
               "Number of individuals:",
               value = 25,
               min = 1,
-              max = 5000,
+              max = max_individuals,
               step = 1
             )
           )
@@ -167,7 +170,7 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names)
     retrievalId,
     ".pxf.json"
   )
-  
+
   json_list <- lapply(selected_files, function(x) fromJSON(x))
   combined_json <- toJSON(
     json_list,
@@ -182,6 +185,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
+  max_individuals <- get_golem_options("maxIndividuals")
 
   moduleServer(id, function(input, output, session) {
     loader_inline <- addLoader$new(
@@ -199,7 +203,7 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
     )
 
     iv <- InputValidator$new()
-    iv$add_rule("arraySizeInput", sv_between(0, 5000))
+    iv$add_rule("arraySizeInput", sv_between(0, max_individuals))
     iv$enable()
 
     retrieved_examples_folder <- get_golem_options(
