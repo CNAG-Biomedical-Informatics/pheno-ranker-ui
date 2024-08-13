@@ -153,8 +153,8 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names)
   if (length(cohort_names) > 0) {
     cohort_names <- strsplit(cohort_names, ",")[[1]]
     json_files <- json_files[grep(paste(cohort_names, collapse = "|"), json_files)]
-    print("json_files")
-    print(json_files)
+    # print("json_files")
+    # print(json_files)
   }
 
   files_count <- length(json_files)
@@ -240,28 +240,6 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       )
     })
 
-    # TODO
-    # both observeEvents in one function
-    # include the addLoader$new
-    # put all loader related stuff in one module
-
-    # observeEvent(input$retrieveExampleCohorts, {
-    #   showLoader(
-    #     loader_inline,
-    #     session,
-    #     input$arraySizeInput,
-    #     "Example retrieval in progress",
-    #     "Please wait while the retrieval is ongoing..."
-    #   )
-    #   js$exampleRequestTriggered()
-    # })
-
-    # observeEvent(input$elementFound, {
-    #   print("observeEvent(input$elementFound")
-    #   loader_inline$hide()
-    #   removeModal()
-    # })
-
     observeEvent(input$getExampleInputClicked, {
       print("observeEvent(input$retrieveExampleCohorts")
       req(iv$is_valid())
@@ -312,8 +290,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       # planned for 2024-01-31
 
       settings_json <- toJSON(settings)
-      print("settings_json")
-      print(settings_json)
+      # print("settings_json")
+      # print(settings_json)
 
       query_string <- "
         INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
@@ -332,8 +310,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
         query_string,
         retrievalId, 1, "input_examples", label, settings_json, "success"
       )
-      print("query")
-      print(query)
+      # print("query")
+      # print(query)
       dbExecute(db_conn, query)
       click("InputExamplesRetrievalHistorySidebar-btn_show_history")
     })

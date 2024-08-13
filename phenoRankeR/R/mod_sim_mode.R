@@ -147,11 +147,12 @@ mod_sim_mode_ui <- function(id) {
                 )
               ),
               verbatimTextOutput(ns("errorOutput")),
-              useShinyjs(),
-              extendShinyjs(
-                script = "www/handlers.js",
-                functions = c("getInputs")
-              ),
+              # useShinyjs(),
+              # extendShinyjs(
+              #   script = "www/handlers.js",
+              #   functions = c("getInputs")
+              # ),
+              mod_loader_ui(ns("loader_simulate")),
               div(
                 class = "grid-item-table",
                 dataTableOutput(ns("simulationSettings"))
@@ -364,11 +365,19 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
   max_individuals <- get_golem_options("maxIndividuals")
 
   moduleServer(id, function(input, output, session) {
-    loader_inline <- addLoader$new(
-      target_selector = "simulateCohort",
-      color = "white",
-      type = "ring",
-      method = "inline"
+
+    submit_clicked <- reactive({
+      input$simulateCohort
+    })
+
+    mod_loader_server(
+      ns("loader_simulate"),
+      session,
+      "simulateCohort",
+      submit_clicked,
+      "Simulation in progress",
+      "Please wait while the simulation is ongoing...",
+      input$arraySizeInput
     )
 
     mod_show_history_button_server(
@@ -517,24 +526,24 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
       })
     })
 
-    observeEvent(input$simulateCohort, {
-      print("observeEvent(input$simulateCohort")
+    # observeEvent(input$simulateCohort, {
+    #   print("observeEvent(input$simulateCohort")
 
-      showLoader(
-        loader_inline,
-        session,
-        input$arraySizeInput,
-        "Simulation in progress",
-        "Please wait while the simulation is ongoing..."
-      )
-      js$getInputs()
-    })
+    #   showLoader(
+    #     loader_inline,
+    #     session,
+    #     input$arraySizeInput,
+    #     "Simulation in progress",
+    #     "Please wait while the simulation is ongoing..."
+    #   )
+    #   js$getInputs()
+    # })
 
-    observeEvent(input$elementFound, {
-      print("observeEvent(input$elementFound")
-      loader_inline$hide()
-      removeModal()
-    })
+    # observeEvent(input$elementFound, {
+    #   print("observeEvent(input$elementFound")
+    #   loader_inline$hide()
+    #   removeModal()
+    # })
 
     observeEvent(input$inputs, {
       rv_sim$dtInputs <- input$inputs

@@ -38,10 +38,15 @@ mod_loader_server <- function(
   sub_title,
   requested_individuals) {
 
+  ns <- session$ns
+  print("ns(target_selector)")
+  print(ns(target_selector))
+
   moduleServer(id, function(input, output, session) {
 
     loader_inline <- addLoader$new(
-      target_selector = target_selector,
+      target_selector = paste0("#", ns(target_selector)),
+      isID = FALSE,
       color = "white",
       type = "ring",
       method = "inline"
@@ -73,6 +78,7 @@ mod_loader_server <- function(
       }
     })
 
+    # below is not working
     observeEvent(input$elementFound, {
       print("observeEvent(input$elementFound")
       loader_inline$hide()

@@ -48,6 +48,7 @@ $(document).ready(function () {
     waitForElementWithText(message.element, message.text, function (element) {
       Shiny.setInputValue("sim_mode-elementFound", Math.random());
       Shiny.setInputValue("input_examples-elementFound", Math.random());
+      Shiny.setInputValue("loader-elementFound", Math.random());
       // Actions to perform after the element is found, e.g., initializing a component or updating the UI
       console.log("Found element with text content:", element);
     });
