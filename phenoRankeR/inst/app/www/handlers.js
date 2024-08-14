@@ -42,11 +42,17 @@ $(document).ready(function () {
     Shiny.setInputValue("input_examples-getExampleInputClicked", Math.random());
   };
 
+  shinyjs.conversionStartTriggered = function () {
+    console.log("setConversionStartTriggered");
+    Shiny.setInputValue("conv_mode-convertBtnClicked", Math.random());
+  };
+
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
       Shiny.setInputValue("input_examples-loader_example_retrieval-elementFound", Math.random());
       Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
+      Shiny.setInputValue("conv_mode-loader_conv-elementFound", Math.random());
       console.log("Found element with text content:", element);
     });
   })

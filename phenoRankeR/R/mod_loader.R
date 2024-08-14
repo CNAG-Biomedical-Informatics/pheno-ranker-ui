@@ -13,7 +13,8 @@ mod_loader_ui <- function(id) {
       script = "www/handlers.js",
       functions = c(
         "getInputs",
-        "exampleRequestTriggered"
+        "exampleRequestTriggered",
+        "conversionStartTriggered"
       )
     )
   )
@@ -76,8 +77,10 @@ mod_loader_server <- function(
 
       if (target_selector == "retrieveExampleCohorts") {
         js$exampleRequestTriggered()
-      } else {
+      } else if (target_selector == "simulateCohort") {
         js$getInputs()
+      } else {
+        js$conversionStartTriggered()
       }
     })
 

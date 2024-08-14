@@ -10,7 +10,6 @@
 #' @importFrom listviewer renderReactjson reactjson
 #' @importFrom shinyvalidate InputValidator sv_between
 #' @importFrom jsonlite read_json fromJSON toJSON
-#' @importFrom spsComps addLoader
 #' @import reactR
 #' @noRd
 
@@ -147,11 +146,6 @@ mod_sim_mode_ui <- function(id) {
                 )
               ),
               verbatimTextOutput(ns("errorOutput")),
-              # useShinyjs(),
-              # extendShinyjs(
-              #   script = "www/handlers.js",
-              #   functions = c("getInputs")
-              # ),
               mod_loader_ui(ns("loader_simulate")),
               div(
                 class = "grid-item-table",
@@ -525,25 +519,6 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
         output$errorOutput <- renderText(result)
       })
     })
-
-    # observeEvent(input$simulateCohort, {
-    #   print("observeEvent(input$simulateCohort")
-
-    #   showLoader(
-    #     loader_inline,
-    #     session,
-    #     input$arraySizeInput,
-    #     "Simulation in progress",
-    #     "Please wait while the simulation is ongoing..."
-    #   )
-    #   js$getInputs()
-    # })
-
-    # observeEvent(input$elementFound, {
-    #   print("observeEvent(input$elementFound")
-    #   loader_inline$hide()
-    #   removeModal()
-    # })
 
     observeEvent(input$inputs, {
       rv_sim$dtInputs <- input$inputs

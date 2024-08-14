@@ -59,6 +59,7 @@ mod_conv_mode_ui <- function(id) {
       area = "opts",
       card_header("Options"),
       card_body(
+        mod_loader_ui(ns("loader_conv")),
         fileInput(
           ns("csv"),
           "Upload a csv file",
@@ -172,6 +173,21 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
   # namespace defined here
   ns <- session$ns
   moduleServer(id, function(input, output, session) {
+
+    submit_clicked <- reactive({
+      input$startConversion
+    })
+
+    mod_loader_server(
+      ns("loader_conv"),
+      session,
+      "startConversion",
+      submit_clicked,
+      "Conversion in progress",
+      "Please wait while the conversion is ongoing...",
+      1
+    )
+
     mod_show_history_button_server(
       "ConvertHistorySidebar",
       "conv",
@@ -190,7 +206,9 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       }
     )
 
-    conversionOutputFolder <- get_golem_options("conversionOutputFolder")
+    conversionOutputFolder <- get_golem_options(
+      "conversionOutputFolder"
+    )
 
     # TODO
     # put in a more general function
@@ -244,8 +262,6 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       "conversionOutput"
     )
 
-    # TODO
-    # the output should not be a json but a yaml file
     output$cfg <- outputDownloadHandler(
       rv_conversion$configYaml,
       "conversionConfig"
@@ -257,9 +273,10 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       zip_download = TRUE
     )
 
-    observeEvent(input$startConversion, {
+    observeEvent(input$convertBtnClicked, {
       # TODO
       # check if the delimiter field is valid
+
       convSettings <- c(
         primary_key = input$primaryKey,
         delimiter = input$delimiter
@@ -276,6 +293,22 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       csvConvBin <- get_golem_options("PHENO_CSV_CONV_BIN")
       outputFolder <- get_golem_options("conversionOutputFolder")
 
+      # get the number of rows in the csv file
+      cmd <- paste(
+        "wc -l",
+        input$csv$datapath
+      )
+
+      num_rows <- as.numeric(
+        system(
+          cmd,
+          intern = TRUE
+        )
+      )
+
+      print("num_rows")
+      print(num_rows)
+
       # create folder for the conversion output
       dir.create(file.path(outputFolder, timestamp))
 
@@ -285,6 +318,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
         timestamp,
         paste0(timestamp, ".csv")
       )
+
       file.copy(
         input$csv$datapath,
         new_path
@@ -293,11 +327,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       cmd <- paste(
         csvConvBin,
         "--input",
-        file.path(
-          outputFolder,
-          timestamp,
-          paste0(timestamp, ".csv")
-        )
+        new_path
       )
 
       print("primary key:")
