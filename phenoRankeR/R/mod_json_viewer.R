@@ -43,9 +43,26 @@ generateJsonView <- function(jsonOutput, title, width = 12) {
   )
 }
 
-mod_json_viewer_server <- function(id, checkboxes, bff_out, pxf_out, arraySizeInput) {
+mod_json_viewer_server <- function(
+  id,
+  checkboxes,
+  bff_out,
+  pxf_out,
+  arraySizeInput,
+  conv_out = NULL
+) {
   moduleServer(id, function(input, output, session) {
+
+    # TODO
+    # should not be hardcoded but get_golem_options
     if (arraySizeInput <= 1000) {
+      if (is.null(checkboxes)) {
+        output$json_viewer <- renderUI({
+          generateJsonView(conv_out, "JSON output", 12)
+        })
+        return()
+      }
+
       output$json_viewer <- renderUI({
         if (length(checkboxes) > 1) {
           fluidRow(

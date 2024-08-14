@@ -132,8 +132,20 @@ mod_conv_mode_ui <- function(id) {
 
 mod_conv_output_viewer_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(
-    ns("conv_output_viewer")
+  grid_container(
+    layout = c(
+      "       1fr         1fr         ",
+      "600px  json_viewer yaml_viewer "
+    ),
+    gap_size = "10px",
+    grid_place(
+      area = "json_viewer",
+      mod_json_viewer_ui(ns("json_viewer_conv_mode"))
+    ),
+    grid_place(
+      area = "yaml_viewer",
+      uiOutput(ns("yaml_viewer"))
+    )
   )
 }
 
@@ -145,26 +157,51 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
     print("cfg_out")
     print(cfg_out)
 
-    output$conv_output_viewer <- renderUI({
-      fluidRow(
-        generateJsonView(conv_out, "JSON output", 6),
-        column(
-          6,
-          div(
-            card_header("Config file"),
-            aceEditor(
-              outputId = "csv_conversion_config_file",
-              value = cfg_out,
-              mode = "yaml",
-              theme = "github",
-              height = "75vh",
-              readOnly = TRUE,
-              fontSize = 20
-            )
-          )
+    mod_json_viewer_server(
+      "json_viewer_conv_mode",
+      checkboxes = NULL,
+      bff_out = NULL,
+      pxf_out = NULL,
+      arraySizeInput = 1,
+      conv_out = conv_out
+    )
+
+    output$yaml_viewer <- renderUI({
+      div(
+        card_header("Config file"),
+        aceEditor(
+          outputId = "csv_conversion_config_file",
+          value = cfg_out,
+          mode = "yaml",
+          theme = "github",
+          height = "75vh",
+          readOnly = TRUE,
+          fontSize = 20
         )
       )
     })
+
+    # output$conv_output_viewer <- renderUI({
+    #   fluidRow(
+    #     mod_json_viewer_ui("json_viewer_conv_mode"),
+    #     # generateJsonView(conv_out, "JSON output", 6),
+    #     column(
+    #       6,
+    #       div(
+    #         card_header("Config file"),
+    #         aceEditor(
+    #           outputId = "csv_conversion_config_file",
+    #           value = cfg_out,
+    #           mode = "yaml",
+    #           theme = "github",
+    #           height = "75vh",
+    #           readOnly = TRUE,
+    #           fontSize = 20
+    #         )
+    #       )
+    #     )
+    #   )
+    # })
   })
 }
 
