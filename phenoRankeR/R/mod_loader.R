@@ -48,6 +48,8 @@ mod_loader_server <- function(
     print("session$ns(elementFound)")
     print(session$ns("elementFound"))
 
+    json_viewer_preview_limit <- get_golem_options("jsonViewerPreviewLimit")
+
     loader_inline <- addLoader$new(
       target_selector = paste0("#", ns(target_selector)),
       isID = FALSE,
@@ -68,14 +70,19 @@ mod_loader_server <- function(
 
       # TODO
       # should not be hardcoded but get_golem_options
-      if (requested_individuals < 20)  {
+      if (requested_individuals < json_viewer_preview_limit)  {
       # if (requested_individuals < 1000) {
         send_custom_message(session, "root")
       } else {
         send_custom_message(
           session,
           # TODO should not be hardcoded
-          "No preview available for more than 1000 individuals."
+          # "No preview available for more than 1000 individuals."
+          paste(
+            "No preview available for more than",
+            json_viewer_preview_limit,
+            "individuals."
+          )
         )
       }
 
