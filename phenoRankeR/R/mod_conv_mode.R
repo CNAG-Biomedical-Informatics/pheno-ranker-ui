@@ -220,7 +220,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       submit_clicked,
       "Conversion in progress",
       "Please wait while the conversion is ongoing...",
-      1
+      rv_conversion$numRows
     )
 
     mod_show_history_button_server(
@@ -244,6 +244,31 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
     conversionOutputFolder <- get_golem_options(
       "conversionOutputFolder"
     )
+
+    observeEvent(input$csv, {
+      print("input$csv")
+      print(input$csv)
+      req(input$csv)
+
+      cmd <- paste(
+        "wc -l",
+        input$csv$datapath
+      )
+
+      cmd_out <- system(
+        cmd,
+        intern = TRUE
+      )
+
+      num_rows <- as.numeric(
+        strsplit(cmd_out, " ")[[1]][1]
+      ) - 1
+
+      print("num_rows")
+      print(num_rows)
+
+      rv_conversion$numRows <- num_rows
+    })
 
     # TODO
     # put in a more general function
@@ -332,24 +357,26 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       print(input$csv$datapath)
 
       # get the number of rows in the csv file
-      cmd <- paste(
-        "wc -l",
-        input$csv$datapath
-      )
+      # TODO
+      # do not do this after click but after having uploaded a file
+      # cmd <- paste(
+      #   "wc -l",
+      #   input$csv$datapath
+      # )
 
-      cmd_out <- system(
-        cmd,
-        intern = TRUE
-      )
+      # cmd_out <- system(
+      #   cmd,
+      #   intern = TRUE
+      # )
 
-      num_rows <- as.numeric(
-        strsplit(cmd_out, " ")[[1]][1]
-      ) - 1
+      # num_rows <- as.numeric(
+      #   strsplit(cmd_out, " ")[[1]][1]
+      # ) - 1
 
-      print("num_rows")
-      print(num_rows)
+      # print("num_rows")
+      # print(num_rows)
 
-      rv_conversion$numRows <- num_rows
+      # rv_conversion$numRows <- num_rows
 
       # create folder for the conversion output
       dir.create(file.path(outputFolder, timestamp))

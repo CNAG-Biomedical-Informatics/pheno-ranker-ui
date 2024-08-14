@@ -66,11 +66,15 @@ mod_loader_server <- function(
         )
       )
 
-      if (requested_individuals < 1000) {
+      # TODO
+      # should not be hardcoded but get_golem_options
+      if (requested_individuals < 20)  {
+      # if (requested_individuals < 1000) {
         send_custom_message(session, "root")
       } else {
         send_custom_message(
           session,
+          # TODO should not be hardcoded
           "No preview available for more than 1000 individuals."
         )
       }

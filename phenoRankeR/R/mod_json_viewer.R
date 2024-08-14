@@ -55,8 +55,8 @@ mod_json_viewer_server <- function(
 
     # TODO
     # should not be hardcoded but get_golem_options
-    # if (arraySizeInput <= 20  ) {
-    if (arraySizeInput <= 1000) {
+    if (arraySizeInput <= 20  ) {
+    # if (arraySizeInput <= 1000) {
       if (is.null(checkboxes)) {
         output$json_viewer <- renderUI({
           generateJsonView(conv_out, "JSON output", 12)
