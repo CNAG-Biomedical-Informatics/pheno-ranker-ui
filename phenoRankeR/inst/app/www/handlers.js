@@ -58,6 +58,7 @@ $(document).ready(function () {
       Shiny.setInputValue("input_examples-loader_example_retrieval-elementFound", Math.random());
       Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
       Shiny.setInputValue("conv_mode-loader_conv-elementFound", Math.random());
+      Shiny.setInputValue("cohort_mode-loader_cohort_mode-elementFound", Math.random());
       console.log("Found element with text content:", element);
     });
   })

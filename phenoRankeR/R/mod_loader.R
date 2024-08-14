@@ -78,8 +78,8 @@ mod_loader_server <- function(
       if (is.null(requested_individuals)) {
         send_custom_message(
           session,
-          "initialize the original heatmap.",
-          element = "div"
+          "Initialize the original heatmap.",
+          element = "div.shiny-notification-content-text"
         )
         js$cohortRankingStartTriggered()
         return()
