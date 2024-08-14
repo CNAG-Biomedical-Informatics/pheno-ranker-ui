@@ -43,6 +43,7 @@ set_testing_golem_options(
     cohortModeOutputFolder = "../../../data/output/rankedCohortMatrixes/",
 
     maxIndividuals = 2500,
+    jsonViewerPreviewLimit = 10000,
 
     tempFolder = "../../../data/temp/", # no longer needed?
 

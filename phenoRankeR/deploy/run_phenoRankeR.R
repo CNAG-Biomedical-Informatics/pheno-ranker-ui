@@ -43,6 +43,7 @@ default_golem_opts <- list(
   cohortModeOutputFolder = "/app/data/output/rankedCohortMatrixes/",
 
   maxIndividuals = 2500,
+  jsonViewerPreviewLimit = 10000,
 
   tempFolder = "/app/data/temp/",  # no longer needed?
 

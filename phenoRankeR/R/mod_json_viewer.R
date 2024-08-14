@@ -54,9 +54,10 @@ mod_json_viewer_server <- function(
   moduleServer(id, function(input, output, session) {
 
     preview_limit <- get_golem_options("jsonViewerPreviewLimit")
+    print("preview_limit")
+    print(preview_limit)
 
     if (arraySizeInput <= preview_limit) {
-    # if (arraySizeInput <= 1000) {
       if (is.null(checkboxes)) {
         output$json_viewer <- renderUI({
           generateJsonView(conv_out, "JSON output", 12)
@@ -93,7 +94,6 @@ mod_json_viewer_server <- function(
                 preview_limit,
                 "individuals."
               )
-              # "No preview available for more than 1000 individuals."
             )
           )
         )
