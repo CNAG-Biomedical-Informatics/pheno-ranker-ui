@@ -60,7 +60,8 @@ app_server <- function(input, output, session) {
   rv_conversion <- reactiveValues(
     id = NULL,
     outputJson = NULL,
-    configYaml = NULL
+    configYaml = NULL,
+    numRows = NULL
   )
 
   rv_patient <- reactiveValues(
@@ -508,7 +509,8 @@ app_server <- function(input, output, session) {
       mod_conv_output_viewer_server(
         "conv_mode-conv_output_viewer",
         jsonData,
-        configVal
+        configVal,
+        rv_conversion
       )
     }
   }

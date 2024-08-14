@@ -149,7 +149,7 @@ mod_conv_output_viewer_ui <- function(id) {
   )
 }
 
-mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
+mod_conv_output_viewer_server <- function(id, conv_out, cfg_out, rv_conversion) {
   moduleServer(id, function(input, output, session) {
     # print ("conv_out")
     # print (conv_out)
@@ -157,14 +157,19 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
     print("cfg_out")
     print(cfg_out)
 
-    mod_json_viewer_server(
-      "json_viewer_conv_mode",
-      checkboxes = NULL,
-      bff_out = NULL,
-      pxf_out = NULL,
-      arraySizeInput = 1,
-      conv_out = conv_out
-    )
+    # TODO
+    # the arraySizeInput
+    # should no longer be hardcoded to allow
+    # for disabling the preview when > 1001 indviduals
+
+    # mod_json_viewer_server(
+    #   "json_viewer_conv_mode",
+    #   checkboxes = NULL,
+    #   bff_out = NULL,
+    #   pxf_out = NULL,
+    #   arraySizeInput = 1,
+    #   conv_out = conv_out
+    # )
 
     output$yaml_viewer <- renderUI({
       div(
@@ -181,27 +186,20 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out) {
       )
     })
 
-    # output$conv_output_viewer <- renderUI({
-    #   fluidRow(
-    #     mod_json_viewer_ui("json_viewer_conv_mode"),
-    #     # generateJsonView(conv_out, "JSON output", 6),
-    #     column(
-    #       6,
-    #       div(
-    #         card_header("Config file"),
-    #         aceEditor(
-    #           outputId = "csv_conversion_config_file",
-    #           value = cfg_out,
-    #           mode = "yaml",
-    #           theme = "github",
-    #           height = "75vh",
-    #           readOnly = TRUE,
-    #           fontSize = 20
-    #         )
-    #       )
-    #     )
-    #   )
-    # })
+    observeEvent(rv_conversion$numRows, {
+
+      print("observeEvent rv_conversion$numRows")
+      print(rv_conversion$numRows)
+
+      mod_json_viewer_server(
+        "json_viewer_conv_mode",
+        checkboxes = NULL,
+        bff_out = NULL,
+        pxf_out = NULL,
+        arraySizeInput = rv_conversion$numRows,
+        conv_out = conv_out
+      )
+    })
   })
 }
 
@@ -330,21 +328,28 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       csvConvBin <- get_golem_options("PHENO_CSV_CONV_BIN")
       outputFolder <- get_golem_options("conversionOutputFolder")
 
+      print("input$csv$datapath")
+      print(input$csv$datapath)
+
       # get the number of rows in the csv file
       cmd <- paste(
         "wc -l",
         input$csv$datapath
       )
 
-      num_rows <- as.numeric(
-        system(
-          cmd,
-          intern = TRUE
-        )
+      cmd_out <- system(
+        cmd,
+        intern = TRUE
       )
+
+      num_rows <- as.numeric(
+        strsplit(cmd_out, " ")[[1]][1]
+      ) - 1
 
       print("num_rows")
       print(num_rows)
+
+      rv_conversion$numRows <- num_rows
 
       # create folder for the conversion output
       dir.create(file.path(outputFolder, timestamp))
@@ -455,10 +460,15 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
         )
       )
 
+      print("executing mod_conv_output_viewer_server")
+      print("rv_conversion")
+      print(rv_conversion)
+    
       mod_conv_output_viewer_server(
         "conv_output_viewer",
         jsonData,
-        configOut
+        configOut,
+        rv_conversion
       )
     })
   })
