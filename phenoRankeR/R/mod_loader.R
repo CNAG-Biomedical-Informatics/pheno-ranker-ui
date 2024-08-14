@@ -14,17 +14,18 @@ mod_loader_ui <- function(id) {
       functions = c(
         "getInputs",
         "exampleRequestTriggered",
-        "conversionStartTriggered"
+        "conversionStartTriggered",
+        "cohortRankingStartTriggered"
       )
     )
   )
 }
 
-send_custom_message <- function(session, text) {
+send_custom_message <- function(session, text, element = "span") {
   session$sendCustomMessage(
     type = "triggerWaitForElement",
     message = list(
-      element = "span",
+      element = element,
       text = text
     )
   )
@@ -69,6 +70,20 @@ mod_loader_server <- function(
           footer = NULL
         )
       )
+
+      # TODO
+      # in order to make this work it is necessary
+      # to always switch the tab to the heatmap tab
+
+      if (is.null(requested_individuals)) {
+        send_custom_message(
+          session,
+          "initialize the original heatmap.",
+          element = "div"
+        )
+        js$cohortRankingStartTriggered()
+        return()
+      }
 
       if (requested_individuals < json_viewer_preview_limit)  {
         send_custom_message(session, "root")

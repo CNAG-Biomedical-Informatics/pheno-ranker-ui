@@ -279,7 +279,7 @@ mod_patient_mode_ui <- function(id) {
         # the run id will then be used to check if the run
         # was weighted or not
         # maybe that information is stored in the log file?
-        verbatimTextOutput("phenoBlastRunId"),
+        verbatimTextOutput(ns("phenoBlastRunId")),
         tabsetPanel(
           selected = "Binary representation",
           tabPanel(

@@ -47,6 +47,11 @@ $(document).ready(function () {
     Shiny.setInputValue("conv_mode-convertBtnClicked", Math.random());
   };
 
+  shinyjs.cohortRankingStartTriggered = function () {
+    console.log("setCohortRankingStartTriggered");
+    Shiny.setInputValue("cohort_mode-cohortRankingBtnClicked", Math.random());
+  };
+
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {

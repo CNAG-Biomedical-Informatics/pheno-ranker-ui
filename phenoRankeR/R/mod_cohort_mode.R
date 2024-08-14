@@ -37,8 +37,8 @@ mod_cohort_mode_ui <- function(id){
     grid_place(
       area = "btn",
       actionButton(
-        ns("rankCohort"), 
-        "Rank", 
+        ns("rankCohort"),
+        "Rank",
         class = "btn btn-primary"
       )
     ),
@@ -123,7 +123,10 @@ mod_cohort_mode_ui <- function(id){
               theme = "github",
               height = "60px"
             ),
-            verbatimTextOutput(ns("cohortIdPrefixesErrorOutput"))
+            verbatimTextOutput(ns("cohortIdPrefixesErrorOutput")),
+            mod_loader_ui(
+              ns("loader_cohort_mode")
+            )
           )
         ),
         grid_card(
@@ -366,6 +369,21 @@ mod_cohort_mode_server <- function(
   # namespace defined here
   ns <-session$ns
   moduleServer(id,function(input, output, session){
+
+    submit_clicked <- reactive({
+      input$rankCohort
+    })
+
+    mod_loader_server(
+      "loader_cohort_mode",
+      session,
+      "rankCohort",
+      submit_clicked,
+      "Cohort Mode",
+      "Please wait while the ranking is ongoing...",
+      NULL
+    )
+
     mod_show_history_button_server(
       "CohortHistorySidebar",
       "cohort",
@@ -569,7 +587,7 @@ mod_cohort_mode_server <- function(
 
     # TODO
     # merge input$rankCohort and input$rankPatient
-    observeEvent(input$rankCohort, {
+    observeEvent(input$cohortRankingBtnClicked, {
       if (is.null(rv_cohort$mappingDf)) {
         showNotification(
           "Please upload at least one file or select example/simulated data",
