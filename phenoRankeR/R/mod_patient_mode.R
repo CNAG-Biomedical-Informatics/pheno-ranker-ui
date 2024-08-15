@@ -281,6 +281,7 @@ mod_patient_mode_ui <- function(id) {
         # maybe that information is stored in the log file?
         verbatimTextOutput(ns("phenoBlastRunId")),
         tabsetPanel(
+          id = ns("patientRankingResults"),
           selected = "Binary representation",
           tabPanel(
             title = "Binary representation",
@@ -926,9 +927,14 @@ mod_patient_mode_server <- function(
       return(file_paths)
     }
 
-    # observeEvent(input$rankPatient, {
     observeEvent(input$patientRankingBtnClicked, {
       print("rankPatient")
+
+      updateTabsetPanel(
+        session,
+        "patientRankingResults",
+        "Hamming Distances Heatmap"
+      )
 
       output$patient_heatmap <- renderUI({
         p("Generating heatmap...")

@@ -192,6 +192,7 @@ mod_cohort_mode_ui <- function(id){
       verbatimTextOutput(ns("phenoBlastCohortRunId")),
 
       tabsetPanel(
+        id = ns("cohortRankingResults"),
         selected = "Hamming Distances Heatmap",
         tabPanel(
           title = "Hamming Distances Heatmap",
@@ -595,6 +596,12 @@ mod_cohort_mode_server <- function(
         )
         return(NULL)
       }
+
+      updateTabsetPanel(
+        session,
+        "cohortRankingResults",
+        "Hamming Distances Heatmap"
+      )
 
       output$cohort_heatmap <- renderUI({
         p("Generating heatmap...")

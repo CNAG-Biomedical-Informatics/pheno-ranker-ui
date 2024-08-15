@@ -72,10 +72,6 @@ mod_loader_server <- function(
         )
       )
 
-      # TODO
-      # in order to make this work it is necessary
-      # to always switch the tab to the heatmap tab
-
       if (is.null(requested_individuals)) {
         send_custom_message(
           session,
