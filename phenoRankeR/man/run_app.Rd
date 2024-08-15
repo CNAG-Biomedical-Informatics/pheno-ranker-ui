@@ -9,7 +9,7 @@ run_app(
   options = list(),
   enableBookmarking = NULL,
   uiPattern = "/",
-  golem_opts = list(packageVersion = "0.0.0.9017", rankInputFolder =
+  golem_opts = list(packageVersion = " 0.0.0.9018", rankInputFolder =
     "../data/uploads/rankInput/", patientRankInputRefsFolder =
     "../data/uploads/rankInput/patientMode/references", cohortRankInputFolder =
     "../data/uploads/rankInput/cohortMode/cohorts", weightsUploadFolder =

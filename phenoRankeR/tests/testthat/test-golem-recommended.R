@@ -24,7 +24,7 @@ set_testing_golem_options <-
 
 set_testing_golem_options(
   list(
-    packageVersion = "0.0.0.9017",
+    packageVersion = " 0.0.0.9018",
 
     rankInputFolder = "../../../data/uploads/rankInput/",
     patientRankInputRefsFolder = "../../../data/uploads/rankInput/patientMode/references",
