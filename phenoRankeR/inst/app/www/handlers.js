@@ -52,6 +52,11 @@ $(document).ready(function () {
     Shiny.setInputValue("cohort_mode-cohortRankingBtnClicked", Math.random());
   };
 
+  shinyjs.patientRankingStartTriggered = function () {
+    console.log("setPatientRankingStartTriggered");
+    Shiny.setInputValue("patient_mode-patientRankingBtnClicked", Math.random());
+  };
+
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
@@ -59,6 +64,7 @@ $(document).ready(function () {
       Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
       Shiny.setInputValue("conv_mode-loader_conv-elementFound", Math.random());
       Shiny.setInputValue("cohort_mode-loader_cohort_mode-elementFound", Math.random());
+      Shiny.setInputValue("patient_mode-loader_patient_mode-elementFound", Math.random());
       console.log("Found element with text content:", element);
     });
   })

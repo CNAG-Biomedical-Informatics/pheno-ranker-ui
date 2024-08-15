@@ -348,6 +348,21 @@ mod_patient_mode_server <- function(
   # namespace defined here
   ns <- session$ns
   moduleServer(id, function(input, output, session) {
+
+    submit_clicked <- reactive({
+      input$rankPatient
+    })
+
+    mod_loader_server(
+      "loader_patient_mode",
+      session,
+      "rankPatient",
+      submit_clicked,
+      "Patient Mode",
+      "Please wait while the ranking is ongoing...",
+      NULL
+    )
+
     mod_show_history_button_server(
       "PatientHistorySidebar",
       "patient",
@@ -911,7 +926,8 @@ mod_patient_mode_server <- function(
       return(file_paths)
     }
 
-    observeEvent(input$rankPatient, {
+    # observeEvent(input$rankPatient, {
+    observeEvent(input$patientRankingBtnClicked, {
       print("rankPatient")
 
       output$patient_heatmap <- renderUI({

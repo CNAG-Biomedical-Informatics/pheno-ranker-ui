@@ -15,7 +15,8 @@ mod_loader_ui <- function(id) {
         "getInputs",
         "exampleRequestTriggered",
         "conversionStartTriggered",
-        "cohortRankingStartTriggered"
+        "cohortRankingStartTriggered",
+        "patientRankingStartTriggered"
       )
     )
   )
@@ -81,7 +82,11 @@ mod_loader_server <- function(
           "Initialize the original heatmap.",
           element = "div.shiny-notification-content-text"
         )
-        js$cohortRankingStartTriggered()
+        if (target_selector == "rankPatient") {
+          js$patientRankingStartTriggered()
+        } else {
+          js$cohortRankingStartTriggered()
+        }
         return()
       }
 
