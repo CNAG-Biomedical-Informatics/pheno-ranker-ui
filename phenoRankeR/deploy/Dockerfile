@@ -6,7 +6,7 @@ FROM base as builder
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.4.1
-ENV PhenoRankeR_VERSION= 0.0.0.9018
+ENV PhenoRankeR_VERSION=0.0.0.9018
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
