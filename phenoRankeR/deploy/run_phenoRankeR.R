@@ -53,13 +53,16 @@ default_golem_opts <- list(
   PHENO_SIM_BIN = "/usr/share/pheno-ranker/utils/bff_pxf_simulator/bff-pxf-simulator",
   PHENO_CSV_CONV_BIN = "/usr/share/pheno-ranker/utils/csv2pheno_ranker/csv2pheno-ranker",
   ODBCSYSINI = "/app/config/odbc",
-  
+
   dbDriver = "SQLite",
   dbServer = ":memory:",
   dbPort = 5432,
   dbDatabase = "shiny",
   dbUser = "shiny",
-  dbPassword = "shiny"
+  dbPassword = "shiny",
+
+  shinyProxyDeployed = TRUE,
+  keycloakSecured = TRUE
 )
 
 # Get the arguments from the command line

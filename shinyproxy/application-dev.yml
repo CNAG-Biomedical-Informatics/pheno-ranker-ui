@@ -12,9 +12,9 @@ proxy:
   my-apps-mode: InLine
   admin-groups: admin
   openid:
-    auth-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
+    auth-url: "http://${DOMAIN}:8080/realms/${KC_REALM}/protocol/openid-connect/auth"
     # auth-url: "https://${DOMAIN}:8444/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
-    logout-url: "https://${DOMAIN}/realms/${KC_REALM}/protocol/openid-connect/logout?client_id=shinyproxy&post_logout_redirect_uri=https://${DOMAIN}"
+    logout-url: "http://${DOMAIN}/realms/${KC_REALM}/protocol/openid-connect/logout?client_id=shinyproxy&post_logout_redirect_uri=https://${DOMAIN}"
     token-url: "http://${KC_INTERNAL_URL}/realms/${KC_REALM}/protocol/openid-connect/token"
     jwks-url: "http://${KC_INTERNAL_URL}/realms/${KC_REALM}/protocol/openid-connect/certs"
     client-id: "${KC_CLIENT_ID}"
@@ -23,6 +23,7 @@ proxy:
     roles-claim: realm_roles
   docker:
     internal-networking: true
+    # url: http://host.docker.internal
   specs:
     - id: pheno-ranker
       display-name: Pheno-Ranker
@@ -46,7 +47,7 @@ proxy:
         ]
       container-image: "${DOCKER_IMG}"
       access-groups: [admin, user] #assign the role "user" to all users
-      container-network: pheno-ranker-ui_shiny-net
+      # container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
           pheno-ranker-ui_shiny-data:/app/data,
@@ -58,7 +59,7 @@ proxy:
       container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
       container-image: openanalytics/shinyproxy-demo
       access-groups: [admin, user] #assign the role "user" to all users
-      container-network: pheno-ranker-ui_shiny-net
+      # container-network: pheno-ranker-ui_shiny-net
 logging:
   file:
     name: shinyproxy.log

@@ -58,7 +58,10 @@ set_testing_golem_options(
     dbPort = 5432,
     dbDatabase = Sys.getenv("DB_NAME"),
     dbUser = Sys.getenv("DB_USER"),
-    dbPassword = Sys.getenv("DB_PW")
+    dbPassword = Sys.getenv("DB_PW"),
+
+    shinyProxyDeployed = FALSE,
+    keycloakSecured = FALSE
   )
 )
 

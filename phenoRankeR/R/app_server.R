@@ -170,6 +170,8 @@ app_server <- function(input, output, session) {
   # cohort mode: coh42553
   # convert mode: conv42554
 
+  # TODO
+  # True should not be a string
   if (get_golem_options("runWithDocker") == "True") {
     print("running with docker")
     Sys.setenv(LD_LIBRARY_PATH = paste(

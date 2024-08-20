@@ -25,27 +25,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: pg_isready -U postgres
-    networks:
-      - shiny-net
-
-  proxy:
-    container_name: nginx-proxy
-    image: nginx:1.25.3-alpine
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    ports:
-      - 443:443
-    volumes:
-      - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
-      - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
-      - ./nginx_mountpoint/logs:/var/log/nginx
-      - ./nginx_mountpoint/certs/${DOMAIN}.cer:/etc/nginx/${DOMAIN}.cer:ro
-      - ./nginx_mountpoint/certs/${DOMAIN}_privatekey.pem:/etc/nginx/${DOMAIN}_privatekey.pem:ro
-      - ./nginx_mountpoint/html/chromium_based_browsers_not_yet_supported.html:/usr/share/nginx/chromium_based_browsers_not_yet_supported.html:ro
-    networks:
-      - shiny-net
-    restart: unless-stopped
+    # networks:
+    #   - shiny-net
 
   shinyproxy:
     image: openanalytics/shinyproxy:3.1.1
@@ -66,13 +47,18 @@ services:
     ports:
       - 3830:8080
     volumes:
-      - /run/user/1001/docker.sock:/var/run/docker.sock:ro
-      - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
+      # - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+      - /run/docker.sock:/var/run/docker.sock:ro
+      - ./shinyproxy/application-dev.yml:/opt/shinyproxy/application.yml:ro
       # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
     group_add:
       - ${DOCKER_GROUP} # getent group docker | cut -d: -f3
-    networks:
-      - shiny-net 
+    # networks:
+    #   - shiny-net 
+
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
     restart: unless-stopped
 
   keycloak-db:
@@ -105,17 +91,17 @@ services:
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_PATH: /auth
-      KC_HOSTNAME_URL: https://${DOMAIN}/auth/
+      KC_HOSTNAME_URL: http://${DOMAIN}:8080
       # KC_HOSTNAME_URL: https://${DOMAIN}:8444/auth/
-      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
+      KC_HOSTNAME_ADMIN_URL: http://${DOMAIN}:8080
       # KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}:8444/auth/
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
+      # KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
+      # KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
       KC_HEALTH_ENABLED: true
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
-      - ./nginx_mountpoint/certs/${DOMAIN}.cer:/opt/keycloak/conf/server.crt.pem:ro
-      - ./nginx_mountpoint/certs/${DOMAIN}_privatekey.pem:/opt/keycloak/conf/server.key.pem:ro
+      # - ./nginx_mountpoint/certs/${DOMAIN}.pem:/opt/keycloak/conf/server.crt.pem:ro
+      # - ./nginx_mountpoint/certs/${DOMAIN}-key.pem:/opt/keycloak/conf/server.key.pem:ro
       - ./custom_keycloak_theme/dist_keycloak/target/retrocompat-keycloakify-starter-keycloak-theme-6.1.5.jar:/opt/keycloak/providers/retrocompat-keycloakify-starter-keycloak-theme-6.1.5.jar:rw
       - ./custom_keycloak_theme/dist_keycloak/src/main/resources/theme/account-v1:/opt/keycloak/themes/account-v1:rw
       - ./custom_keycloak_theme/dist_keycloak/src/main/resources/theme/keycloakify-starter_retrocompat:/opt/keycloak/themes/keycloakify-starter_retrocompat:rw
@@ -126,8 +112,10 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-    networks:
-      - shiny-net
+    ports:
+      - 8080:8080
+    # networks:
+    #   - shiny-net
 
 volumes:
   postgres-data:
@@ -144,5 +132,5 @@ volumes:
       device: ${PWD}/config
       o: bind
 
-networks:
-  shiny-net:
+# networks:
+#   shiny-net:

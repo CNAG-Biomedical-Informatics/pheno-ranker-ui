@@ -806,6 +806,9 @@ mod_cohort_mode_server <- function(
       print("label")
       print(label)
 
+      # TODO
+      # userId should not be hardcoded
+
       userId <- 1
       # settings <- list()
       store_job_in_db(
