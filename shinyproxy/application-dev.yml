@@ -47,7 +47,7 @@ proxy:
         ]
       container-image: "${DOCKER_IMG}"
       access-groups: [admin, user] #assign the role "user" to all users
-      # container-network: pheno-ranker-ui_shiny-net
+      container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
           pheno-ranker-ui_shiny-data:/app/data,
@@ -59,7 +59,7 @@ proxy:
       container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
       container-image: openanalytics/shinyproxy-demo
       access-groups: [admin, user] #assign the role "user" to all users
-      # container-network: pheno-ranker-ui_shiny-net
+      container-network: pheno-ranker-ui_shiny-net
 logging:
   file:
     name: shinyproxy.log

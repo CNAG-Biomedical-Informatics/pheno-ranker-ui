@@ -25,8 +25,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: pg_isready -U postgres
-    # networks:
-    #   - shiny-net
+    networks:
+      - shiny-net
 
   shinyproxy:
     image: openanalytics/shinyproxy:3.1.1
@@ -53,8 +53,8 @@ services:
       # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
     group_add:
       - ${DOCKER_GROUP} # getent group docker | cut -d: -f3
-    # networks:
-    #   - shiny-net 
+    networks:
+      - shiny-net 
 
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
@@ -114,8 +114,8 @@ services:
       retries: 5
     ports:
       - 8080:8080
-    # networks:
-    #   - shiny-net
+    networks:
+      - shiny-net
 
 volumes:
   postgres-data:
@@ -132,5 +132,5 @@ volumes:
       device: ${PWD}/config
       o: bind
 
-# networks:
-#   shiny-net:
+networks:
+  shiny-net:
