@@ -62,7 +62,8 @@ default_golem_opts <- list(
   dbPassword = "shiny",
 
   shinyProxyDeployed = TRUE,
-  keycloakSecured = TRUE
+  keycloakSecured = TRUE,
+  playgroundDummyEmail = "pheno.ranker@playground.com"
 )
 
 # Get the arguments from the command line

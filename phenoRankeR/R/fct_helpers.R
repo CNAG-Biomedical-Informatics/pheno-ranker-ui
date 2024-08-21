@@ -296,6 +296,25 @@ outputDownloadHandler <- function(
 #' @noRd
 
 store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
+
+  shinyproxy <- get_golem_options("shinyProxyDeployed")
+  keycloakSecured <- get_golem_options("keycloakSecured")
+
+  userId <- 1
+  playground_user <- get_golem_options("playgroundDummyEmail")
+  if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
+    user <- Sys.getenv("SHINYPROXY_USERNAME")
+  }
+
+  # get the user id from the database
+  query <- sprintf(
+    "SELECT id FROM users WHERE email = '%s'",
+    user
+  )
+  res <- dbGetQuery(db_conn, query)
+  userId <- res$id
+
+  # store the job in the database
   query <- sprintf(
     "
       INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
