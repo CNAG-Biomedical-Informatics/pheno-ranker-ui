@@ -303,26 +303,33 @@ store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   userId <- 1
   playground_user <- get_golem_options("playgroundDummyEmail")
   if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
-    user <- Sys.getenv("SHINYPROXY_USERNAME")
+    user_email <- Sys.getenv("SHINYPROXY_USERNAME")
+  }
+
+  if (user_email == "") {
+    user_email <- playground_user
   }
 
   # get the user id from the database
   query <- sprintf(
     "SELECT id FROM users WHERE email = '%s'",
-    user
+    user_email
   )
   res <- dbGetQuery(db_conn, query)
   userId <- res$id
 
   # if the user does not exist in the database
   if (nrow(res) == 0) {
-    query <- sprintf(
+    insert_user <- sprintf(
       "INSERT INTO users (email) VALUES ('%s')",
-      user
+      user_email
     )
-    dbExecute(db_conn, query)
+    dbExecute(db_conn, insert_user)
     res <- dbGetQuery(db_conn, query)
     userId <- res$id
+    print("User inserted")
+    print(userId)
+    print(user_email)
   }
 
   # store the job in the database

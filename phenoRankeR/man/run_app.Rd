@@ -28,7 +28,8 @@ run_app(
     Sys.getenv("DB_DRIVER"), 
      dbServer = Sys.getenv("DB_IP"), dbPort = 5432,
     dbDatabase = Sys.getenv("DB_NAME"), dbUser = Sys.getenv("DB_USER"), dbPassword =
-    Sys.getenv("DB_PW")),
+    Sys.getenv("DB_PW"), shinyProxyDeployed = TRUE, keycloakSecured = TRUE,
+    playgroundDummyEmail = "pheno.ranker@playground.com"),
   ...
 )
 }

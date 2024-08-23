@@ -57,7 +57,6 @@ mod_db_server <- function(id){
 
     print("Available Drivers:")
     print(odbcListDrivers())
-    
 
     # TODO
     # return the db_conn object
@@ -65,25 +64,19 @@ mod_db_server <- function(id){
     # TODO
     # throw an error if the db_conn is not initialized
 
-    query <- "
+    create_user_table <- "
       CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
-      email varchar(255) NOT NULL
+      email varchar(255) NOT NULL UNIQUE
     )"
 
     if (dbDriver == "SQLite") {
-      query <- "
+      create_user_table <- "
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
-        email varchar(255) NOT NULL
+        email varchar(255) NOT NULL UNIQUE
       )"
     }
-
-    observe({
-      print("initialize users table")
-      print(db_conn)
-      dbExecute(db_conn, query)
-    })
 
     # initialize jobs table
 
@@ -97,7 +90,7 @@ mod_db_server <- function(id){
     # TODO
     # user_id probably should be a foreign key
 
-    query <- "
+    create_jobs_table <- "
       CREATE TABLE IF NOT EXISTS jobs (
       id SERIAL PRIMARY KEY,
       run_id numeric NOT NULL,
@@ -110,7 +103,7 @@ mod_db_server <- function(id){
     )"
 
     if (dbDriver == "SQLite") {
-      query <- "
+      create_jobs_table <- "
         CREATE TABLE IF NOT EXISTS jobs (
         id INTEGER PRIMARY KEY,
         run_id numeric NOT NULL,
@@ -124,9 +117,8 @@ mod_db_server <- function(id){
     }
 
     observe({
-      print("initialize jobs table")
-      print(db_conn)
-      dbExecute(db_conn, query)
+      dbExecute(db_conn, create_user_table)
+      dbExecute(db_conn, create_jobs_table)
     })
 
     session$onSessionEnded(function() {
