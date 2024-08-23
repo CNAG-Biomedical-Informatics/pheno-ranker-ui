@@ -88,6 +88,15 @@ restart-shinyproxy:
 change-owner:
 	sudo chown -R ${UID}:${GID} data
 
+# below is needed to reverse the changes made when 
+# docker-compose -f docker-compose.dev.yml up
+change-file-owner-and-mods:
+	sudo chown -R ${UID}:${GID} data
+	sudo chown -R ${UID}:${GID} config
+
+	sudo chmod -R 744 data
+	sudo chmod -R 744 config
+
 # analyze an docker image using dive
 # https://github.com/wagoodman/dive
 dive:
