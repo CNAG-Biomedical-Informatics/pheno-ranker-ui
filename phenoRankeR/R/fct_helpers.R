@@ -300,6 +300,10 @@ store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   shinyproxy <- get_golem_options("shinyProxyDeployed")
   keycloakSecured <- get_golem_options("keycloakSecured")
 
+  # TODO
+  # better would it to have the user_email stored in a reactive value
+  # so below does not needs to be executed every database call
+
   userId <- 1
   playground_user <- get_golem_options("playgroundDummyEmail")
   if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
@@ -333,13 +337,34 @@ store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   }
 
   # store the job in the database
+  print("HERE before toJSON")
+  settings_json <- toJSON(settings)
+  print("HERE after toJSON")
+
   query <- sprintf(
     "
       INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
       VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
     ",
-    runId, userId, mode, label, toJSON(settings), "success"
+    runId, userId, mode, label, settings_json, "success"
   )
+
+  db_driver <- get_golem_options("dbDriver")
+  print("HERE db_driver")
+  print(db_driver)
+  #* NOTE
+  # JSONB is only available in sqlite > 3.45.0
+  # planned for 2024-01-31
+  if (db_driver == "SQLite") {
+    query <- sprintf(
+      "
+        INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
+        VALUES (%s,%s,'%s','%s','%s','%s')
+      ",
+      runId, userId, mode, label, settings_json, "success"
+    )
+  }
+
   tryCatch(
     {
       rows_affected <- dbExecute(db_conn, query)

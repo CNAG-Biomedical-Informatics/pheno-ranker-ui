@@ -659,28 +659,37 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim) {
       # JSONB is only available in sqlite > 3.45.0
       # planned for 2024-01-31
 
-      settings_json <- toJSON(settings)
-      print("settings_json")
-      print(settings_json)
+      # settings_json <- toJSON(settings)
+      # print("settings_json")
+      # print(settings_json)
 
-      query_string <- "
-        INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-        VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
-      "
-
-      if (db_driver == "SQLite") {
-        query_string <- "
-          INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-          VALUES (%s,%s,'%s','%s','%s','%s')
-        "
-      }
-      query <- sprintf(
-        query_string,
-        simulationId, 1, "sim", label, settings_json, "success"
+      store_job_in_db(
+        simulationId,
+        userId,
+        "sim",
+        label,
+        settings,
+        db_conn
       )
-      print("query")
-      print(query)
-      dbExecute(db_conn, query)
+
+      # query_string <- "
+      #   INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
+      #   VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
+      # "
+
+      # if (db_driver == "SQLite") {
+      #   query_string <- "
+      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
+      #     VALUES (%s,%s,'%s','%s','%s','%s')
+      #   "
+      # }
+      # query <- sprintf(
+      #   query_string,
+      #   simulationId, 1, "sim", label, settings_json, "success"
+      # )
+      # print("query")
+      # print(query)
+      # dbExecute(db_conn, query)
       click("SimulateHistorySidebar-btn_show_history")
     })
   })
