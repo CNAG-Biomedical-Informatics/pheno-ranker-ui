@@ -11,7 +11,7 @@ uploads/config/*.yaml
 output/inputExamples/*
 !output/inputExamples/README.md
 
-output/simulatedData/*.json
+output/simulatedData/*/*.json
 output/tmp/*.json
 
 output/rankedPatients/*

@@ -270,6 +270,25 @@ simulate_data <- function(outputFormat, simulationId, ext_onts_settings_string, 
   ouputFolder <- get_golem_options("simulationOutputFolder")
   ontologyUploadFolder <- get_golem_options("ontologyUploadFolder")
 
+  shinyproxy <- get_golem_options("shinyProxyDeployed")
+  keycloakSecured <- get_golem_options("keycloakSecured")
+
+  playground_user <- get_golem_options("playgroundDummyEmail")
+  if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
+    user_email <- Sys.getenv("SHINYPROXY_USERNAME")
+  }
+
+  if (user_email == "") {
+    user_email <- playground_user
+  }
+
+  ouputFolder <- paste0(ouputFolder, user_email, "/")
+
+  # create the output folder if it does not exist
+  if (!dir.exists(ouputFolder)) {
+    dir.create(ouputFolder)
+  }
+
   fn <- paste0(
     ouputFolder,
     simulationId,
