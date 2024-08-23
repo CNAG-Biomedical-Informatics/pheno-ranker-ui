@@ -61,7 +61,8 @@ set_testing_golem_options(
     dbPassword = Sys.getenv("DB_PW"),
 
     shinyProxyDeployed = FALSE,
-    keycloakSecured = FALSE
+    keycloakSecured = FALSE,
+    playgroundDummyEmail = "pheno.ranker@playground.com"
   )
 )
 

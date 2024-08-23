@@ -15,7 +15,7 @@ mod_db_ui <- function(id){
 }
 
 mod_db_server <- function(id){
-  
+
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
@@ -65,14 +65,37 @@ mod_db_server <- function(id){
     # TODO
     # throw an error if the db_conn is not initialized
 
+    query <- "
+      CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email varchar(255) NOT NULL
+    )"
+
+    if (dbDriver == "SQLite") {
+      query <- "
+        CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        email varchar(255) NOT NULL
+      )"
+    }
+
+    observe({
+      print("initialize users table")
+      print(db_conn)
+      dbExecute(db_conn, query)
+    })
+
     # initialize jobs table
-    
+
     # TODO
     # also create a users table if not exists
 
     #* NOTE
     # JSONB is only available in sqlite > 3.45.0
     # planned for 2024-01-31
+
+    # TODO
+    # user_id probably should be a foreign key
 
     query <- "
       CREATE TABLE IF NOT EXISTS jobs (
@@ -103,34 +126,8 @@ mod_db_server <- function(id){
     observe({
       print("initialize jobs table")
       print(db_conn)
-      # query <- "
-      #   CREATE TABLE IF NOT EXISTS jobs (
-      #   id SERIAL PRIMARY KEY,
-      #   run_id numeric NOT NULL,
-      #   user_id numeric NOT NULL,
-      #   mode varchar(255) NOT NULL,
-      #   label varchar(255) NOT NULL,
-      #   settings JSONB NOT NULL, 
-      #   status varchar(255) NOT NULL,
-      #   submitted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-      # )"
       dbExecute(db_conn, query)
     })
-
-    # TODO
-
-    # check if user is already in users table
-    # if not add user to users table
-    # observe({
-    #   print("add user to users table")
-    #   print(db_conn)
-    #   query <- paste0(
-    #     "INSERT INTO users (user_id) VALUES (",
-    #     session$user,
-    #     ")"
-    #   )
-    #   dbExecute(db_conn, query)
-    # })
 
     session$onSessionEnded(function() {
       print("session ended")
@@ -138,6 +135,6 @@ mod_db_server <- function(id){
       print("database connection closed")
     })
 
-    return (db_conn)
+    return(db_conn)
   })
 }

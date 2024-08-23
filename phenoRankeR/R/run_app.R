@@ -55,7 +55,8 @@ run_app <- function(
     dbPassword = Sys.getenv("DB_PW"),
 
     shinyProxyDeployed = TRUE,
-    keycloakSecured = TRUE
+    keycloakSecured = TRUE,
+    playgroundDummyEmail = "pheno.ranker@playground.com"
   ),
   ...
 ) {

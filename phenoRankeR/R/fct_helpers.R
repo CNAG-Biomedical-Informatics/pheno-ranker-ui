@@ -314,6 +314,17 @@ store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   res <- dbGetQuery(db_conn, query)
   userId <- res$id
 
+  # if the user does not exist in the database
+  if (nrow(res) == 0) {
+    query <- sprintf(
+      "INSERT INTO users (email) VALUES ('%s')",
+      user
+    )
+    dbExecute(db_conn, query)
+    res <- dbGetQuery(db_conn, query)
+    userId <- res$id
+  }
+
   # store the job in the database
   query <- sprintf(
     "

@@ -11,8 +11,8 @@ services:
       - |
         chown -R 1001:1001 /app/config &&
         chown -R 1001:1001 /app/data &&
-        chmod -R 744 /app/config &&
-        chmod -R 744 /app/data
+        chmod -R 777 /app/config &&
+        chmod -R 777 /app/data
   db:
     image: postgres:16.1-alpine3.18
     container_name: pheno-ranker-db
