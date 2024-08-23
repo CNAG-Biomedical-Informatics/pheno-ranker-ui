@@ -444,14 +444,23 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       # it would be nice to have the used primary key in the label
 
       settings <- list()
-      query <- sprintf(
-        "
-          INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-          VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
-        ",
-        timestamp, 1, "conv", label, toJSON(settings), "success"
+      store_job_in_db(
+        timestamp,
+        userId,
+        "conv",
+        label,
+        settings,
+        db_conn
       )
-      dbExecute(db_conn, query)
+
+      # query <- sprintf(
+      #   "
+      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
+      #     VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
+      #   ",
+      #   timestamp, 1, "conv", label, toJSON(settings), "success"
+      # )
+      # dbExecute(db_conn, query)
 
       # rerender the history sidebar
       click("ConvertHistorySidebar-btn_show_history")
