@@ -243,7 +243,7 @@ onts_defaults_exposures <- loadOntologyDefaults(
 )
 
 writeYAMLDataToFile <- function(
-    user_dir,
+    user_dirs,
     yaml_diseases,
     yaml_expos,
     yaml_phenos,
@@ -260,9 +260,9 @@ writeYAMLDataToFile <- function(
   timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
   # file_path <- file.path("./data/uploads/ontologies", paste0(timestamp, "_ontologies.yaml"))
   file_path <- file.path(
-    user_dir,
-    "uploads/",
-    get_golem_options("subDirs")$uploads$ontologies,
+    user_dirs$uploads$ontologies,
+    # "uploads/",
+    # get_golem_options("subDirs")$uploads$ontologies,
 
     # get_golem_options("ontologyUploadFolder"),
     paste0(timestamp, "_ontologies.yaml")
@@ -277,7 +277,7 @@ writeYAMLDataToFile <- function(
 
 simulate_data <- function(
   outputFormat,
-  user_dir,
+  user_dirs,
   simulationId,
   ext_onts_settings_string,
   number_of_individuals
@@ -285,17 +285,20 @@ simulate_data <- function(
 
   phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
 
-  sub_dirs <- get_golem_options("subDirs")
-  outputFolder <- paste0(
-    user_dir,
-    "output/",
-    sub_dirs$output$sim
-  )
-  ontologyUploadFolder <- paste0(
-    user_dir,
-    "uploads/",
-    sub_dirs$uploads$ontologies
-  )
+  # sub_dirs <- get_golem_options("subDirs")
+  outputFolder <- user_dirs$output$sim
+  ontologyUploadFolder <- user_dirs$uploads$ontologies
+
+  # outputFolder <- paste0(
+  #   user_dir,
+  #   "output/",
+  #   sub_dirs$output$sim
+  # )
+  # ontologyUploadFolder <- paste0(
+  #   user_dir,
+  #   "uploads/",
+  #   sub_dirs$uploads$ontologies
+  # )
 
   # outputFolder <- paste0(user_dir, subFoldersOutput$sim, "/")
 
@@ -593,7 +596,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
       print("HERE")
 
       simulationId <- writeYAMLDataToFile(
-        rv_general$user_dir,
+        rv_general$user_dirs,
         input$yamlEditor_diseases,
         input$yamlEditor_expos,
         input$yamlEditor_phenos,
@@ -670,7 +673,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
         if (option == "BFF") {
           rv_sim$simResult_bff <- simulate_data(
             "bff",
-            rv_general$user_dir,
+            rv_general$user_dirs,
             simulationId,
             ext_onts_settings_string,
             number_of_individuals
@@ -678,7 +681,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
         } else if (option == "PXF") {
           rv_sim$simResult_pxf <- simulate_data(
             "pxf",
-            rv_general$user_dir,
+            rv_general$user_dirs,
             simulationId,
             ext_onts_settings_string,
             number_of_individuals

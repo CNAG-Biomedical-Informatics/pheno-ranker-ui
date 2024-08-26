@@ -24,10 +24,12 @@ run_app <- function(
 
     subDirs = list(
       uploads = list(
-        rankInput = "rankInput",
+        pats_mode_refs = "rankInput/patientMode/references",
+        pats_mode_targets = "rankInput/patientMode/targets",
+        cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
         weights = "weights",
-        config = "config",
-        ontologies = "ontologies"
+        ontologies = "ontologies",
+        config = "config"
       ),
       output = list(
         sim = "simulatedData",

@@ -71,6 +71,38 @@ app_server <- function(input, output, session) {
 
   user_dir <- paste0(parent_dir, user_email, "/")
 
+  # create a mapping containing all dirs that need to be created
+  # and their corresponding subdirectories in the user folder
+  # using the full path
+
+  all_dirs <- list(
+    output = sub_dirs$output,
+    uploads = sub_dirs$uploads
+  )
+
+  # loop through the keys and add user_dir in front of the subdirectories
+  for (key in names(all_dirs$output)) {
+    all_dirs$output[[key]] <- paste0(user_dir, "output/", all_dirs$output[[key]])
+  }
+
+  for (key in names(all_dirs$uploads)) {
+    all_dirs$uploads[[key]] <- paste0(user_dir, "uploads/", all_dirs$uploads[[key]])
+  }
+
+  print("all_dirs")
+  print(all_dirs)
+
+  # for (sub_dir in sub_dirs_uploads) {
+  #   all_dirs <- c(all_dirs, paste0(user_dir, "uploads/", sub_dir))
+  # }
+
+  # for (sub_dir in sub_dirs_output) {
+  #   all_dirs <- c(all_dirs, paste0(user_dir, "output/", sub_dir))
+  # }
+
+  # print("all_dirs")
+  # print(all_dirs)
+
 
   # sub_dirs_uploads <- c(
   #   cfg = "config",
@@ -94,23 +126,42 @@ app_server <- function(input, output, session) {
     dir.create(user_dir)
   }
 
-  print("creating subfolders - uploads")
-  for (sub_dir in sub_dirs_uploads) {
-    folder <- paste0(user_dir, "uploads/", sub_dir)
+  # create the subfolders using all_dirs
+  for (key in names(all_dirs$output)) {
+    folder <- all_dirs$output[[key]]
     print(folder)
     if (!dir.exists(folder)) {
       dir.create(folder, recursive = TRUE)
     }
   }
 
-  print("creating subfolders - output")
-  for (sub_dir in sub_dirs_output) {
-    folder <- paste0(user_dir, "output/", sub_dir)
+  for (key in names(all_dirs$uploads)) {
+    folder <- all_dirs$uploads[[key]]
     print(folder)
     if (!dir.exists(folder)) {
       dir.create(folder, recursive = TRUE)
     }
   }
+
+  # print("creating subfolders - uploads")
+  # for (sub_dir in sub_dirs_uploads) {
+  #   folder <- paste0(user_dir, "uploads/", sub_dir)
+  #   print(folder)
+  #   if (!dir.exists(folder)) {
+  #     dir.create(folder, recursive = TRUE)
+  #   }
+  # }
+
+  # print("creating subfolders - output")
+  # for (sub_dir in sub_dirs_output) {
+  #   folder <- paste0(user_dir, "output/", sub_dir)
+  #   print(folder)
+  #   if (!dir.exists(folder)) {
+  #     dir.create(folder, recursive = TRUE)
+  #   }
+  # }
+
+
 
   # TODO
   # reactlog should be conditionally enabled
@@ -118,7 +169,7 @@ app_server <- function(input, output, session) {
 
   # initialize reactive values
   rv_general <- reactiveValues(
-    user_dir = user_dir
+    user_dirs = all_dirs
   )
 
   rv_input_examples <- reactiveValues(
