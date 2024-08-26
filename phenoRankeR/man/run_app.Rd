@@ -9,25 +9,25 @@ run_app(
   options = list(),
   enableBookmarking = NULL,
   uiPattern = "/",
-  golem_opts = list(packageVersion = "0.0.0.9018", rankInputFolder =
-    "../data/uploads/rankInput/", patientRankInputRefsFolder =
+  golem_opts = list(packageVersion = "0.0.0.9018", userDataFolder = "../data/user_data/",
+    rankInputFolder = "../data/uploads/rankInput/", patientRankInputRefsFolder =
     "../data/uploads/rankInput/patientMode/references", cohortRankInputFolder =
     "../data/uploads/rankInput/cohortMode/cohorts", weightsUploadFolder =
     "../data/uploads/weights", extraConfigsUploadFolder = "../data/uploads/config",
     ontologyUploadFolder = "../data/uploads/ontologies/", inputExamplesInputFolder =
-    "../data/input_examples/phenopacket_store/0.1.18/", inputExamplesOutputFolder =
-    "../data/output/inputExamples/", 
-     simulationOutputFolder =
+    "../data/input_examples/phenopacket_store/0.1.18/", 
+     inputExamplesOutputFolder =
+    "../data/output/inputExamples/", simulationOutputFolder =
     "../data/output/simulatedData/", conversionOutputFolder =
     "../data/output/convertedData/", patientModeOutputFolder =
     "../data/output/rankedPatients/", cohortModeOutputFolder =
     "../data/output/rankedCohortMatrixes/", maxIndividuals = 2500, jsonViewerPreviewLimit
     = 10000, tempFolder = "../data/temp/", runWithDocker = FALSE, PHENO_SIM_BIN =
     "bff-pxf-simulator", PHENO_RANK_BIN = "pheno-ranker", PHENO_CSV_CONV_BIN =
-    "csv2pheno-ranker", ODBCSYSINI = "../config/odbc", dbDriver =
-    Sys.getenv("DB_DRIVER"), 
-     dbServer = Sys.getenv("DB_IP"), dbPort = 5432,
-    dbDatabase = Sys.getenv("DB_NAME"), dbUser = Sys.getenv("DB_USER"), dbPassword =
+    "csv2pheno-ranker", 
+     ODBCSYSINI = "../config/odbc", dbDriver =
+    Sys.getenv("DB_DRIVER"), dbServer = Sys.getenv("DB_IP"), dbPort = 5432, dbDatabase =
+    Sys.getenv("DB_NAME"), dbUser = Sys.getenv("DB_USER"), dbPassword =
     Sys.getenv("DB_PW"), shinyProxyDeployed = TRUE, keycloakSecured = TRUE,
     playgroundDummyEmail = "pheno.ranker@playground.com"),
   ...

@@ -40,6 +40,66 @@ app_server <- function(input, output, session) {
   # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
   Sys.unsetenv("LD_LIBRARY_PATH")
 
+  # initialize the output folder for the new user
+  
+  shinyproxy <- get_golem_options("shinyProxyDeployed")
+  keycloakSecured <- get_golem_options("keycloakSecured")
+
+  playground_user <- get_golem_options("playgroundDummyEmail")
+  if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
+    user_email <- Sys.getenv("SHINYPROXY_USERNAME")
+  }
+
+  if (user_email == "") {
+    user_email <- playground_user
+  }
+
+  # create the folders for the user
+  # if they do not exist
+
+  parent_folder <- get_golem_options("userDataFolder")
+  user_folder <- paste0(parent_folder, user_email, "/")
+
+  sub_folders_uploads <- c(
+    cfg = "config",
+    onts = "ontologies",
+    pat_mode_refs = "rankInput/patientMode/references",
+    pats_mode_targets = "rankInput/patientMode/targets",
+    cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
+    weights = "weights"
+  )
+
+  sub_folders_output <- c(
+    sim = "simulatedData",
+    examples = "inputExamples",
+    conv = "convertedData",
+    pats_ranked = "rankedPatients",
+    cohorts_ranked = "rankedCohortMatrixes"
+  )
+
+  if (!dir.exists(user_folder)) {
+    print ("creating user folder")
+    dir.create(user_folder)
+  }
+
+  print("creating subfolders - uploads")
+  for (sub_folder in sub_folders_uploads) {
+    folder <- paste0(user_folder, "uploads/", sub_folder)
+    print(folder)
+    if (!dir.exists(folder)) {
+      dir.create(folder, recursive = TRUE)
+    }
+  }
+
+  print("creating subfolders - output")
+  for (sub_folder in sub_folders_output) {
+    folder <- paste0(user_folder, "output/", sub_folder)
+    print(folder)
+    if (!dir.exists(folder)) {
+      dir.create(folder, recursive = TRUE)
+    }
+  }
+
   # TODO
   # reactlog should be conditionally enabled
   # reactlog_enable()

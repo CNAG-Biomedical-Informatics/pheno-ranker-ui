@@ -20,6 +20,8 @@ run_app <- function(
   golem_opts = list(
     packageVersion = "0.0.0.9018",
 
+    userDataFolder = "../data/user_data/",
+
     rankInputFolder = "../data/uploads/rankInput/",
     patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",
 

@@ -25,3 +25,6 @@ output/convertedData/*
 
 input_examples/*
 !input_examples/README.md
+
+user_data/*
+!user_data/README.md

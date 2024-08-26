@@ -26,6 +26,8 @@ parse_args <- function(args) {
 default_golem_opts <- list(
   packageVersion = "0.0.0.9018",
 
+  userDataFolder = "/app/data/user_data/",
+
   rankInputFolder = "/app/data/uploads/rankInput/",
   patientRankInputRefsFolder = "/app/data/uploads/rankInput/patientMode/references",
 
