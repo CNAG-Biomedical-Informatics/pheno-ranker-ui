@@ -71,6 +71,7 @@ app_server <- function(input, output, session) {
 
   user_dir <- paste0(parent_dir, user_email, "/")
 
+
   # sub_dirs_uploads <- c(
   #   cfg = "config",
   #   onts = "ontologies",
@@ -116,6 +117,10 @@ app_server <- function(input, output, session) {
   # reactlog_enable()
 
   # initialize reactive values
+  rv_general <- reactiveValues(
+    user_dir = user_dir
+  )
+
   rv_input_examples <- reactiveValues(
     retrievalId = NULL,
     inputExamples = NULL
@@ -188,7 +193,8 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     db_driver,
-    rv_sim
+    rv_sim,
+    rv_general
   )
 
   mod_conv_mode_server(
