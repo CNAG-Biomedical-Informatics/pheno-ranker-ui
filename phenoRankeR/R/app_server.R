@@ -57,34 +57,45 @@ app_server <- function(input, output, session) {
   # create the folders for the user
   # if they do not exist
 
-  parent_folder <- get_golem_options("userDataFolder")
-  user_folder <- paste0(parent_folder, user_email, "/")
+  parent_dir <- get_golem_options("userDataDir")
+  sub_dirs <- get_golem_options("subDirs")
 
-  sub_folders_uploads <- c(
-    cfg = "config",
-    onts = "ontologies",
-    pat_mode_refs = "rankInput/patientMode/references",
-    pats_mode_targets = "rankInput/patientMode/targets",
-    cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
-    weights = "weights"
-  )
+  print("parent_dir")
+  print(parent_dir)
 
-  sub_folders_output <- c(
-    sim = "simulatedData",
-    examples = "inputExamples",
-    conv = "convertedData",
-    pats_ranked = "rankedPatients",
-    cohorts_ranked = "rankedCohortMatrixes"
-  )
+  print("sub_dirs")
+  print(sub_dirs)
 
-  if (!dir.exists(user_folder)) {
+  sub_dirs_output <- sub_dirs$output
+  sub_dirs_uploads <- sub_dirs$uploads
+
+  user_dir <- paste0(parent_dir, user_email, "/")
+
+  # sub_dirs_uploads <- c(
+  #   cfg = "config",
+  #   onts = "ontologies",
+  #   pat_mode_refs = "rankInput/patientMode/references",
+  #   pats_mode_targets = "rankInput/patientMode/targets",
+  #   cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
+  #   weights = "weights"
+  # )
+
+  # sub_dirs_output <- c(
+  #   sim = "simulatedData",
+  #   examples = "inputExamples",
+  #   conv = "convertedData",
+  #   pats_ranked = "rankedPatients",
+  #   cohorts_ranked = "rankedCohortMatrixes"
+  # )
+
+  if (!dir.exists(user_dir)) {
     print ("creating user folder")
-    dir.create(user_folder)
+    dir.create(user_dir)
   }
 
   print("creating subfolders - uploads")
-  for (sub_folder in sub_folders_uploads) {
-    folder <- paste0(user_folder, "uploads/", sub_folder)
+  for (sub_dir in sub_dirs_uploads) {
+    folder <- paste0(user_dir, "uploads/", sub_dir)
     print(folder)
     if (!dir.exists(folder)) {
       dir.create(folder, recursive = TRUE)
@@ -92,8 +103,8 @@ app_server <- function(input, output, session) {
   }
 
   print("creating subfolders - output")
-  for (sub_folder in sub_folders_output) {
-    folder <- paste0(user_folder, "output/", sub_folder)
+  for (sub_dir in sub_dirs_output) {
+    folder <- paste0(user_dir, "output/", sub_dir)
     print(folder)
     if (!dir.exists(folder)) {
       dir.create(folder, recursive = TRUE)

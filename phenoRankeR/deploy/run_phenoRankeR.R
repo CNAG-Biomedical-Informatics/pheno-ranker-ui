@@ -26,7 +26,40 @@ parse_args <- function(args) {
 default_golem_opts <- list(
   packageVersion = "0.0.0.9018",
 
-  userDataFolder = "/app/data/user_data/",
+  userDataDir = "/app/data/user_data/",
+
+  subDirs = list(
+    uploads = list(
+      rankInput = "rankInput",
+      weights = "weights",
+      config = "config",
+      ontologies = "ontologies"
+    ),
+    output = list(
+      sim = "simulatedData",
+      examples = "inputExamples",
+      conv = "convertedData",
+      pats_ranked = "rankedPatients",
+      cohorts_ranked = "rankedCohortMatrixes"
+    )
+  ),
+
+  # subFoldersUploads <- c(
+  #   cfg = "config",
+  #   onts = "ontologies",
+  #   pat_mode_refs = "rankInput/patientMode/references",
+  #   pats_mode_targets = "rankInput/patientMode/targets",
+  #   cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
+  #   weights = "weights"
+  # ),
+
+  # subFoldersOutput <- c(
+  #   sim = "simulatedData",
+  #   examples = "inputExamples",
+  #   conv = "convertedData",
+  #   pats_ranked = "rankedPatients",
+  #   cohorts_ranked = "rankedCohortMatrixes"
+  # ),
 
   rankInputFolder = "/app/data/uploads/rankInput/",
   patientRankInputRefsFolder = "/app/data/uploads/rankInput/patientMode/references",

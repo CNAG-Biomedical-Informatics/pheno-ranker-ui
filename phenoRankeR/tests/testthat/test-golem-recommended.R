@@ -26,7 +26,23 @@ set_testing_golem_options(
   list(
     packageVersion = "0.0.0.9018",
 
-    userDataFolder = "../../../data/user_data/",
+    userDataDir = "../../../data/user_data/",
+
+    subDirs = list(
+      uploads = list(
+        rankInput = "rankInput",
+        weights = "weights",
+        config = "config",
+        ontologies = "ontologies"
+      ),
+      output = list(
+        sim = "simulatedData",
+        examples = "inputExamples",
+        conv = "convertedData",
+        pats_ranked = "rankedPatients",
+        cohorts_ranked = "rankedCohortMatrixes"
+      )
+    ),
 
     rankInputFolder = "../../../data/uploads/rankInput/",
     patientRankInputRefsFolder = "../../../data/uploads/rankInput/patientMode/references",
