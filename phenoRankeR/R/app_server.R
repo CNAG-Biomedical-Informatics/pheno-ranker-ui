@@ -658,6 +658,15 @@ app_server <- function(input, output, session) {
       # print("jsonData")
       # print(jsonData)
 
+      # TODO
+      # it would be better to have the number of rows
+      # stored in the database e.g. in a new column named logs
+
+      # without num_rows the jsonData is not displayed
+      rv_conversion$numRows <- length(jsonData)
+      print("numRows")
+      print(rv_conversion$numRows)
+
       mod_conv_output_viewer_server(
         "conv_mode-conv_output_viewer",
         jsonData,
