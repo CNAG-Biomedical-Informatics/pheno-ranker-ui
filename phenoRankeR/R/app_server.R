@@ -236,7 +236,8 @@ app_server <- function(input, output, session) {
     session,
     db_conn,
     db_driver,
-    rv_input_examples
+    rv_input_examples,
+    rv_general
   )
 
   mod_sim_mode_server(

@@ -138,9 +138,11 @@ mod_input_examples_page_ui <- function(id) {
   )
 }
 
-get_input_examples <- function(retrievalId, number_of_individuals, cohort_names) {
+get_input_examples <- function(retrievalId, number_of_individuals, cohort_names, rv_general) {
   inputFolder <- get_golem_options("inputExamplesInputFolder")
-  ouputFolder <- get_golem_options("inputExamplesOutputFolder")
+  # ouputFolder <- get_golem_options("inputExamplesOutputFolder")
+
+  ouputFolder <- rv_general$user_dirs$output$examples
 
   json_files <- list.files(
     path = inputFolder,
@@ -173,6 +175,7 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names)
 
   fn <- paste0(
     ouputFolder,
+    "/",
     retrievalId,
     ".pxf.json"
   )
@@ -187,7 +190,14 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names)
   return(combined_json)
 }
 
-mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_input_examples) {
+mod_input_examples_page_server <- function(
+  id,
+  session,
+  db_conn,
+  db_driver,
+  rv_input_examples,
+  rv_general
+  ) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
@@ -257,7 +267,8 @@ mod_input_examples_page_server <- function(id, session, db_conn, db_driver, rv_i
       rv_input_examples$inputExamples <- get_input_examples(
         retrievalId,
         input$arraySizeInput,
-        input$textInput
+        input$textInput,
+        rv_general
       )
 
       selectedOutputFormats <- "PXF"
