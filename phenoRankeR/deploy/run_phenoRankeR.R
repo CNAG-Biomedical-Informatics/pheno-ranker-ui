@@ -30,10 +30,12 @@ default_golem_opts <- list(
 
   subDirs = list(
     uploads = list(
-      rankInput = "rankInput",
+      refs = "rankInput/patientMode/references",
+      targets = "rankInput/patientMode/targets",
+      cohorts = "rankInput/cohortMode/cohorts",
       weights = "weights",
-      config = "config",
-      ontologies = "ontologies"
+      ontologies = "ontologies",
+      config = "config"
     ),
     output = list(
       sim = "simulatedData",

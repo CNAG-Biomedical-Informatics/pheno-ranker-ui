@@ -365,11 +365,13 @@ mod_cohort_mode_server <- function(
   rv_cohort,
   rv_input_examples,
   rv_sim,
-  rv_conversion){
+  rv_conversion,
+  rv_general
+  ){
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <-session$ns
-  moduleServer(id,function(input, output, session){
+  moduleServer(id, function(input, output, session) {
 
     submit_clicked <- reactive({
       input$rankCohort
@@ -406,7 +408,9 @@ mod_cohort_mode_server <- function(
     observeEvent(input$cohortModeFiles, {
       req(input$cohortModeFiles)
 
-      rank_input_dir <- get_golem_options("cohortRankInputFolder")
+      rank_input_dir <- rv_general$user_dirs$uploads$cohorts
+
+      # rank_input_dir <- get_golem_options("cohortRankInputFolder")
       print("rank_input_dir")
       print(rank_input_dir)
       allowed_types <- c("json")
@@ -630,7 +634,8 @@ mod_cohort_mode_server <- function(
           ".yaml"
         )
         weights_file_path <- file.path(
-          get_golem_options("weightsUploadFolder"),
+          rv_general$user_dirs$uploads$weights,
+          # get_golem_options("weightsUploadFolder"),
           fn
         )
         writeLines(
@@ -642,7 +647,8 @@ mod_cohort_mode_server <- function(
       extra_config_file_path <- NULL
       if (input$yamlCohortEditor_config != "") {
         extra_config_file_path <- file.path(
-          get_golem_options("extraConfigsUploadFolder"),
+          rv_general$user_dirs$uploads$config,
+          # get_golem_options("extraConfigsUploadFolder"),
           paste0(timestamp, "_config.yaml")
         )
 
@@ -653,7 +659,9 @@ mod_cohort_mode_server <- function(
       }
 
       outDir <- paste0(
-        get_golem_options("cohortModeOutputFolder"),
+        # get_golem_options("cohortModeOutputFolder"),
+        rv_general$user_dirs$output$cohorts_ranked,
+        "/",
         timestamp,
         "/"
       )
@@ -666,7 +674,9 @@ mod_cohort_mode_server <- function(
       write.csv(
         rv_cohort$mappingDf,
         file = paste0(
-          get_golem_options("cohortModeOutputFolder"),
+          rv_general$user_dirs$output$cohorts_ranked,
+          "/",
+          # get_golem_options("cohortModeOutputFolder"),
           timestamp,
           "/",
           timestamp,
@@ -933,7 +943,9 @@ mod_cohort_mode_server <- function(
       print("observeEvent input$simulatedCohortInputFormatRadio")
       rv_cohort$inputFormat <- input$simulatedCohortInputFormatRadio
 
-      simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+      # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+      # simulatedData_input_dir <- rv_general$user_dirs$output$sim
+
       row <- data.frame(
         file_info = "Cohort",
         original_fn = paste0(
@@ -944,7 +956,7 @@ mod_cohort_mode_server <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            simulatedData_input_dir,
+            rv_general$user_dirs$output$sim,
             rv_sim$simulationId,
             ".",
             rv_cohort$inputFormat,

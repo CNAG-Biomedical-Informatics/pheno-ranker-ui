@@ -274,7 +274,8 @@ app_server <- function(input, output, session) {
     rv_cohort,
     rv_input_examples,
     rv_sim,
-    rv_conversion
+    rv_conversion,
+    rv_general
   )
 
   historySidebars <- c(
@@ -318,10 +319,13 @@ app_server <- function(input, output, session) {
   phenoRankBin <- get_golem_options("phenoRankBin")
 
   # maybe better to put this in a separate module(?)
-  getPastRunResults <- function(mode, runId) {
+  getPastRunResults <- function(query, rv_general) {
     print("inside getPastRunResults")
     print("mode")
     print(mode)
+
+    mode <- query[["mode"]]
+    runId <- query[["id"]]
 
     # TODO
     # maybe better to put this in the simulation module
@@ -356,7 +360,10 @@ app_server <- function(input, output, session) {
       print("number_of_individuals")
       print(number_of_individuals)
 
-      inputExamplesOutputFolder <- get_golem_options("inputExamplesOutputFolder")
+      # inputExamplesOutputFolder <- get_golem_options("inputExamplesOutputFolder")
+      inputExamplesOutputFolder <- rv_general$user_dirs$output$examples
+
+
       files <- list.files(
         inputExamplesOutputFolder,
         pattern = paste0(runId, "*.(bff|pxf).json")
@@ -414,7 +421,9 @@ app_server <- function(input, output, session) {
       # add a get_golem_options wrapper to check if the
       # required option does not return NULL
 
-      simulationOutputFolder <- get_golem_options("simulationOutputFolder")
+      # simulationOutputFolder <- get_golem_options("simulationOutputFolder")
+      simulationOutputFolder <- rv_general$user_dirs$output$sim
+
       print("simulationOutputFolder")
       print(simulationOutputFolder)
       files <- list.files(
@@ -463,7 +472,9 @@ app_server <- function(input, output, session) {
       rv_patient$runId <- runId
       output$phenoBlastRunId <- renderText(paste0("RUN ID: ", runId))
 
-      outDir <- get_golem_options("patientModeOutputFolder")
+      # outDir <- get_golem_options("patientModeOutputFolder")
+      outDir <- rv_general$user_dirs$output$pats_ranked
+
       print("outDir")
       print(outDir)
       dirs <- list.dirs(outDir)
@@ -530,7 +541,9 @@ app_server <- function(input, output, session) {
       rv_cohort$runId <- runId
       output$phenoBlastCohortRunId <- renderText(paste0("RUN ID: ", runId))
 
-      outDir <- get_golem_options("cohortModeOutputFolder")
+      # outDir <- get_golem_options("cohortModeOutputFolder")
+      outDir <- rv_general$user_dirs$output$cohorts_ranked
+
       dirs <- list.dirs(outDir)
       print("dirs")
       print(dirs)
@@ -565,7 +578,9 @@ app_server <- function(input, output, session) {
 
       rv_cohort$mappingDf <- read.csv(
         paste0(
-          get_golem_options("cohortModeOutputFolder"),
+          rv_general$user_dirs$output$cohorts_ranked,
+          "/",
+          # get_golem_options("cohortModeOutputFolder"),
           runId,
           "/",
           runId,
@@ -594,9 +609,11 @@ app_server <- function(input, output, session) {
       rv_conversion$id <- runId
       output$conversionId <- renderText(paste0("RUN ID: ", runId))
 
-      outDir <- paste0(
-        get_golem_options("conversionOutputFolder")
-      )
+      # outDir <- paste0(
+      #   get_golem_options("conversionOutputFolder")
+      # )
+
+      outDir <- rv_general$user_dirs$output$conv
 
       dirs <- list.dirs(outDir)
       print("dirs")
@@ -637,6 +654,9 @@ app_server <- function(input, output, session) {
       # for what is that needed?
       rv_conversion$outputJson <- jsonData
       rv_conversion$configYaml <- as.yaml(yaml.load(configVal))
+
+      # print("jsonData")
+      # print(jsonData)
 
       mod_conv_output_viewer_server(
         "conv_mode-conv_output_viewer",
@@ -683,7 +703,10 @@ app_server <- function(input, output, session) {
           updateNavbarPage(session, "nav", query[["mode"]])
           print("after updateNavbarPage")
           print(query[["mode"]])
-          getPastRunResults(query[["mode"]], query[["id"]])
+          getPastRunResults(
+            query,
+            rv_general
+          )
         } else {
           # TODO
           # update the run ID field with information
