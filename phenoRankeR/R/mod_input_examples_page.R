@@ -230,15 +230,17 @@ mod_input_examples_page_server <- function(
     iv$add_rule("arraySizeInput", sv_between(0, max_individuals))
     iv$enable()
 
-    retrieved_examples_folder <- get_golem_options(
-      "inputExamplesOutputFolder"
-    )
+    # retrieved_examples_folder <- get_golem_options(
+    #   "inputExamplesOutputFolder"
+    # )
 
     observe({
       req(rv_input_examples$retrievalId)
 
       path <- paste0(
-        retrieved_examples_folder,
+        rv_general$user_dirs$output$examples,
+        "/",
+        # retrieved_examples_folder,
         rv_input_examples$retrievalId
       )
       pxfOutputFn <- paste0(path, ".pxf.json")
