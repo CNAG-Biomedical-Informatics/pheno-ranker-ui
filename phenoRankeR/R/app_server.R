@@ -264,7 +264,8 @@ app_server <- function(input, output, session) {
     rv_patient,
     rv_input_examples,
     rv_sim,
-    rv_conversion
+    rv_conversion,
+    rv_general
   )
 
   mod_cohort_mode_server(
@@ -533,6 +534,7 @@ app_server <- function(input, output, session) {
       # TabHeader: Multidimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "patient_mode-mds_scatter",
+        rv_general,
         runId = runId,
         rv = rv_patient,
         mode = "patient"
@@ -600,6 +602,7 @@ app_server <- function(input, output, session) {
       # TabHeader: Multidimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "cohort_mode-mds_scatter",
+        rv_general,
         runId = runId,
         rv = rv_cohort,
         mode = "cohort",

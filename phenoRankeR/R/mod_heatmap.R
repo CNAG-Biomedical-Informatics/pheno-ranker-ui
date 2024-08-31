@@ -36,6 +36,7 @@ mod_heatmap_server <- function(
   id,
   runId,
   rv,
+  rv_general,
   mode,
   uploaded_files_count = NULL
   ) {
@@ -99,8 +100,14 @@ mod_heatmap_server <- function(
         labels_row = row_cols_labels,
       )
     } else {
+
+      output_folder <- rv_general$user_dirs$output$cohorts_ranked
+      print("mod_heatmap output_folder")
+      print(output_folder)
+
       filePath <- paste0(
-        get_golem_options("cohortModeOutputFolder"),
+        output_folder,
+        "/",
         runId,
         "/",
         runId,
@@ -108,6 +115,9 @@ mod_heatmap_server <- function(
       )
 
       if (!file.exists(filePath)) {
+        print("mod_heatmap cohort mode file does not exist")
+        print("filePath")
+        print(filePath)
         print("file does not exist")
         # TODO
         # throw error
@@ -119,7 +129,7 @@ mod_heatmap_server <- function(
 
       data <- as.matrix(
         readTxt(
-          get_golem_options("cohortModeOutputFolder"),
+          output_folder,
           runId = runId,
           row_names = 1
         )

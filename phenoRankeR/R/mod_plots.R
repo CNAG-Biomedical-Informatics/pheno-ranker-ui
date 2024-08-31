@@ -25,10 +25,18 @@ mod_plot_mds_ui <- function(id) {
   )
 }
 
-renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
+renderPlots <- function(
+  runId,
+  rv,
+  rv_general,
+  mode,
+  uploaded_files_count = NULL
+) {
   if (mode == "patient") {
     filePath <- paste0(
-      get_golem_options("patientModeOutputFolder"),
+      rv_general$user_dirs$output$pats_ranked,
+      # get_golem_options("patientModeOutputFolder"),
+      "/",
       runId,
       "/",
       runId,
@@ -42,7 +50,8 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
 
     merged_data <- as.matrix(
       readTxt(
-        get_golem_options("patientModeOutputFolder"),
+        rv_general$user_dirs$output$pats_ranked,
+        # get_golem_options("patientModeOutputFolder"),
         runId = runId,
         row_names = 1
       )
@@ -128,10 +137,14 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
         name = "Cohort"
       )
   } else {
-    # copy cohort plotting here
+    
+    path <- rv_general$user_dirs$output$cohorts_ranked
+
     filePath <- paste0(
-      get_golem_options("cohortModeOutputFolder"),
+      path,
+      # get_golem_options("cohortModeOutputFolder"),
       # "data/output/rankedCohortMatrixes/",
+      "/",
       runId,
       "/",
       runId,
@@ -140,12 +153,16 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
 
     if (!file.exists(filePath)) {
       print("file does not exist")
+      print("mod_plot_mds_server")
+      print("filePath")
+      print(filePath)
       return()
     }
 
     data <- as.matrix(
       readTxt(
-        get_golem_options("cohortModeOutputFolder"),
+        path,
+        # get_golem_options("cohortModeOutputFolder"),
         runId = runId,
         row_names = 1
       )
@@ -206,6 +223,7 @@ renderPlots <- function(runId, rv, mode, uploaded_files_count = NULL) {
 
 mod_plot_mds_server <- function(
     id,
+    rv_general,
     runId = NULL,
     rv = NULL,
     mode = NULL,
@@ -215,6 +233,7 @@ mod_plot_mds_server <- function(
       renderPlots(
         runId,
         rv,
+        rv_general,
         mode,
         uploaded_files_count = uploaded_files_count
       )

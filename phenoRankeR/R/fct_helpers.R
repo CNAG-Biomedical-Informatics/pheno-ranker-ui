@@ -874,6 +874,7 @@ observeExampleDataChange <- function(
     output,
     rv,
     rv_input_examples,
+    rv_general,
     input_id,
     yaml_editor_id,
     expected_row_count) {
@@ -919,7 +920,8 @@ observeExampleDataChange <- function(
       mapping_df <- create_new_mapping_df()
     }
 
-    exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
+    # exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
+    # exampleDataInputDir <- rv_general$user_dirs$output$examples
 
     rows <- lapply(1:expected_row_count, function(i) {
       id_prefix_new <- paste0(id_prefix, i)
@@ -943,7 +945,9 @@ observeExampleDataChange <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            exampleDataInputDir,
+            rv_general$user_dirs$output$examples,
+            "/",
+            # exampleDataInputDir,
             retrievalId,
             ".",
             rv$inputFormat,
@@ -987,6 +991,7 @@ observeConvertedDataChange <- function(
     output,
     rv,
     rv_conversion,
+    rv_general,
     input_id,
     yaml_editor_id,
     yaml_cfg_editor_id,
@@ -1038,7 +1043,10 @@ observeConvertedDataChange <- function(
       mapping_df <- create_new_mapping_df()
     }
 
-    convertedDataInputDir <- get_golem_options("conversionOutputFolder")
+    # convertedDataInputDir <- get_golem_options("conversionOutputFolder")
+
+    convertedDataInputDir <- rv_general$user_dirs$output$conv
+
     print("convertedDataInputDir")
     print(convertedDataInputDir)
 
@@ -1065,6 +1073,7 @@ observeConvertedDataChange <- function(
         new_fn = normalizePath(
           paste0(
             convertedDataInputDir,
+            "/",
             convertedId,
             "/",
             convertedId,
@@ -1130,6 +1139,7 @@ observeConvertedDataChange <- function(
     yaml_path <- normalizePath(
       paste0(
         convertedDataInputDir,
+        "/",
         convertedId,
         "/",
         convertedId,

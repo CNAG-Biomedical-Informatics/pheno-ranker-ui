@@ -344,7 +344,8 @@ mod_patient_mode_server <- function(
     rv_patient,
     rv_input_examples,
     rv_sim,
-    rv_conversion) {
+    rv_conversion,
+    rv_general) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
@@ -379,7 +380,7 @@ mod_patient_mode_server <- function(
     mod_table_phenoBlast_server("phenoBlastTable")
     mod_table_phenoRanking_server("phenoRankingTable")
     mod_table_phenoHeadsUp_server("phenoHeadsUpTable")
-    mod_plot_mds_server("mds_scatter")
+    mod_plot_mds_server("mds_scatter", rv_general)
 
     output$patient_heatmap <- renderUI({
       p("Click on Rank to generate the heatmap")
@@ -1249,6 +1250,7 @@ mod_patient_mode_server <- function(
       # TabHeader: Multidimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "mds_scatter",
+        rv_general,
         runId = timestamp,
         rv = rv_patient,
         mode = "patient"
@@ -1319,6 +1321,7 @@ mod_patient_mode_server <- function(
         output,
         rv_patient,
         rv_conversion,
+        rv_general,
         "patient_conv_reference",
         "yamlEditorIdPrefixes",
         "yamlEditor_config",
@@ -1336,6 +1339,7 @@ mod_patient_mode_server <- function(
         output,
         rv_patient,
         rv_conversion,
+        rv_general,
         "patient_conv_target",
         "yamlEditorIdPrefixes",
         "yamlEditor_config",
@@ -1352,6 +1356,7 @@ mod_patient_mode_server <- function(
         output,
         rv_patient,
         rv_input_examples,
+        rv_general,
         "patient_example_reference",
         "yamlEditorIdPrefixes",
         expectedRowCount
@@ -1367,6 +1372,7 @@ mod_patient_mode_server <- function(
         output,
         rv_patient,
         rv_input_examples,
+        rv_general,
         "patient_example_target",
         "yamlEditorIdPrefixes",
         expectedRowCount

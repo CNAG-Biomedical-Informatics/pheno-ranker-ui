@@ -399,7 +399,7 @@ mod_cohort_mode_server <- function(
       rv_cohort
     )
 
-    mod_plot_mds_server("mds_scatter")
+    mod_plot_mds_server("mds_scatter", rv_general)
 
     output$cohort_heatmap <- renderUI({
       p("Click on Rank to generate the heatmap")
@@ -837,6 +837,7 @@ mod_cohort_mode_server <- function(
         "heatmap",
         timestamp,
         rv_cohort,
+        rv_general,
         "cohort",
         uploaded_files_count = uploaded_files_count
       )
@@ -844,6 +845,7 @@ mod_cohort_mode_server <- function(
       # TabHeader: Multi Dimensional Scaling Scatter Plot
       mod_plot_mds_server(
         "mds_scatter",
+        rv_general,
         timestamp,
         rv = rv_cohort,
         mode = "cohort",
@@ -957,6 +959,7 @@ mod_cohort_mode_server <- function(
         new_fn = normalizePath(
           paste0(
             rv_general$user_dirs$output$sim,
+            "/",
             rv_sim$simulationId,
             ".",
             rv_cohort$inputFormat,
@@ -1036,6 +1039,7 @@ mod_cohort_mode_server <- function(
         output,
         rv_cohort,
         rv_input_examples,
+        rv_general,
         "cohort_input_examples",
         "yamlCohortEditorIdPrefixes",
         expectedRowCount
@@ -1074,6 +1078,7 @@ mod_cohort_mode_server <- function(
         output,
         rv_cohort,
         rv_conversion,
+        rv_general,
         "cohort_conv",
         "yamlCohortEditorIdPrefixes",
         "yamlCohortEditor_config",
