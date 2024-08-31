@@ -485,7 +485,13 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
     observe({
       req(rv_sim$simulationId)
 
-      path <- paste0(simulationOutputFolder, rv_sim$simulationId)
+      path <- paste0(
+        rv_general$user_dirs$output$sim,
+        "/",
+        rv_sim$simulationId
+      )
+
+      # path <- paste0(simulationOutputFolder, rv_sim$simulationId)
       bffOutputFn <- paste0(path, ".bff.json")
       pxfOutputFn <- paste0(path, ".pxf.json")
 
