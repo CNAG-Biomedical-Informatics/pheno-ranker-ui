@@ -203,7 +203,7 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out, rv_conversion) 
   })
 }
 
-mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
+mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
@@ -279,7 +279,8 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       print(rv_conversion$id)
 
       path <- paste0(
-        conversionOutputFolder,
+        rv_general$user_dirs$output$conv,
+        "/",
         rv_conversion$id
       )
 
@@ -351,7 +352,9 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion) {
       )
 
       csvConvBin <- get_golem_options("PHENO_CSV_CONV_BIN")
-      outputFolder <- get_golem_options("conversionOutputFolder")
+      # outputFolder <- get_golem_options("conversionOutputFolder")
+
+      outputFolder <- rv_general$user_dirs$output$conv
 
       print("input$csv$datapath")
       print(input$csv$datapath)

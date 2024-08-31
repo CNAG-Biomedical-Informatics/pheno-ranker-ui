@@ -40,7 +40,7 @@ default_golem_opts <- list(
       examples = "inputExamples",
       conv = "convertedData",
       pats_ranked = "rankedPatients",
-      cohorts_ranked = "rankedCohortMatrixes"
+      cohorts_ranked = "rankedCohorts"
     )
   ),
 

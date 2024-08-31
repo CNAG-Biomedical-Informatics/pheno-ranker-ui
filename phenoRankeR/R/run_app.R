@@ -36,7 +36,7 @@ run_app <- function(
         examples = "inputExamples",
         conv = "convertedData",
         pats_ranked = "rankedPatients",
-        cohorts_ranked = "rankedCohortMatrixes"
+        cohorts_ranked = "rankedCohorts"
       )
     ),
 

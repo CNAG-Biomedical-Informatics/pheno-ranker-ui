@@ -253,7 +253,8 @@ app_server <- function(input, output, session) {
     "conv_mode",
     session,
     db_conn,
-    rv_conversion
+    rv_conversion,
+    rv_general
   )
 
   mod_patient_mode_server(

@@ -15,7 +15,7 @@ run_app(
     "rankInput/cohortMode/cohorts", weights = "weights", ontologies = "ontologies",
     config = "config"), output = list(sim = "simulatedData", examples = "inputExamples",
     conv = "convertedData", pats_ranked = "rankedPatients", cohorts_ranked =
-    "rankedCohortMatrixes")), rankInputFolder = "../data/uploads/rankInput/", 
+    "rankedCohorts")), rankInputFolder = "../data/uploads/rankInput/", 
     
     patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",
     cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
