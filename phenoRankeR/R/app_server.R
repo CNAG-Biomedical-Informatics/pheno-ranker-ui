@@ -503,12 +503,14 @@ app_server <- function(input, output, session) {
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
         "patient_mode-phenoBlastTable",
+        rv_general,
         runId = runId,
         rv_patient = rv_patient
       )
       # TabHeader: Ranking
       rv_patient$rankingDf <- mod_table_phenoRanking_server(
         "patient_mode-phenoRankingTable",
+        rv_general,
         runId = runId,
         rv_patient = rv_patient
       )
@@ -518,12 +520,15 @@ app_server <- function(input, output, session) {
         "patient_mode_heatmap",
         runId,
         rv_patient,
-        "patient",
+        rv_general,
+        "patient"
       )
 
       rv_patient$mappingDf <- read.csv(
         paste0(
-          get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          "/",
+          # get_golem_options("patientModeOutputFolder"),
           runId,
           "/",
           runId,
@@ -595,6 +600,7 @@ app_server <- function(input, output, session) {
         "cohort_mode_heatmap",
         runId,
         rv_cohort,
+        rv_general,
         "cohort",
         uploaded_files_count = uploaded_files_count
       )

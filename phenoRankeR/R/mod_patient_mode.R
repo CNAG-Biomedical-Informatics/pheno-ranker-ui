@@ -377,19 +377,24 @@ mod_patient_mode_server <- function(
       rv_patient
     )
 
-    mod_table_phenoBlast_server("phenoBlastTable")
-    mod_table_phenoRanking_server("phenoRankingTable")
-    mod_table_phenoHeadsUp_server("phenoHeadsUpTable")
+    mod_table_phenoBlast_server("phenoBlastTable", rv_general)
+    mod_table_phenoRanking_server("phenoRankingTable", rv_general)
+    mod_table_phenoHeadsUp_server("phenoHeadsUpTable", rv_general)
     mod_plot_mds_server("mds_scatter", rv_general)
 
     output$patient_heatmap <- renderUI({
       p("Click on Rank to generate the heatmap")
     })
 
-    handleFileUpload <- function(input_id, rv, targetDir) {
+    handleFileUpload <- function(input_id, rv, rv_general, targetDir) {
       print("handleFileUpload")
 
-      rank_input_dir <- get_golem_options("rankInputFolder")
+      # rank_input_dir <- get_golem_options("rankInputFolder")
+
+      rank_input_dir <- paste0(
+        rv_general$user_dirs$uploads,
+        "/rankInput/",
+      )
 
       file <- input[[input_id]]
       print("file")
@@ -454,6 +459,7 @@ mod_patient_mode_server <- function(
       }
       mod_table_phenoHeadsUp_server(
         "phenoHeadsUpTable",
+        rv_general,
         rv_patient = rv_patient
       )
     })
@@ -569,7 +575,9 @@ mod_patient_mode_server <- function(
     observeEvent(input$referenceFiles, {
       req(input$referenceFiles)
 
-      rank_input_dir <- get_golem_options("patientRankInputRefsFolder")
+      # rank_input_dir <- get_golem_options("patientRankInputRefsFolder")
+      rank_input_dir <- rv_general$user_dirs$uploads$refs
+
       allowed_types <- c("json")
 
       input_format <- NULL
@@ -691,6 +699,7 @@ mod_patient_mode_server <- function(
       res <- handleFileUpload(
         "targetFile",
         rv_patient,
+        rv_general,
         "patientMode/targets"
       )
 
@@ -827,13 +836,21 @@ mod_patient_mode_server <- function(
       rv_patient$allowedTerms <- data$allowed_terms
     })
 
-    set_input_paths <- function(rv, rv_input_examples, rv_sim, rv_conversion, mode) {
+    set_input_paths <- function(
+      rv,
+      rv_input_examples,
+      rv_sim,
+      rv_conversion,
+      rv_general,
+      mode) {
       print("set_input_paths")
       print("rv_input_examples$retrievalId")
       print(rv_input_examples$retrievalId)
 
       exampleDataPath <- paste0(
-        get_golem_options("inputExamplesOutputFolder"),
+        # get_golem_options("inputExamplesOutputFolder"),
+        rv_general$user_dirs$output$example,
+        "/",
         rv_input_examples$retrievalId,
         ".pxf.json"
       )
@@ -842,7 +859,9 @@ mod_patient_mode_server <- function(
       print(exampleDataPath)
 
       simDataPath <- paste0(
-        get_golem_options("simulationOutputFolder"),
+        rv_general$user_dirs$output$sim,
+        "/",
+        # get_golem_options("simulationOutputFolder"),
         rv_sim$simulationId,
         ".",
         rv$inputFormat,
@@ -850,14 +869,20 @@ mod_patient_mode_server <- function(
       )
 
       convDataPath <- paste0(
-        get_golem_options("conversionOutputFolder"),
-        paste0(rv_conversion$id, "/"),
+        # get_golem_options("conversionOutputFolder"),
+        rv_general$user_dirs$output$conv,
+        "/",
+        rv_conversion$id,
+        "/",
+        # paste0(rv_conversion$id, "/"),
         rv_conversion$id,
         ".json"
       )
 
       upload_dir <- paste0(
-        get_golem_options("rankInputFolder"),
+        rv_general$user_dirs$uploads$rankInput,
+        "/",
+        # get_golem_options("rankInputFolder"),
         mode,
         "/"
       )
@@ -892,6 +917,7 @@ mod_patient_mode_server <- function(
         file_paths["target_file_path"] <- generate_target_based_on_example_data(
           rv,
           rv_input_examples,
+          rv_general,
           exampleDataPath
         )
       }
@@ -900,6 +926,7 @@ mod_patient_mode_server <- function(
         file_paths["target_file_path"] <- generate_target_based_on_simulated_data(
           rv,
           rv_sim,
+          rv_general,
           simDataPath
         )
       }
@@ -908,6 +935,7 @@ mod_patient_mode_server <- function(
         file_paths["target_file_path"] <- generate_target_based_on_converted_data(
           rv,
           rv_conversion,
+          rv_general,
           convDataPath
         )
       }
@@ -962,6 +990,7 @@ mod_patient_mode_server <- function(
         rv_input_examples,
         rv_sim,
         rv_conversion,
+        rv_general,
         "patientMode"
       )
 
@@ -999,7 +1028,9 @@ mod_patient_mode_server <- function(
 
       outDir <- paste0(
         paste0(
-          get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          "/",
+          # get_golem_options("patientModeOutputFolder"),
           timestamp,
           "/"
         )
@@ -1013,7 +1044,9 @@ mod_patient_mode_server <- function(
       write.csv(
         rv_patient$mappingDf,
         file = paste0(
-          get_golem_options("patientModeOutputFolder"),
+          # get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          "/",
           rv_patient$runId,
           "/",
           rv_patient$runId,
@@ -1029,7 +1062,8 @@ mod_patient_mode_server <- function(
           ".yaml"
         )
         weights_file_path <- file.path(
-          get_golem_options("weightsUploadFolder"),
+          rv_general$user_dirs$uploads$weights,
+          # get_golem_options("weightsUploadFolder"),
           fn
         )
 
@@ -1042,7 +1076,8 @@ mod_patient_mode_server <- function(
       extra_config_file_path <- NULL
       if (input$yamlEditor_config != "") {
         extra_config_file_path <- file.path(
-          get_golem_options("extraConfigsUploadFolder"),
+          # get_golem_options("extraConfigsUploadFolder"),
+          rv_general$user_dirs$uploads$config,
           paste0(timestamp, "_config.yaml")
         )
 
@@ -1228,6 +1263,7 @@ mod_patient_mode_server <- function(
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
         "phenoBlastTable",
+        rv_general,
         runId = timestamp,
         rv_patient = rv_patient
       )
@@ -1235,6 +1271,7 @@ mod_patient_mode_server <- function(
       # TabHeader: Ranking
       rv_patient$rankingDf <- mod_table_phenoRanking_server(
         "phenoRankingTable",
+        rv_general,
         runId = timestamp,
         rv_patient = rv_patient
       )
@@ -1244,6 +1281,7 @@ mod_patient_mode_server <- function(
         "heatmap",
         timestamp,
         rv_patient,
+        rv_general,
         "patient"
       )
 
@@ -1428,7 +1466,7 @@ mod_patient_mode_server <- function(
       print(rv_patient$inputFormat)
 
       # simulatedData_input_dir <- "./data/output/simulatedData/"
-      simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+      # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
 
       print("rv_sim$simulationId")
       print(rv_sim$simulationId)
@@ -1443,7 +1481,8 @@ mod_patient_mode_server <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            simulatedData_input_dir,
+            rv_general$user_dirs$output$sim,
+            "/",
             rv_sim$simulationId,
             ".",
             rv_patient$inputFormat,
@@ -1475,7 +1514,7 @@ mod_patient_mode_server <- function(
       )
     })
 
-    generate_target_based_on_converted_data <- function(rv, rv_conversion, convDataPath) {
+    generate_target_based_on_converted_data <- function(rv, rv_conversion, rv_general, convDataPath) {
       print("generate_target_based_on_converted_data")
 
       targetFilePath <- convDataPath
@@ -1493,7 +1532,8 @@ mod_patient_mode_server <- function(
       jsonObj <- jsonArray[[1]]
 
       targetFilePath <- paste0(
-        get_golem_options("conversionOutputFolder"),
+        rv_general$user_dirs$output$conv,
+        # get_golem_options("conversionOutputFolder"),
         "/",
         paste0(rv_conversion$id, "/"),
         rv_conversion$id,
@@ -1517,7 +1557,12 @@ mod_patient_mode_server <- function(
       return(targetFilePath)
     }
 
-    generate_target_based_on_example_data <- function(rv, rv_input_examples, exampleDataPath) {
+    generate_target_based_on_example_data <- function(
+      rv,
+      rv_input_examples,
+      rv_general,
+      exampleDataPath
+      ) {
       print("generate_target_based_on_example_data")
 
       targetFilePath <- exampleDataPath
@@ -1535,7 +1580,9 @@ mod_patient_mode_server <- function(
       jsonObj <- jsonArray[[1]]
 
       targetFilePath <- paste0(
-        get_golem_options("inputExamplesOutputFolder"),
+        rv_general$user_dirs$output$example,
+        "/",
+        # get_golem_options("inputExamplesOutputFolder"),
         rv_input_examples$retrievalId,
         ".target.pxf.json"
       )
@@ -1557,7 +1604,7 @@ mod_patient_mode_server <- function(
       return(targetFilePath)
     }
 
-    generate_target_based_on_simulated_data <- function(rv, rv_sim, simDataPath) {
+    generate_target_based_on_simulated_data <- function(rv, rv_sim, rv_general, simDataPath) {
       print("generate_target_based_on_simulated_data")
 
       targetFilePath <- simDataPath
@@ -1575,7 +1622,8 @@ mod_patient_mode_server <- function(
       jsonObj <- jsonArray[[1]]
 
       targetFilePath <- paste0(
-        get_golem_options("simulationOutputFolder"),
+        # get_golem_options("simulationOutputFolder"),
+        rv_general$user_dirs$output$sim,
         # normalizePath("./data/output/simulatedData"),
         "/",
         rv_sim$simulationId,

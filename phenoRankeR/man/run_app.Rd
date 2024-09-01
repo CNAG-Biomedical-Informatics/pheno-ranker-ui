@@ -10,19 +10,19 @@ run_app(
   enableBookmarking = NULL,
   uiPattern = "/",
   golem_opts = list(packageVersion = "0.0.0.9018", userDataDir = "../data/user_data/",
-    subDirs = list(uploads = list(refs = "rankInput/patientMode/references", targets =
-    "rankInput/patientMode/targets", cohorts = "rankInput/cohortMode/cohorts", weights =
-    "weights", ontologies = "ontologies", config = "config"), output = list(sim =
-    "simulatedData", examples = "inputExamples", conv = "convertedData", pats_ranked =
-    "rankedPatients", cohorts_ranked = "rankedCohorts")), rankInputFolder =
-    "../data/uploads/rankInput/", 
-     patientRankInputRefsFolder =
-    "../data/uploads/rankInput/patientMode/references", cohortRankInputFolder =
-    "../data/uploads/rankInput/cohortMode/cohorts", weightsUploadFolder =
-    "../data/uploads/weights", extraConfigsUploadFolder = "../data/uploads/config",
-    ontologyUploadFolder = "../data/uploads/ontologies/", inputExamplesInputFolder =
-    "../data/input_examples/phenopacket_store/0.1.18/", inputExamplesOutputFolder =
-    "../data/output/inputExamples/", simulationOutputFolder =
+    subDirs = list(uploads = list(rankInput = "rankInput", refs =
+    "rankInput/patientMode/references", targets = "rankInput/patientMode/targets",
+    cohorts = "rankInput/cohortMode/cohorts", weights = "weights", ontologies =
+    "ontologies", config = "config"), output = list(sim = "simulatedData", examples =
+    "inputExamples", conv = "convertedData", pats_ranked = "rankedPatients",
+    cohorts_ranked = "rankedCohorts")), rankInputFolder = "../data/uploads/rankInput/", 
+
+        patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",
+    cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
+    weightsUploadFolder = "../data/uploads/weights", extraConfigsUploadFolder =
+    "../data/uploads/config", ontologyUploadFolder = "../data/uploads/ontologies/",
+    inputExamplesInputFolder = "../data/input_examples/phenopacket_store/0.1.18/",
+    inputExamplesOutputFolder = "../data/output/inputExamples/", simulationOutputFolder =
     "../data/output/simulatedData/", 
      conversionOutputFolder =
     "../data/output/convertedData/", patientModeOutputFolder =

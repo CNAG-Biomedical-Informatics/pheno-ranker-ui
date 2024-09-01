@@ -24,9 +24,10 @@ run_app <- function(
 
     subDirs = list(
       uploads = list(
-        refs = "rankInput/patientMode/references",
-        targets = "rankInput/patientMode/targets",
-        cohorts = "rankInput/cohortMode/cohorts",
+        rankInput = "rankInput",
+        refs = "rankInput/patientMode/references", # never change
+        targets = "rankInput/patientMode/targets", # never change
+        cohorts = "rankInput/cohortMode/cohorts", # never change
         weights = "weights",
         ontologies = "ontologies",
         config = "config"

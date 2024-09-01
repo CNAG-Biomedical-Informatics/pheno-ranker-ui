@@ -52,7 +52,9 @@ mod_heatmap_server <- function(
 
     if(mode == "patient") {
       filePath <- paste0(
-        get_golem_options("patientModeOutputFolder"),
+        # get_golem_options("patientModeOutputFolder"),
+        rv_general$user_dirs$output$pats_ranked,
+        "/",
         # "data/output/rankedPatients/",
         runId,
         "/",
@@ -69,7 +71,8 @@ mod_heatmap_server <- function(
 
       merged_data <- as.matrix(
         readTxt(
-          get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          # get_golem_options("patientModeOutputFolder"),
           runId = runId,
           row_names = 1
         )

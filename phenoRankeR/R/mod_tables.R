@@ -86,8 +86,10 @@ renderDefaultTable <- function(
   })
 } 
 
-mod_table_phenoBlast_server <- function(id, 
-  runId=NULL, 
+mod_table_phenoBlast_server <- function(
+  id,
+  rv_general,
+  runId=NULL,
   rv_patient=NULL
 ){
   moduleServer(id,function(input, output, session){
@@ -95,10 +97,12 @@ mod_table_phenoBlast_server <- function(id,
 
     print("in mod_table_phenoBlast_server")
     
-    renderPhenoBlastTable <- function(runId) {
+    renderPhenoBlastTable <- function(runId, rv_general) {
       
       file_path <- paste0(
-        get_golem_options("patientModeOutputFolder"),
+        rv_general$user_dirs$output$pats_ranked,
+        "/",
+        # get_golem_options("patientModeOutputFolder"),
         # "data/output/rankedPatients/",
         runId,
         "/",
@@ -115,8 +119,9 @@ mod_table_phenoBlast_server <- function(id,
 
 
       blast_data <- readTxt(
-        get_golem_options("patientModeOutputFolder"),
-        fileName_suffix = "_alignment.csv", 
+        rv_general$user_dirs$output$pats_ranked,
+        # get_golem_options("patientModeOutputFolder"),
+        fileName_suffix = "_alignment.csv",
         runId = runId,
         sep = ";"
       )
@@ -265,14 +270,14 @@ mod_table_phenoBlast_server <- function(id,
       # from a config file
       renderDefaultTable(
         output,
-        "phenoBlast", 
-        "Click on Rank", 
-        c("Id", "V1", "V2", "V3", "V4", "V5", 
+        "phenoBlast",
+        "Click on Rank",
+        c("Id", "V1", "V2", "V3", "V4", "V5",
           "V6", "V7", "V8", "V9", "V10")
       )
       return()
     }
-    blast_data <- renderPhenoBlastTable(runId)
+    blast_data <- renderPhenoBlastTable(runId, rv_general)
 
     observeEvent(input$phenoBlastTable_row_last_clicked, {
 
@@ -298,6 +303,7 @@ mod_table_phenoBlast_server <- function(id,
 
       mod_table_phenoHeadsUp_server(
         "phenoHeadsUpTable",
+        rv_general,
         rv_patient = rv_patient
       )
     })
@@ -306,18 +312,21 @@ mod_table_phenoBlast_server <- function(id,
 }
 
 mod_table_phenoRanking_server <- function(
-  id, 
+  id,
+  rv_general,
   runId=NULL, 
   rv_patient=NULL){
 
   moduleServer(id,function(input, output, session){
     ns <- session$ns
 
-    renderRankingTable <- function(runId, rv_patient){
+    renderRankingTable <- function(runId, rv_patient, rv_general){
       print("Reading ranking table")
 
       file_path <- paste0(
-        get_golem_options("patientModeOutputFolder"),
+        rv_general$user_dirs$output$pats_ranked,
+        "/",
+        # get_golem_options("patientModeOutputFolder"),
         runId,
         "/",
         runId,
@@ -334,9 +343,10 @@ mod_table_phenoRanking_server <- function(
       
       data <- as.matrix(
         readTxt(
-          get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          # get_golem_options("patientModeOutputFolder"),
           runId=runId,
-          fileName_suffix = "_alignment.stdout", 
+          fileName_suffix = "_alignment.stdout",
           row_names = 1,
         )
       )
@@ -350,7 +360,8 @@ mod_table_phenoRanking_server <- function(
 
 
       weights_file_path <- file.path(
-        get_golem_options("weightsUploadFolder"),
+        rv_general$user_dirs$uploads$weights,
+        # get_golem_options("weightsUploadFolder"),
         paste0(runId,".yaml")
       )
 
@@ -409,18 +420,18 @@ mod_table_phenoRanking_server <- function(
     if(is.null(runId)){
       renderDefaultTable(
         output,
-        "phenoRanking", 
-        "Click on Rank", 
-        c("Rank", "Reference(ID)", "Length", 
-          "Hamming Distance", "Distance Z-Score", 
-          "Distance P-Value", "Distance Z-Score (Rand)", 
+        "phenoRanking",
+        "Click on Rank",
+        c("Rank", "Reference(ID)", "Length",
+          "Hamming Distance", "Distance Z-Score",
+          "Distance P-Value", "Distance Z-Score (Rand)",
           "Jaccard Index", "Jaccard Z-Score", "Jaccard P-Value"
         )
       )
       return()
     }
 
-    ranking_df <- renderRankingTable(runId, rv_patient)
+    ranking_df <- renderRankingTable(runId, rv_patient, rv_general)
     
     observeEvent(input$phenoRankingTable_row_last_clicked, {
 
@@ -448,19 +459,24 @@ mod_table_phenoRanking_server <- function(
 }
 
 mod_table_phenoHeadsUp_server <- function(
-  id, 
-  rv_patient=NULL){  
-  
-  moduleServer(id,function(input, output, session){
-    renderPhenoHeadsUpTable <- function(output, rv_patient) {
+  id,
+  rv_general,
+  rv_patient=NULL){
 
-      prepareTable <- function(rv_patient){
+  moduleServer(id, function(input, output, session){
+    renderPhenoHeadsUpTable <- function(output, rv_patient, rv_general) {
+
+      prepareTable <- function(rv_patient, rv_general){
 
         runId <- rv_patient$runId
-        
+
         print("in prepareTable")
+        print("rv_general")
+        print(rv_general)
         alignment_file_path <- paste0(
-          get_golem_options("patientModeOutputFolder"),
+          rv_general$user_dirs$output$pats_ranked,
+          "/",
+          # get_golem_options("patientModeOutputFolder"),
           # "data/output/rankedPatients/",
           runId,
           "/",
@@ -479,8 +495,9 @@ mod_table_phenoHeadsUp_server <- function(
         }
         alignment_data <- as.matrix(
           readTxt(
-            get_golem_options("patientModeOutputFolder"),
-            runId = runId, 
+            rv_general$user_dirs$output$pats_ranked,
+            # get_golem_options("patientModeOutputFolder"),
+            runId = runId,
             fileName_suffix = "_alignment.target.csv",
             sep = ";"
           )
@@ -556,22 +573,22 @@ mod_table_phenoHeadsUp_server <- function(
         })
         print("rendered table")
       }
-      
-      tableVals <- prepareTable(rv_patient)
+
+      tableVals <- prepareTable(rv_patient, rv_general)
       renderTable(output, tableVals)
     }
 
     if (is.null(rv_patient)){
       renderDefaultTable(
         output,
-        "phenoHeadsUp", 
-        "After ranking click on any row in the table above", 
-        c("Reference", "Indicator", "Target", 
-          "Weight", "Hamming Distance", 
-          "JSON Path", "Label") 
+        "phenoHeadsUp",
+        "After ranking click on any row in the table above",
+        c("Reference", "Indicator", "Target",
+          "Weight", "Hamming Distance",
+          "JSON Path", "Label")
       )
       return()
     }
-    renderPhenoHeadsUpTable(output, rv_patient)
+    renderPhenoHeadsUpTable(output, rv_patient, rv_general)
   })
 }
