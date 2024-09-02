@@ -24,7 +24,7 @@ set_testing_golem_options <-
 
 set_testing_golem_options(
   list(
-    packageVersion = "0.0.0.9018",
+    packageVersion = "0.0.0.9019",
 
     userDataDir = "../../../data/user_data/",
 

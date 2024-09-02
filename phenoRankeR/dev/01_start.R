@@ -26,7 +26,7 @@ golem::fill_desc(
   author_last_name = "Leist", # Your Last Name
   author_email = "ivo.leist@cnag.eu", # Your Email
   repo_url = "https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui", # The URL of the GitHub Repo (optional),
-  pkg_version = " 0.0.0.9018" # The Version of the package containing the App
+  pkg_version = " 0.0.0.9019" # The Version of the package containing the App
 )
 
 ## Set {golem} options ----
@@ -37,9 +37,9 @@ golem::install_dev_deps()
 
 ## Create Common Files ----
 ## See ?usethis for more information
-usethis::use_gpl_license(version = 3, include_future = TRUE)# You can set another license here
+usethis::use_gpl_license(version = 3, include_future = TRUE) # You can set another license here
 usethis::use_readme_rmd(open = FALSE)
-#devtools::build_readme()
+# devtools::build_readme()
 # Note that `contact` is required since usethis version 2.1.5
 # If your {usethis} version is older, you can remove that param
 usethis::use_code_of_conduct(contact = "Ivo Christopher Leist")
@@ -47,7 +47,7 @@ usethis::use_lifecycle_badge("Experimental")
 usethis::use_news_md(open = FALSE)
 
 ## Use git ----
-#usethis::use_git()
+# usethis::use_git()
 
 ## Init Testing Infrastructure ----
 ## Create a template for tests

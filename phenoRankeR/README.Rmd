@@ -44,12 +44,12 @@ sudo apt-get install qpdf
 
 How to do a local package install
 ```r
-pak::local_install("phenoRankeR_0.0.0.9018.tar.gz")
+pak::local_install("phenoRankeR_0.0.0.9019.tar.gz")
 ```
 
 Test coverage
 ```r
-pak::local_install("phenoRankeR_0.0.0.9018.tar.gz")
+pak::local_install("phenoRankeR_0.0.0.9019.tar.gz")
 covr::report()
 ```
 
