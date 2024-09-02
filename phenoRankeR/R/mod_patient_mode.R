@@ -350,7 +350,6 @@ mod_patient_mode_server <- function(
   # namespace defined here
   ns <- session$ns
   moduleServer(id, function(input, output, session) {
-
     submit_clicked <- reactive({
       input$rankPatient
     })
@@ -369,7 +368,8 @@ mod_patient_mode_server <- function(
       "PatientHistorySidebar",
       "patient",
       "PatientHistorySidebar",
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
 
     mod_dnd_server(
@@ -836,13 +836,12 @@ mod_patient_mode_server <- function(
       rv_patient$allowedTerms <- data$allowed_terms
     })
 
-    set_input_paths <- function(
-      rv,
-      rv_input_examples,
-      rv_sim,
-      rv_conversion,
-      rv_general,
-      mode) {
+    set_input_paths <- function(rv,
+                                rv_input_examples,
+                                rv_sim,
+                                rv_conversion,
+                                rv_general,
+                                mode) {
       print("set_input_paths")
       print("rv_input_examples$retrievalId")
       print(rv_input_examples$retrievalId)
@@ -1244,11 +1243,10 @@ mod_patient_mode_server <- function(
       print("label")
       print(label)
 
-      userId <- 1
       settings <- list()
       store_job_in_db(
         timestamp,
-        userId,
+        rv_general$user_email,
         "patient",
         label,
         settings,
@@ -1557,12 +1555,10 @@ mod_patient_mode_server <- function(
       return(targetFilePath)
     }
 
-    generate_target_based_on_example_data <- function(
-      rv,
-      rv_input_examples,
-      rv_general,
-      exampleDataPath
-      ) {
+    generate_target_based_on_example_data <- function(rv,
+                                                      rv_input_examples,
+                                                      rv_general,
+                                                      exampleDataPath) {
       print("generate_target_based_on_example_data")
 
       targetFilePath <- exampleDataPath

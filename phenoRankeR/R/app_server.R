@@ -41,7 +41,6 @@ app_server <- function(input, output, session) {
   Sys.unsetenv("LD_LIBRARY_PATH")
 
   # initialize the output folder for the new user
-  
   shinyproxy <- get_golem_options("shinyProxyDeployed")
   keycloakSecured <- get_golem_options("keycloakSecured")
 
@@ -169,7 +168,8 @@ app_server <- function(input, output, session) {
 
   # initialize reactive values
   rv_general <- reactiveValues(
-    user_dirs = all_dirs
+    user_dirs = all_dirs,
+    user_email = user_email
   )
 
   rv_input_examples <- reactiveValues(

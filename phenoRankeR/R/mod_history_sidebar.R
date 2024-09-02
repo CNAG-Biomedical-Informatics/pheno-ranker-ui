@@ -78,11 +78,18 @@ mod_history_sidebar_ui <- function(id) {
   )
 }
 
-categorize_runs <- function(db_conn, user_id, mode) {
+categorize_runs <- function(db_conn, user_email, mode) {
   print("categorize_runs")
   print(db_conn)
-  print(user_id)
   print(mode)
+
+  # get the user id from the database
+  query <- sprintf(
+    "SELECT id FROM users WHERE email = '%s'",
+    user_email
+  )
+  res <- dbGetQuery(db_conn, query)
+  user_id <- res$id
 
   query <- sprintf(
     "SELECT label,run_id,submitted_at FROM jobs WHERE user_id = %d AND mode = '%s' AND status = 'success' ORDER BY submitted_at DESC",
@@ -290,7 +297,8 @@ mod_show_history_button_server <- function(
     id,
     mode,
     sidebar,
-    db_conn) {
+    db_conn,
+    user_email) {
   moduleServer(id, function(input, output, session) {
     observeEvent(input$btn_show_history, {
       showElement(
@@ -299,11 +307,7 @@ mod_show_history_button_server <- function(
         selector = paste0("#", sidebar)
       )
 
-      # TODO
-      # below should be not hardcoded
-      userId <- 1
-
-      run_ids_vector_with_labels <- categorize_runs(db_conn, userId, mode)
+      run_ids_vector_with_labels <- categorize_runs(db_conn, user_email, mode)
       links <- return_link_or_label(
         run_ids_vector_with_labels,
         mode,

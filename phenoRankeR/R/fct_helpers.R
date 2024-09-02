@@ -116,13 +116,11 @@ generateJsonView <- function(jsonOutput, title, width = 12) {
 }
 
 showLoader <- function(
-  loader_inline,
-  session,
-  requested_individuals,
-  title,
-  sub_title
-  ) {
-  
+    loader_inline,
+    session,
+    requested_individuals,
+    title,
+    sub_title) {
   loader_inline$show()
   showModal(
     modalDialog(
@@ -295,8 +293,13 @@ outputDownloadHandler <- function(
 #' Database helper'
 #' @noRd
 
-store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
-
+store_job_in_db <- function(
+    runId,
+    user_email,
+    mode,
+    label,
+    settings,
+    db_conn) {
   shinyproxy <- get_golem_options("shinyProxyDeployed")
   keycloakSecured <- get_golem_options("keycloakSecured")
 
@@ -304,15 +307,15 @@ store_job_in_db <- function(runId, userId, mode, label, settings, db_conn) {
   # better would it to have the user_email stored in a reactive value
   # so below does not needs to be executed every database call
 
-  userId <- 1
-  playground_user <- get_golem_options("playgroundDummyEmail")
-  if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
-    user_email <- Sys.getenv("SHINYPROXY_USERNAME")
-  }
+  # userId <- 1
+  # playground_user <- get_golem_options("playgroundDummyEmail")
+  # if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
+  #   user_email <- Sys.getenv("SHINYPROXY_USERNAME")
+  # }
 
-  if (user_email == "") {
-    user_email <- playground_user
-  }
+  # if (user_email == "") {
+  #   user_email <- playground_user
+  # }
 
   # get the user id from the database
   query <- sprintf(

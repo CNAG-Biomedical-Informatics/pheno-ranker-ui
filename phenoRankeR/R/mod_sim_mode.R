@@ -249,7 +249,6 @@ writeYAMLDataToFile <- function(
     yaml_phenos,
     yaml_procedures,
     yaml_treatments) {
-
   yaml_data <- list()
   yaml_data$diseases <- yaml.load(yaml_diseases)
   yaml_data$exposures <- yaml.load(yaml_expos)
@@ -276,13 +275,11 @@ writeYAMLDataToFile <- function(
 }
 
 simulate_data <- function(
-  outputFormat,
-  user_dirs,
-  simulationId,
-  ext_onts_settings_string,
-  number_of_individuals
-  ) {
-
+    outputFormat,
+    user_dirs,
+    simulationId,
+    ext_onts_settings_string,
+    number_of_individuals) {
   phenoSimBin <- get_golem_options("PHENO_SIM_BIN")
 
   # sub_dirs <- get_golem_options("subDirs")
@@ -423,7 +420,6 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
   max_individuals <- get_golem_options("maxIndividuals")
 
   moduleServer(id, function(input, output, session) {
-
     submit_clicked <- reactive({
       input$simulateCohort
     })
@@ -442,7 +438,8 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
       "SimulateHistorySidebar",
       "sim",
       "SimulateHistorySidebar",
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
 
     iv <- InputValidator$new()
@@ -735,7 +732,7 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
 
       store_job_in_db(
         simulationId,
-        userId,
+        rv_general$user_email,
         "sim",
         label,
         settings,

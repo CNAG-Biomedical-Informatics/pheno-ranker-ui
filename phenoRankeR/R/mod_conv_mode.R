@@ -187,7 +187,6 @@ mod_conv_output_viewer_server <- function(id, conv_out, cfg_out, rv_conversion) 
     })
 
     observeEvent(rv_conversion$numRows, {
-
       print("observeEvent rv_conversion$numRows")
       print(rv_conversion$numRows)
 
@@ -208,7 +207,6 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general
   # namespace defined here
   ns <- session$ns
   moduleServer(id, function(input, output, session) {
-
     submit_clicked <- reactive({
       input$startConversion
     })
@@ -227,7 +225,8 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general
       "ConvertHistorySidebar",
       "conv",
       "ConvertHistorySidebar",
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
 
     # below is not working when running inside the docker container
@@ -449,7 +448,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general
       settings <- list()
       store_job_in_db(
         timestamp,
-        userId,
+        rv_general$user_email,
         "conv",
         label,
         settings,
@@ -502,7 +501,7 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general
       print("executing mod_conv_output_viewer_server")
       print("rv_conversion")
       print(rv_conversion)
-    
+
       mod_conv_output_viewer_server(
         "conv_output_viewer",
         jsonData,

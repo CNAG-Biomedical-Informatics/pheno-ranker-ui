@@ -9,7 +9,7 @@ run_app(
   options = list(),
   enableBookmarking = NULL,
   uiPattern = "/",
-  golem_opts = list(packageVersion = "0.0.0.9018", userDataDir = "../data/user_data/",
+  golem_opts = list(packageVersion = "0.0.0.9019", userDataDir = "../data/user_data/",
     subDirs = list(uploads = list(rankInput = "rankInput", refs =
     "rankInput/patientMode/references", targets = "rankInput/patientMode/targets",
     cohorts = "rankInput/cohortMode/cohorts", weights = "weights", ontologies =

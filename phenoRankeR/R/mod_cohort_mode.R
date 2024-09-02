@@ -391,7 +391,8 @@ mod_cohort_mode_server <- function(
       "CohortHistorySidebar",
       "cohort",
       "CohortHistorySidebar",
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
 
     mod_dnd_server(
@@ -816,14 +817,10 @@ mod_cohort_mode_server <- function(
       print("label")
       print(label)
 
-      # TODO
-      # userId should not be hardcoded
-
-      userId <- 1
       # settings <- list()
       store_job_in_db(
         timestamp,
-        userId,
+        rv_general$user_email,
         "cohort",
         label,
         settingsMapping,

@@ -30,7 +30,6 @@ mod_input_examples_page_ui <- function(id) {
   grid_container(
     layout = mode_input_examples_layout,
     gap_size = "0px",
-
     grid_place(
       area = "btn",
       actionButton(
@@ -191,20 +190,18 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names,
 }
 
 mod_input_examples_page_server <- function(
-  id,
-  session,
-  db_conn,
-  db_driver,
-  rv_input_examples,
-  rv_general
-  ) {
+    id,
+    session,
+    db_conn,
+    db_driver,
+    rv_input_examples,
+    rv_general) {
   # NOTE somehow this function is only working with the
   # namespace defined here
   ns <- session$ns
   max_individuals <- get_golem_options("maxIndividuals")
 
   moduleServer(id, function(input, output, session) {
-
     submit_clicked <- reactive({
       input$retrieveExampleCohorts
     })
@@ -223,7 +220,8 @@ mod_input_examples_page_server <- function(
       "InputExamplesRetrievalHistorySidebar",
       "input_examples",
       "InputExamplesRetrievalHistorySidebar",
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
 
     iv <- InputValidator$new()
@@ -303,7 +301,7 @@ mod_input_examples_page_server <- function(
 
       store_job_in_db(
         retrievalId,
-        userId,
+        rv_general$user_email,
         "input_examples",
         label,
         settings,
