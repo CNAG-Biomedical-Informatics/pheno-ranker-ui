@@ -5,7 +5,7 @@ options(shiny.port = 3838, shiny.host = "0.0.0.0")
 parse_args <- function(args) {
   opts <- list()
   num_args <- length(args)
-  
+
   # If there are no arguments, return the empty list
   if (num_args == 0) {
     return(opts)
@@ -14,7 +14,7 @@ parse_args <- function(args) {
   if (length(args) %% 2 != 0) {
     stop("An even number of arguments is required, each option should be followed by its value.")
   }
-  
+
   for (i in seq(1, length(args), by = 2)) {
     key <- args[i]
     value <- args[i + 1]
@@ -25,14 +25,13 @@ parse_args <- function(args) {
 
 default_golem_opts <- list(
   packageVersion = "0.0.0.9018",
-
   userDataDir = "/app/data/user_data/",
-
   subDirs = list(
     uploads = list(
-      refs = "rankInput/patientMode/references",
-      targets = "rankInput/patientMode/targets",
-      cohorts = "rankInput/cohortMode/cohorts",
+      rankInput = "rankInput",
+      refs = "rankInput/patientMode/references", # never change
+      targets = "rankInput/patientMode/targets", # never change
+      cohorts = "rankInput/cohortMode/cohorts", # never change
       weights = "weights",
       ontologies = "ontologies",
       config = "config"
@@ -45,44 +44,21 @@ default_golem_opts <- list(
       cohorts_ranked = "rankedCohorts"
     )
   ),
-
-  # subFoldersUploads <- c(
-  #   cfg = "config",
-  #   onts = "ontologies",
-  #   pat_mode_refs = "rankInput/patientMode/references",
-  #   pats_mode_targets = "rankInput/patientMode/targets",
-  #   cohort_mode_cohorts = "rankInput/cohortMode/cohorts",
-  #   weights = "weights"
-  # ),
-
-  # subFoldersOutput <- c(
-  #   sim = "simulatedData",
-  #   examples = "inputExamples",
-  #   conv = "convertedData",
-  #   pats_ranked = "rankedPatients",
-  #   cohorts_ranked = "rankedCohortMatrixes"
-  # ),
-
   rankInputFolder = "/app/data/uploads/rankInput/",
   patientRankInputRefsFolder = "/app/data/uploads/rankInput/patientMode/references",
-
   cohortRankInputFolder = "/app/data/uploads/rankInput/cohortMode/cohorts",
-
   weightsUploadFolder = "/app/data/uploads/weights",
   extraConfigsUploadFolder = "/app/data/uploads/config",
   ontologyUploadFolder = "/app/data/uploads/ontologies/",
-
   inputExamplesInputFolder = "/app/data/input_examples/phenopacket_store/0.1.18/",
   inputExamplesOutputFolder = "/app/data/output/inputExamples/",
   simulationOutputFolder = "/app/data/output/simulatedData/",
   conversionOutputFolder = "/app/data/output/convertedData/",
   patientModeOutputFolder = "/app/data/output/rankedPatients/",
   cohortModeOutputFolder = "/app/data/output/rankedCohortMatrixes/",
-
   maxIndividuals = 2500,
   jsonViewerPreviewLimit = 10000,
-
-  tempFolder = "/app/data/temp/",  # no longer needed?
+  tempFolder = "/app/data/temp/", # no longer needed?
 
   runWithDocker = "True",
   LD_LIB_PATH = "/usr/local/lib/perl5/5.36.1/x86_64-linux-gnu/CORE",
@@ -90,14 +66,12 @@ default_golem_opts <- list(
   PHENO_SIM_BIN = "/usr/share/pheno-ranker/utils/bff_pxf_simulator/bff-pxf-simulator",
   PHENO_CSV_CONV_BIN = "/usr/share/pheno-ranker/utils/csv2pheno_ranker/csv2pheno-ranker",
   ODBCSYSINI = "/app/config/odbc",
-
   dbDriver = "SQLite",
   dbServer = ":memory:",
   dbPort = 5432,
   dbDatabase = "shiny",
   dbUser = "shiny",
   dbPassword = "shiny",
-
   shinyProxyDeployed = TRUE,
   keycloakSecured = TRUE,
   playgroundDummyEmail = "pheno.ranker@playground.com"
