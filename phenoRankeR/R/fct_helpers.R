@@ -290,8 +290,35 @@ outputDownloadHandler <- function(
   )
 }
 
-#' Database helper'
+#' Database helpers'
 #' @noRd
+
+get_user_id <- function(
+    user_email,
+    db_conn) {
+  # function checks if the user exists in the database
+  # if not, it inserts the user into the database
+  # finally, it returns the user id
+
+  query <- sprintf(
+    "SELECT id FROM users WHERE email = '%s'",
+    user_email
+  )
+  res <- dbGetQuery(db_conn, query)
+  userId <- res$id
+
+  if (nrow(res) == 0) {
+    insert_user <- sprintf(
+      "INSERT INTO users (email) VALUES ('%s')",
+      user_email
+    )
+    dbExecute(db_conn, insert_user)
+    res <- dbGetQuery(db_conn, query)
+    userId <- res$id
+  }
+
+  return(userId)
+}
 
 store_job_in_db <- function(
     runId,
@@ -318,26 +345,28 @@ store_job_in_db <- function(
   # }
 
   # get the user id from the database
-  query <- sprintf(
-    "SELECT id FROM users WHERE email = '%s'",
-    user_email
-  )
-  res <- dbGetQuery(db_conn, query)
-  userId <- res$id
+  userId <- get_user_id(user_email, db_conn)
+
+  # query <- sprintf(
+  #   "SELECT id FROM users WHERE email = '%s'",
+  #   user_email
+  # )
+  # res <- dbGetQuery(db_conn, query)
+  # userId <- res$id
 
   # if the user does not exist in the database
-  if (nrow(res) == 0) {
-    insert_user <- sprintf(
-      "INSERT INTO users (email) VALUES ('%s')",
-      user_email
-    )
-    dbExecute(db_conn, insert_user)
-    res <- dbGetQuery(db_conn, query)
-    userId <- res$id
-    print("User inserted")
-    print(userId)
-    print(user_email)
-  }
+  # if (nrow(res) == 0) {
+  #   insert_user <- sprintf(
+  #     "INSERT INTO users (email) VALUES ('%s')",
+  #     user_email
+  #   )
+  #   dbExecute(db_conn, insert_user)
+  #   res <- dbGetQuery(db_conn, query)
+  #   userId <- res$id
+  #   print("User inserted")
+  #   print(userId)
+  #   print(user_email)
+  # }
 
   # store the job in the database
   print("HERE before toJSON")
@@ -419,9 +448,12 @@ observeTabChangeToExampleData <- function(
     session,
     db_conn,
     panel_id,
-    dropdown_id) {
+    dropdown_id,
+    user_email) {
   # should not be hardcoded
-  user_id <- 1
+  # user_id <- 1
+
+  user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
     "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'input_examples' AND status = 'success' ORDER BY submitted_at DESC",
@@ -457,9 +489,12 @@ observeTabChangeToSimulateData <- function(
     session,
     db_conn,
     panel_id,
-    dropdown_id) {
+    dropdown_id,
+    user_email) {
   # should not be hardcoded
-  user_id <- 1
+  # user_id <- 1
+
+  user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
     "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'sim' AND status = 'success' ORDER BY submitted_at DESC",
@@ -494,10 +529,13 @@ observeTabChangeToConvertedData <- function(
     session,
     db_conn,
     panel_id,
-    dropdown_id) {
+    dropdown_id,
+    user_email) {
   # TODO
   # get user id from the database
-  user_id <- 1
+  # user_id <- 1
+
+  user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
     "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'conv' AND status = 'success' ORDER BY submitted_at DESC",

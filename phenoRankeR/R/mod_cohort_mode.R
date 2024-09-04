@@ -998,7 +998,8 @@ mod_cohort_mode_server <- function(
           session,
           db_conn,
           "cohortRankerTabsetPanel",
-          "cohort_input_examples"
+          "cohort_input_examples",
+          rv_general$user_email
         )
       }
 
@@ -1008,7 +1009,8 @@ mod_cohort_mode_server <- function(
           session,
           db_conn,
           "cohortRankerTabsetPanel",
-          "cohort_sim"
+          "cohort_sim",
+          rv_general$user_email
         )
       }
 
@@ -1018,7 +1020,8 @@ mod_cohort_mode_server <- function(
           session,
           db_conn,
           "cohortRankerTabsetPanel",
-          "cohort_conv"
+          "cohort_conv",
+          rv_general$user_email
         )
       }
     })

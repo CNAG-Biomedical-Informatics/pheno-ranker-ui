@@ -322,7 +322,7 @@ mod_show_history_button_server <- function(
   })
 }
 
-mod_history_sidebar_server <- function(id, db_conn) {
+mod_history_sidebar_server <- function(id, db_conn, user_email) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -351,7 +351,11 @@ mod_history_sidebar_server <- function(id, db_conn) {
 
       mode <- namespace_to_mode_mapping[namespace]
 
-      user_id <- 1
+      # should not be hardcoded
+      # user_id <- 1
+
+      user_id <- get_user_id(user_email, db_conn)
+
       query <- sprintf(
         "UPDATE jobs SET label = '%s' WHERE run_id = '%s' and mode = '%s' and user_id = %d",
         textbox_value,
@@ -414,7 +418,12 @@ mod_history_sidebar_server <- function(id, db_conn) {
 
       mode <- namespace_to_mode_mapping[namespace]
 
-      user_id <- 1
+
+      # should not be hardcoded
+      # user_id <- 1
+
+      user_id <- get_user_id(user_email, db_conn)
+
       query <- sprintf(
         "DELETE FROM jobs WHERE run_id = '%s' and mode = '%s' and user_id = %d",
         input$old_run_id_trash_clicked$runId,

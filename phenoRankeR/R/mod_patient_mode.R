@@ -476,7 +476,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerReferenceTabsetPanel",
-          "patient_example_reference"
+          "patient_example_reference",
+          rv_general$user_email
         )
       }
 
@@ -486,7 +487,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerReferenceTabsetPanel",
-          "patient_sim_reference"
+          "patient_sim_reference",
+          rv_general$user_email
         )
       }
 
@@ -496,7 +498,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerReferenceTabsetPanel",
-          "patient_conv_reference"
+          "patient_conv_reference",
+          rv_general$user_email
         )
       }
     })
@@ -525,7 +528,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerTargetTabsetPanel",
-          "patient_example_target"
+          "patient_example_target",
+          rv_general$user_email
         )
       }
 
@@ -535,7 +539,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerTargetTabsetPanel",
-          "patient_sim_target"
+          "patient_sim_target",
+          rv_general$user_email
         )
       }
 
@@ -545,7 +550,8 @@ mod_patient_mode_server <- function(
           session,
           db_conn,
           "patientRankerTargetTabsetPanel",
-          "patient_conv_target"
+          "patient_conv_target",
+          rv_general$user_email
         )
       }
     })
