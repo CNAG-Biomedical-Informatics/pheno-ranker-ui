@@ -19,5 +19,5 @@
 
 	<figure markdown>
 	[![Pheno-Ranker-UI](img/simulate-data.png)]()
-	<figcaption> Use example data selected</figcaption>
+	<figcaption> Simulate BFF/PXF selected</figcaption>
 	</figure>

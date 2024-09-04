@@ -18,7 +18,7 @@
 mod_table_phenoBlast_ui <- function(id) {
   ns <- NS(id)
   card_body(
-    htmlOutput(ns("phenoBlastTableHeader")),
+    htmlOutput(ns("binaryRepresentationTableHeader")),
     tags$div(
       style = "overflow-x: scroll;",
 
@@ -28,14 +28,14 @@ mod_table_phenoBlast_ui <- function(id) {
       # but it does not work
 
       # style = HTML(
-      #   "#phenoBlastTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody {
+      #   "#binaryRepresentationTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody {
       # transform:rotateX(180deg);
       # }
-      # #phenoBlastTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody table{
+      # #binaryRepresentationTable > .dataTables_wrapper.no-footer > .dataTables_scroll > .dataTables_scrollBody table{
       # transform:rotateX(180deg);
       # }"
       # ),
-      DTOutput(ns("phenoBlastTable"))
+      DTOutput(ns("binaryRepresentationTable"))
     )
   )
 }
@@ -95,7 +95,7 @@ mod_table_phenoBlast_server <- function(
 
     print("in mod_table_phenoBlast_server")
 
-    renderPhenoBlastTable <- function(runId, rv_general) {
+    renderbinaryRepresentationTable <- function(runId, rv_general) {
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
@@ -113,7 +113,6 @@ mod_table_phenoBlast_server <- function(
         # throw error
         return()
       }
-
 
       blast_data <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
@@ -210,9 +209,21 @@ mod_table_phenoBlast_server <- function(
         }
       }
 
-      # # TODO
-      # # figure out how to search but keep the first row fixed
-      output$phenoBlastTable <- renderDT({
+      # TODO
+      # figure out how to search but keep the first row fixed
+
+      # one possible solution would be to convert every input into the searchbox
+      # into a regular expression
+      # e.g. T\|Beacon_1\b|R\|Beacon_1\b
+      # would match the following rows
+      # T|Beacon_1
+      # R|Beacon_1
+
+      # but then we would need an extra custom search box
+      # with some custom filter logic which would be quite some work
+      # postponed for now
+
+      output$binaryRepresentationTable <- renderDT({
         dt <- datatable(
           blast_data,
           selection = "single",
@@ -227,6 +238,10 @@ mod_table_phenoBlast_server <- function(
             paging = FALSE,
             searching = FALSE,
             ordering = FALSE,
+            # search = list(
+            #   regex = TRUE,   # Enable regular expression searching
+            #   caseInsensitive = TRUE
+            # ),
             initComplete = JS(
               "function(settings, json) {",
               paste0(unlist(lapply(names(col_colors), function(col_name) {
@@ -256,7 +271,7 @@ mod_table_phenoBlast_server <- function(
         }
         dt
       }, )
-      output$phenoBlastTableHeader <- renderUI({
+      output$binaryRepresentationTableHeader <- renderUI({
         div()
       })
       return(blast_data)
@@ -276,9 +291,10 @@ mod_table_phenoBlast_server <- function(
       )
       return()
     }
-    blast_data <- renderPhenoBlastTable(runId, rv_general)
 
-    observeEvent(input$phenoBlastTable_row_last_clicked, {
+    blast_data <- renderbinaryRepresentationTable(runId, rv_general)
+
+    observeEvent(input$binaryRepresentationTable_row_last_clicked, {
       # TODO
       # check for an existing patient$id
       # if there is already one when switching between
@@ -286,12 +302,12 @@ mod_table_phenoBlast_server <- function(
       # Do not change the patient$id
       # and select the row in the table to which the patient$id belongs to
 
-      row <- input$phenoBlastTable_row_last_clicked
+      row <- input$binaryRepresentationTable_row_last_clicked
       print("rv_patient")
       print(rv_patient)
       blast_data <- rv_patient$blastData
       ranking_df <- rv_patient$rankingDf
-      print(paste("phenoBlastTable row", row, "clicked"))
+      print(paste("binaryRepresentationTable row", row, "clicked"))
 
       clickedRowData <- blast_data[row, ]
       patient_id <- strsplit(clickedRowData$Id, split = "\\|")[[1]][2]
@@ -372,9 +388,9 @@ mod_table_phenoRanking_server <- function(
           paste0(
             "Input format: ",
             rv_patient$inputFormat,
-            " |> Target ID: ",
+            " | Target ID: ",
             ref_vs_target_targetId,
-            " |> Weighted: ",
+            " | Weighted: ",
             weighted
           )
         )
@@ -514,7 +530,14 @@ mod_table_phenoHeadsUp_server <- function(
         )
 
         ranking_df <- rv_patient$rankingDf
-        ranking_table_row <- ranking_df[ranking_df[, 2] == rv_patient$id, ]
+        print("ranking_df")
+        print(ranking_df)
+
+        ranking_table_row <- ranking_df[ranking_df[, 1] == rv_patient$id, ]
+
+        print("ranking_table_row")
+        print(ranking_table_row)
+
         cumulated_hamming_distance <- ranking_table_row$`Hamming Distance`
         jaccard_index <- ranking_table_row$`Jaccard Index`
 
@@ -526,27 +549,20 @@ mod_table_phenoHeadsUp_server <- function(
       }
 
       renderTable <- function(output, values) {
-        print("in renderTable")
+        # print("in renderTable")
+        # print("values")
+        # print(values)
 
         cumulated_hamming_distance <- values$hamDist
         jaccard_index <- values$JacIdx
         filtered_df <- values$df
-
-        # print("filtered_df")
-        # print(str(filtered_df))
-
-        # print("ns(phenoHeadsUpTable-phenoHeadsUpTableHeader)")
-        # ns("phenoHeadsUpTable-phenoHeadsUpTableHeader")
-
-        # TODO is not rendering the table
-        # output[["patient_mode-phenoHeadsUpTable"]] <- renderUI({
 
         output$phenoHeadsUpTableHeader <- renderUI({
           p(
             paste0(
               "Cumulated Hamming Distance: ",
               cumulated_hamming_distance,
-              " |> Jaccard Index: ",
+              " | Jaccard Index: ",
               jaccard_index
             )
           )

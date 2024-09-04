@@ -48,13 +48,12 @@ mod_landing_page_ui <- function(id) {
           Beacon-friendly format (BFF) or Phenopackets v2(PXF),
           you can use the following utilities to get started:"),
         h6("Option 1: Simulate a BFF/PXF using our sample data generator "),
-
         p(paste(
           "Generate a json array of up to", max_individuals,
-          "patient with random phenotypic data. In order to obtain data 
-          that is more similar to your own, 
-          you can also provide a list of diseases, phenotypic features 
-          and treatments that you would like to be included 
+          "patient with random phenotypic data. In order to obtain data
+          that is more similar to your own,
+          you can also provide a list of diseases, phenotypic features
+          and treatments that you would like to be included
           in the simulated data."
         )),
         actionButton(
@@ -63,9 +62,9 @@ mod_landing_page_ui <- function(id) {
           style = "width: 100%;"
         ),
         hr(),
-        h6("Option 2: Use example data from public sources"),
+        h6("Option 2: Get example data from public sources"),
         p("
-          Use example data from public sources like the
+          Get example data from public sources like the
         "),
         a("
           Phenopacket store",
@@ -74,7 +73,7 @@ mod_landing_page_ui <- function(id) {
         ),
         actionButton(
           ns("navigateToExamples"),
-          "Use example data",
+          "Get example data",
           style = "width: 100%;"
         ),
         hr(),

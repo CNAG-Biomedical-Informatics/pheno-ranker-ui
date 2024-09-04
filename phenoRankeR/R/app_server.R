@@ -121,7 +121,7 @@ app_server <- function(input, output, session) {
   # )
 
   if (!dir.exists(user_dir)) {
-    print ("creating user folder")
+    print("creating user folder")
     dir.create(user_dir)
   }
 
@@ -181,7 +181,7 @@ app_server <- function(input, output, session) {
     dtInputs = NULL,
     simResult_bff = NULL,
     simResult_pxf = NULL,
-    simulationId = NULL #note this could be also multiple ids
+    simulationId = NULL # note this could be also multiple ids
   )
 
   rv_conversion <- reactiveValues(
@@ -502,8 +502,7 @@ app_server <- function(input, output, session) {
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
-        "patient_mode-phenoBlastTable",
-        rv_general,
+        "patient_mode-binaryRepresentationTable",
         runId = runId,
         rv_patient = rv_patient
       )
@@ -786,33 +785,31 @@ app_server <- function(input, output, session) {
   })
 
   renderInteractiveComplexHeatmap <- function(
-    ht_list,
-    output_id
-  ) {
+      ht_list,
+      output_id) {
+    default_opts <- list(
+      close_button = FALSE,
+      layout = "1|23",
+      width1 = "100%",
+      width2 = "700px",
+      width3 = "300px",
+      height1 = "500px",
+      height2 = "410px"
+    )
 
-  default_opts <- list(
-    close_button = FALSE,
-    layout = "1|23",
-    width1 = "100%",
-    width2 = "700px",
-    width3 = "300px",
-    height1 = "500px",
-    height2 = "410px"
-  )
-
-  InteractiveComplexHeatmapWidget(
-    input,
-    output,
-    session,
-    ht_list = ht_list,
-    output_id = output_id,
-    close_button = default_opts$close_button,
-    layout = default_opts$layout,
-    width1 = default_opts$width1,
-    width2 = default_opts$width2,
-    width3 = default_opts$width3,
-    height1 = default_opts$height1,
-    height2 = default_opts$height2
+    InteractiveComplexHeatmapWidget(
+      input,
+      output,
+      session,
+      ht_list = ht_list,
+      output_id = output_id,
+      close_button = default_opts$close_button,
+      layout = default_opts$layout,
+      width1 = default_opts$width1,
+      width2 = default_opts$width2,
+      width3 = default_opts$width3,
+      height1 = default_opts$height1,
+      height2 = default_opts$height2
     )
   }
 

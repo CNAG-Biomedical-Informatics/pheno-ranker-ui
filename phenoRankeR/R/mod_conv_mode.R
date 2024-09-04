@@ -414,8 +414,10 @@ mod_conv_mode_server <- function(id, session, db_conn, rv_conversion, rv_general
       )
 
       line_split <- strsplit(firstLine, input$delimiter)
-      if (!(input$primaryKey %in% line_split[[1]])) {
+      if (!(input$primaryKey %in% gsub("\"", "", line_split[[1]]))) {
         print("primary key not in data")
+        print("line_split[[1]][1:5]")
+        print(line_split[[1]][1:5])
         cmd <- paste(
           cmd,
           "--generate-primary-key"

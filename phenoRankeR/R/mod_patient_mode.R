@@ -282,14 +282,14 @@ mod_patient_mode_ui <- function(id) {
         verbatimTextOutput(ns("phenoBlastRunId")),
         tabsetPanel(
           id = ns("patientRankingResults"),
-          selected = "Binary representation",
-          tabPanel(
-            title = "Binary representation",
-            mod_table_phenoBlast_ui(ns("phenoBlastTable"))
-          ),
+          selected = "Ranking",
           tabPanel(
             title = "Ranking",
             mod_table_phenoRanking_ui(ns("phenoRankingTable"))
+          ),
+          tabPanel(
+            title = "Binary representation",
+            mod_table_phenoBlast_ui(ns("binaryRepresentationTable"))
           ),
           tabPanel(
             title = "Hamming Distances Heatmap",
@@ -377,7 +377,7 @@ mod_patient_mode_server <- function(
       rv_patient
     )
 
-    mod_table_phenoBlast_server("phenoBlastTable", rv_general)
+    mod_table_phenoBlast_server("binaryRepresentationTable", rv_general)
     mod_table_phenoRanking_server("phenoRankingTable", rv_general)
     mod_table_phenoHeadsUp_server("phenoHeadsUpTable", rv_general)
     mod_plot_mds_server("mds_scatter", rv_general)
@@ -1166,7 +1166,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (length(input$dnd_excl) > 0) {
+      if (length(dnd_excl) > 0) {
         settings <- paste0(
           settings,
           " -exclude-terms ",
@@ -1177,6 +1177,8 @@ mod_patient_mode_server <- function(
         )
       }
       settings2 <- settings
+      print("settings2")
+      print(settings2)
       ref_prefixes <- rv_patient$mappingDf$id_prefixes[1:nrow((rv_patient$mappingDf)) - 1]
       print("ref_prefixes")
       print(ref_prefixes)
@@ -1266,7 +1268,7 @@ mod_patient_mode_server <- function(
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
-        "phenoBlastTable",
+        "binaryRepresentationTable",
         rv_general,
         runId = timestamp,
         rv_patient = rv_patient
@@ -1299,7 +1301,7 @@ mod_patient_mode_server <- function(
       )
 
 
-      # blast_data <- renderPhenoBlastTable(timestamp)
+      # blast_data <- renderbinaryRepresentationTable(timestamp)
       # ranking_df <- renderRankingTable(timestamp)
       # CardHeader: Target vs a selected reference individual
       # renderPhenoHeadsUpTable(timestamp, blast_data, ranking_df)

@@ -7,10 +7,11 @@
 #' @noRd
 #'
 #' @importFrom shiny NS need validate
-#' @importFrom plotly plotlyOutput renderPlotly ggplotly
+#' @importFrom plotly plotlyOutput renderPlotly ggplotly event_register event_data
 #' @importFrom ggplot2 ggplot aes geom_point labs theme element_text scale_color_discrete
 #' @importFrom stats cmdscale
 #' @importFrom utils globalVariables
+#' @importFrom magrittr %>%
 
 # to prevent the linting error
 globalVariables(".data")
@@ -21,17 +22,18 @@ mod_plot_mds_ui <- function(id) {
     plotlyOutput(
       outputId = ns("plot_mds"),
       height = "600px"
-    )
+    ),
+    p("Mouse over or select the points to see the patient IDs"),
+    verbatimTextOutput(ns("selected_points"))
   )
 }
 
 renderPlots <- function(
-  runId,
-  rv,
-  rv_general,
-  mode,
-  uploaded_files_count = NULL
-) {
+    runId,
+    rv,
+    rv_general,
+    mode,
+    uploaded_files_count = NULL) {
   if (mode == "patient") {
     filePath <- paste0(
       rv_general$user_dirs$output$pats_ranked,
@@ -76,6 +78,14 @@ renderPlots <- function(
 
     fit <- cmdscale(merged_data, eig = TRUE, k = 2)
 
+    # TODO
+    # Error handling for the cmdscale error
+    # Error in cmdscale: 'k' must be in {1, 2, ..  n - 1}
+
+    # one trigger for the cmdscale error is when a user wants to compare
+    # one patient vs one patient
+    # obviously you cannot do dimensionality reduction on 2 patients
+
     x <- fit$points[, 1]
     y <- fit$points[, 2]
 
@@ -110,7 +120,8 @@ renderPlots <- function(
       aes(
         x, y,
         color = .data[["original_fn"]],
-        label = .data[["label"]]
+        label = label,
+        customdata = label
       )
       # aes(
       #   x, y,
@@ -137,7 +148,6 @@ renderPlots <- function(
         name = "Cohort"
       )
   } else {
-    
     path <- rv_general$user_dirs$output$cohorts_ranked
 
     filePath <- paste0(
@@ -179,7 +189,8 @@ renderPlots <- function(
     # print(df)
     aes_func <- aes(
       x, y,
-      label = .data[["label"]]
+      label = label,
+      customdata = label
     )
 
     if (uploaded_files_count > 1) {
@@ -239,9 +250,10 @@ mod_plot_mds_server <- function(
       )
 
       output$plot_mds <- renderPlotly({
-        ggplotly(rv$mdsPlot)
+        plot <- ggplotly(rv$mdsPlot) %>%
+          event_register("plotly_selected")
       })
-      return()
+      return(plot)
     }
 
     output$plot_mds <- renderPlotly({
@@ -251,6 +263,19 @@ mod_plot_mds_server <- function(
           "Click on Rank to generate the plot"
         )
       )
+    })
+
+    observeEvent(event_data("plotly_selected"), {
+      print("plotly_selected")
+      selected_points <- event_data("plotly_selected")
+      # get the labels of the selected points
+      patientIds <- selected_points$customdata
+      print(selected_points)
+      print(patientIds)
+
+      output$selected_points <- renderPrint({
+        paste("Selected patient IDs: ", paste(patientIds, collapse = ", "))
+      })
     })
   })
 }

@@ -67,7 +67,7 @@
 }
 
 /* for the table in patient mode */
-#phenoBlastTable tbody tr:first-child {
+#DataTables_Table_0 tbody tr:first-child {
   position: -webkit-sticky;
   position: sticky;
   top: 0;

@@ -850,6 +850,18 @@ mod_cohort_mode_server <- function(
       )
     })
 
+
+
+    # TODO
+    # the yaml validator needs to be more strict:
+    # fails:
+    # subject.sex.FEMALE:5
+    # Works:
+    # subject.sex.FEMALE: 5
+
+    # so the validator needs to check if there is a space after the colon
+    # and if there is no space it should throw an error
+
     observeEvent(input$weightsCohortFile, {
       req(input$weightsCohortFile)
 
@@ -866,6 +878,8 @@ mod_cohort_mode_server <- function(
         ),
         collapse = "\n"
       )
+
+
 
       yamlValid <- validateYAML(file_data)
       if (yamlValid != "YAML is valid") {
@@ -925,7 +939,7 @@ mod_cohort_mode_server <- function(
       result <- validateYAML(input$yamlCohortEditor_config)
       output$configYamlCohortsErrorOutput <- renderText(result)
 
-      print("input$yamlCohortEditor_config")
+      # print("input$yamlCohortEditor_config")
       data <- yaml.load(input$yamlCohortEditor_config)
       print(data)
 
