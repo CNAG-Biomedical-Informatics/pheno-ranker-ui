@@ -45,6 +45,7 @@ app_server <- function(input, output, session) {
   keycloakSecured <- get_golem_options("keycloakSecured")
 
   playground_user <- get_golem_options("playgroundDummyEmail")
+  user_email <- ""
   if (shinyproxy && keycloakSecured && Sys.getenv("SHINYPROXY_USERNAME") != playground_user) {
     user_email <- Sys.getenv("SHINYPROXY_USERNAME")
   }

@@ -19,6 +19,7 @@ Imports:
     jsonlite,
     listviewer,
     lubridate,
+    magrittr,
     odbc,
     plotly,
     reactR,
