@@ -15,7 +15,7 @@
 # TODO
 # try to get rid of the dependency tibble
 
-mod_table_phenoBlast_ui <- function(id){
+mod_table_phenoBlast_ui <- function(id) {
   ns <- NS(id)
   card_body(
     htmlOutput(ns("phenoBlastTableHeader")),
@@ -40,7 +40,7 @@ mod_table_phenoBlast_ui <- function(id){
   )
 }
 
-mod_table_phenoRanking_ui <- function(id){
+mod_table_phenoRanking_ui <- function(id) {
   ns <- NS(id)
   card_body(
     htmlOutput(ns("phenoRankingTableHeader")),
@@ -48,7 +48,7 @@ mod_table_phenoRanking_ui <- function(id){
   )
 }
 
-mod_table_phenoHeadsUp_ui <- function(id){
+mod_table_phenoHeadsUp_ui <- function(id) {
   ns <- NS(id)
   card_body(
     htmlOutput(ns("phenoHeadsUpTableHeader")),
@@ -60,11 +60,10 @@ mod_table_phenoHeadsUp_ui <- function(id){
 }
 
 renderDefaultTable <- function(
-  output, 
-  tabName, 
-  tableHeaderMessage, 
-  colNames) {
-
+    output,
+    tabName,
+    tableHeaderMessage,
+    colNames) {
   print("renderDefaultTable")
   print(tabName)
   print(tableHeaderMessage)
@@ -73,7 +72,7 @@ renderDefaultTable <- function(
   output[[paste0(tabName, "TableHeader")]] <- renderUI({
     p(tableHeaderMessage)
   })
-      
+
   output[[paste0(tabName, "Table")]] <- renderDT({
     datatable(
       data.frame(Value = "Placeholder"),
@@ -84,21 +83,19 @@ renderDefaultTable <- function(
       colnames = colNames
     )
   })
-} 
+}
 
 mod_table_phenoBlast_server <- function(
-  id,
-  rv_general,
-  runId=NULL,
-  rv_patient=NULL
-){
-  moduleServer(id,function(input, output, session){
+    id,
+    rv_general,
+    runId = NULL,
+    rv_patient = NULL) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     print("in mod_table_phenoBlast_server")
-    
+
     renderPhenoBlastTable <- function(runId, rv_general) {
-      
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
@@ -137,7 +134,7 @@ mod_table_phenoBlast_server <- function(
       jsonPaths <- as.character(blast_data[1, ])[-1]
 
       # if there is no jsonPath
-      if(length(jsonPaths) == 0){
+      if (length(jsonPaths) == 0) {
         print("jsonPaths is empty")
         # TODO
         # throw error
@@ -249,10 +246,10 @@ mod_table_phenoBlast_server <- function(
         # }
         for (col_name in names(col_colors)) {
           dt <- do.call(
-            "formatStyle", 
+            "formatStyle",
             list(
-              dt, 
-              columns = col_name, 
+              dt,
+              columns = col_name,
               backgroundColor = col_colors[[col_name]]
             )
           )
@@ -262,25 +259,26 @@ mod_table_phenoBlast_server <- function(
       output$phenoBlastTableHeader <- renderUI({
         div()
       })
-      return (blast_data)
+      return(blast_data)
     }
 
-    if(is.null(runId)){
+    if (is.null(runId)) {
       # This information would be better if it comes
       # from a config file
       renderDefaultTable(
         output,
         "phenoBlast",
         "Click on Rank",
-        c("Id", "V1", "V2", "V3", "V4", "V5",
-          "V6", "V7", "V8", "V9", "V10")
+        c(
+          "Id", "V1", "V2", "V3", "V4", "V5",
+          "V6", "V7", "V8", "V9", "V10"
+        )
       )
       return()
     }
     blast_data <- renderPhenoBlastTable(runId, rv_general)
 
     observeEvent(input$phenoBlastTable_row_last_clicked, {
-
       # TODO
       # check for an existing patient$id
       # if there is already one when switching between
@@ -307,20 +305,19 @@ mod_table_phenoBlast_server <- function(
         rv_patient = rv_patient
       )
     })
-    return (blast_data)
+    return(blast_data)
   })
 }
 
 mod_table_phenoRanking_server <- function(
-  id,
-  rv_general,
-  runId=NULL, 
-  rv_patient=NULL){
-
-  moduleServer(id,function(input, output, session){
+    id,
+    rv_general,
+    runId = NULL,
+    rv_patient = NULL) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    renderRankingTable <- function(runId, rv_patient, rv_general){
+    renderRankingTable <- function(runId, rv_patient, rv_general) {
       print("Reading ranking table")
 
       file_path <- paste0(
@@ -340,12 +337,12 @@ mod_table_phenoRanking_server <- function(
         return()
       }
 
-      
+
       data <- as.matrix(
         readTxt(
           rv_general$user_dirs$output$pats_ranked,
           # get_golem_options("patientModeOutputFolder"),
-          runId=runId,
+          runId = runId,
           fileName_suffix = "_alignment.stdout",
           row_names = 1,
         )
@@ -362,7 +359,7 @@ mod_table_phenoRanking_server <- function(
       weights_file_path <- file.path(
         rv_general$user_dirs$uploads$weights,
         # get_golem_options("weightsUploadFolder"),
-        paste0(runId,".yaml")
+        paste0(runId, ".yaml")
       )
 
       weighted <- "no"
@@ -414,15 +411,16 @@ mod_table_phenoRanking_server <- function(
           )
         )
       })
-      return (ranking_df)
+      return(ranking_df)
     }
 
-    if(is.null(runId)){
+    if (is.null(runId)) {
       renderDefaultTable(
         output,
         "phenoRanking",
         "Click on Rank",
-        c("Rank", "Reference(ID)", "Length",
+        c(
+          "Rank", "Reference(ID)", "Length",
           "Hamming Distance", "Distance Z-Score",
           "Distance P-Value", "Distance Z-Score (Rand)",
           "Jaccard Index", "Jaccard Z-Score", "Jaccard P-Value"
@@ -432,9 +430,8 @@ mod_table_phenoRanking_server <- function(
     }
 
     ranking_df <- renderRankingTable(runId, rv_patient, rv_general)
-    
-    observeEvent(input$phenoRankingTable_row_last_clicked, {
 
+    observeEvent(input$phenoRankingTable_row_last_clicked, {
       # TODO
       # check for an existing patient$id
       # if there is already one when switching between
@@ -452,22 +449,18 @@ mod_table_phenoRanking_server <- function(
       rv_patient$id <- patient_id #-> triggers the rerendering of the phenoHeadsUpTable
       #* Note: you do not seem to be able to trigger the rendering
       #* from this module because then the namespace is not correct
-    
     })
-    return (ranking_df)
+    return(ranking_df)
   })
 }
 
 mod_table_phenoHeadsUp_server <- function(
-  id,
-  rv_general,
-  rv_patient=NULL){
-
-  moduleServer(id, function(input, output, session){
+    id,
+    rv_general,
+    rv_patient = NULL) {
+  moduleServer(id, function(input, output, session) {
     renderPhenoHeadsUpTable <- function(output, rv_patient, rv_general) {
-
-      prepareTable <- function(rv_patient, rv_general){
-
+      prepareTable <- function(rv_patient, rv_general) {
         runId <- rv_patient$runId
 
         print("in prepareTable")
@@ -484,8 +477,8 @@ mod_table_phenoHeadsUp_server <- function(
           "_alignment.target.csv"
         )
 
-        print ("alignment_file_path")
-        print (alignment_file_path)
+        print("alignment_file_path")
+        print(alignment_file_path)
 
         if (!file.exists(alignment_file_path)) {
           print("file does not exist")
@@ -502,7 +495,7 @@ mod_table_phenoHeadsUp_server <- function(
             sep = ";"
           )
         )
-        
+
         # print("alignment_data")
         # print(str(alignment_data))
 
@@ -525,15 +518,14 @@ mod_table_phenoHeadsUp_server <- function(
         cumulated_hamming_distance <- ranking_table_row$`Hamming Distance`
         jaccard_index <- ranking_table_row$`Jaccard Index`
 
-        return (list(
-          df=filtered_df, 
-          hamDist = cumulated_hamming_distance, 
-          JacIdx =jaccard_index
+        return(list(
+          df = filtered_df,
+          hamDist = cumulated_hamming_distance,
+          JacIdx = jaccard_index
         ))
       }
 
-      renderTable <- function(output, values){
-        
+      renderTable <- function(output, values) {
         print("in renderTable")
 
         cumulated_hamming_distance <- values$hamDist
@@ -542,7 +534,7 @@ mod_table_phenoHeadsUp_server <- function(
 
         # print("filtered_df")
         # print(str(filtered_df))
-        
+
         # print("ns(phenoHeadsUpTable-phenoHeadsUpTableHeader)")
         # ns("phenoHeadsUpTable-phenoHeadsUpTableHeader")
 
@@ -578,14 +570,16 @@ mod_table_phenoHeadsUp_server <- function(
       renderTable(output, tableVals)
     }
 
-    if (is.null(rv_patient)){
+    if (is.null(rv_patient)) {
       renderDefaultTable(
         output,
         "phenoHeadsUp",
         "After ranking click on any row in the table above",
-        c("Reference", "Indicator", "Target",
+        c(
+          "Reference", "Indicator", "Target",
           "Weight", "Hamming Distance",
-          "JSON Path", "Label")
+          "JSON Path", "Label"
+        )
       )
       return()
     }
