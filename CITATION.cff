@@ -1,0 +1,50 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Pheno-Ranker-UI
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Ivo Christopher
+    family-names: Leist
+    email: Ivo.leist@cnag.eu
+    affiliation: >-
+      Centro Nacional de Análisis Genómico (CNAG),
+      Universitat de Barcelona (UB) 
+    orcid: 'https://orcid.org/0000-0002-9772-443X'
+repository-code: >-
+  https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui
+url: 'https://pheno-ranker.cnag.eu'
+abstract: >-
+  The web ui (R-Shiny application) for Pheno-Ranker, a tool
+  designed for performing semantic similarity analysis on
+  phenotypic data structured in JSON format, such as Beacon
+  v2 Models or Phenopackets v2 and beyond
+keywords:
+  - json
+  - R
+  - shiny
+  - semantic-similarity
+  - data-exploration
+  - clinical-data
+  - beacon-v2
+  - phenopackets-v2
+license: GPL-3.0
+commit: bbfdd9310cead55516eac7d8163bd1509c5c9c25
+version: 0.0.0.9019
+date-released: '2024-09-04'
+preferred-citation:
+  type: article
+  authors:
+  - given-names: Ivo Christopher
+    family-names: Leist
+  - given-names: Ivo Glynne
+    family-names: Gut
+  - given-names: Manuel
+    family-names: Rueda
+  title: "Pheno-Ranker: A Toolkit for Comparison of Phenotypic Data Stored in GA4GH Standards and Beyond."
+  year: 2014
+  status: "submitted"
