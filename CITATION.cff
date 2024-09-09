@@ -37,14 +37,20 @@ commit: bbfdd9310cead55516eac7d8163bd1509c5c9c25
 version: 0.0.0.9019
 date-released: '2024-09-04'
 preferred-citation:
-  type: article
+  type: unpublished
   authors:
   - given-names: Ivo Christopher
     family-names: Leist
+  - given-names: María
+    family-names: Rivas-Torrubia
+  - given-names: Marta Eugenia
+    family-names: Alarcón Riquelme
+  - given-names: Guillermo
+    family-names: Barturen
+  - name: PRECISESADS Clinical Consortium
   - given-names: Ivo Glynne
     family-names: Gut
   - given-names: Manuel
     family-names: Rueda
   title: "Pheno-Ranker: A Toolkit for Comparison of Phenotypic Data Stored in GA4GH Standards and Beyond."
   year: 2014
-  status: "submitted"
