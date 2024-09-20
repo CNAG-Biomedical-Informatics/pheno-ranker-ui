@@ -9,6 +9,7 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
+#' @importFrom DiagrammeR grVizOutput renderGrViz grViz
 
 #* Note: the landing page module is coming without a server function
 # because it was not possible to run updateNavbarPage from this module
@@ -24,6 +25,7 @@ mod_landing_page_ui <- function(id) {
     layout = c(
       "         1fr         1fr     ",
       "150px    welcome     welcome ",
+      "1fr      graph       graph   ",
       "1fr      utilities   modes   ",
       "5px      version     version "
     ),
@@ -37,6 +39,13 @@ mod_landing_page_ui <- function(id) {
           "Your interactive tool for semantic similarity analyses
           of Phenotypic Data Stored in GA4GH Standards and Beyond"
         )
+      )
+    ),
+    grid_place(
+      area = "graph",
+      card_body(
+        grVizOutput(ns("dg")),
+        verbatimTextOutput(ns("print"))
       )
     ),
     grid_card(
@@ -170,4 +179,43 @@ mod_landing_page_ui <- function(id) {
       )
     )
   )
+}
+
+mod_landing_page_server <- function(id){
+  moduleServer(id, function(input, output, session) {
+
+    output$dg <- renderGrViz({
+      grViz("
+        digraph a_nice_graph {
+
+        # node definitions with substituted label text
+        node [fontname = Helvetica]
+        a [label = '@@1']
+        b [label = '@@2-1']
+        c [label = '@@2-2']
+        d [label = '@@2-3']
+        e [label = '@@2-4']
+        f [label = '@@2-5']
+        g [label = '@@2-6']
+        h [label = '@@2-7']
+        i [label = '@@2-8']
+        j [label = '@@2-9']
+
+        # edge definitions with the node IDs
+        a -> {b c d e f g h i j}
+        }
+
+        [1]: 'top'
+        [2]: 10:20
+      ")
+    })
+    txt <- reactive({
+      req(input$dg_click)
+      nodeval <- input$dg_click$nodeValues[[1]]
+      return(paste(nodeval, " is clicked"))
+    })
+    output$print <- renderPrint({
+      txt()
+    })
+  })
 }
