@@ -232,6 +232,8 @@ app_server <- function(input, output, session) {
   print("dbDriver")
   print(db_driver)
 
+  mod_landing_page_server("landing_page")
+
   mod_input_examples_page_server(
     "input_examples",
     session,

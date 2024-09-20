@@ -9,6 +9,8 @@
 #' @importFrom gridlayout grid_container grid_card grid_place
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
+#' @importFrom cyjShiny cyjShiny cyjShinyOutput renderCyjShiny dataFramesToJSON
+#' @importFrom jsonlite toJSON
 
 #* Note: the landing page module is coming without a server function
 # because it was not possible to run updateNavbarPage from this module
@@ -24,6 +26,7 @@ mod_landing_page_ui <- function(id) {
     layout = c(
       "         1fr         1fr     ",
       "150px    welcome     welcome ",
+      "200px    cyjShiny    cyjShiny ",
       "1fr      utilities   modes   ",
       "5px      version     version "
     ),
@@ -36,6 +39,14 @@ mod_landing_page_ui <- function(id) {
         p(
           "Your interactive tool for semantic similarity analyses
           of Phenotypic Data Stored in GA4GH Standards and Beyond"
+        )
+      )
+    ),
+    grid_place(
+      area = "cyjShiny",
+      card_body(
+        cyjShinyOutput(
+          ns("cyjShiny")
         )
       )
     ),
@@ -170,4 +181,39 @@ mod_landing_page_ui <- function(id) {
       )
     )
   )
+}
+
+mod_landing_page_server <- function(id) {
+
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
+    tbl.nodes <- data.frame(
+      id = c("A", "B", "C"),
+      type = c("patientA", "patientB", "patientC"),
+      stringsAsFactors = FALSE
+    )
+
+    tbl.edges <- data.frame(
+      source = c("A", "B", "C"),
+      target = c("B", "C", "A"),
+      interaction=c("phosphorylates", "synthetic lethal", "unknown"),
+      stringsAsFactors = FALSE
+    )
+
+    graph.json <- toJSON(
+      dataFramesToJSON(
+        tbl.edges,
+        tbl.nodes
+      ),
+      auto_unbox = TRUE
+    )
+
+    output$cyjShiny <- renderCyjShiny({
+      cyjShiny(
+        graph = graph.json,
+        layoutName = "grid"
+      )
+    })
+  })
 }
