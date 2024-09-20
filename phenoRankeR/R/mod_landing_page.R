@@ -186,28 +186,59 @@ mod_landing_page_server <- function(id){
 
     output$dg <- renderGrViz({
       grViz("
-        digraph a_nice_graph {
+        digraph G {
+          
+          node [shape = rectangle, style = filled, fillcolor = lightgrey]
+          
+          Start [shape = circle, style = filled, fillcolor = lightgreen, label = 'Start'];
+          A [shape = diamond, label = 'Is input data available?', fillcolor = lightgoldenrod1];
+          B [shape = diamond, label = 'Which data source?', fillcolor = lightgoldenrod1];
+          C [label = 'Simulated BFF/PXF'];
+          D [label = 'Example data'];
+          F [label = 'BFF/PXF'];
+          
+          G [shape = diamond, label = 'Which file type?', fillcolor = lightgoldenrod1];
+          H [label = 'CSV'];
 
-        # node definitions with substituted label text
-        node [fontname = Helvetica]
-        a [label = '@@1']
-        b [label = '@@2-1']
-        c [label = '@@2-2']
-        d [label = '@@2-3']
-        e [label = '@@2-4']
-        f [label = '@@2-5']
-        g [label = '@@2-6']
-        h [label = '@@2-7']
-        i [label = '@@2-8']
-        j [label = '@@2-9']
+          // Start to decision point
+          Start -> A;
+          
+          // Decision: Is input data available?
+          A -> B [label = 'No'];
+          A -> G [label = 'Yes'];
 
-        # edge definitions with the node IDs
-        a -> {b c d e f g h i j}
-        }
+          // Data source decision
+          B -> C;
+          B -> D;
 
-        [1]: 'top'
-        [2]: 10:20
+          // File type decision
+          G -> H;
+          G -> F;
+        }  
       ")
+      # grViz("
+      #   digraph a_nice_graph {
+
+      #   # node definitions with substituted label text
+      #   node [fontname = Helvetica]
+      #   a [label = '@@1']
+      #   b [label = '@@2-1']
+      #   c [label = '@@2-2']
+      #   d [label = '@@2-3']
+      #   e [label = '@@2-4']
+      #   f [label = '@@2-5']
+      #   g [label = '@@2-6']
+      #   h [label = '@@2-7']
+      #   i [label = '@@2-8']
+      #   j [label = '@@2-9']
+
+      #   # edge definitions with the node IDs
+      #   a -> {b c d e f g h i j}
+      #   }
+
+      #   [1]: 'top'
+      #   [2]: 10:20
+      # ")
     })
     txt <- reactive({
       req(input$dg_click)
