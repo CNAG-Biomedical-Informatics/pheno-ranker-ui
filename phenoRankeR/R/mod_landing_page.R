@@ -41,7 +41,7 @@ mod_landing_page_ui <- function(id) {
     ),
     grid_card(
       area = "utilities",
-      card_header("Obtain input data"),
+      card_header("New User?"),
       card_body(
         tags$head(
           tags$style(HTML("
@@ -170,6 +170,14 @@ mod_landing_page_ui <- function(id) {
           }
         ")),
         ),
+        p(
+          "Our interactive decision tree will help you
+          to get started with Pheno-Ranker 🚀"
+        ),
+        p(
+          "Just hover over the
+          tree nodes to learn how to use it 💡"
+        ),
         div(class = "tree",
         tags$ul(
           tags$li(
@@ -232,80 +240,6 @@ mod_landing_page_ui <- function(id) {
             )
           )
         )),
-        # div(
-        #   class = "flowchart-container",
-        #   # Start node
-        #   div(
-        #     class = "circle",
-        #     style = "top: 20px; left: 20px;", "Start"
-        #   ),
-
-        #   # Line from Start to A
-        #   div(
-        #     class = "line vertical",
-        #     style = "top: 120px; left: 20px; height: 80px;"
-        #   ),
-        #   div(
-        #     class = "arrow down",
-        #     style = "top: 200px; left: 20px;"
-        #   ),
-
-        #   # Node A
-        #   div(
-        #     class = "diamond", style = "top: 200px; left: 350px;",
-        #     div(class = "diamond-text", "Is input data available?")
-        #   ),
-
-        #   # Line from A to B ('No' path)
-        #   div(class = "line vertical", style = "top: 300px; left: 400px; height: 80px;"),
-        #   div(class = "arrow down", style = "top: 380px; left: 390px;"),
-        #   div(class = "label", style = "top: 330px; left: 410px;", "No"),
-
-        #   # Node B
-        #   div(
-        #     class = "diamond", style = "top: 380px; left: 350px;",
-        #     div(class = "diamond-text", "Which data source?")
-        #   ),
-
-        #   # Line from A to G ('Yes' path)
-        #   div(class = "line horizontal", style = "top: 250px; left: 400px; width: 150px;"),
-        #   div(class = "arrow right", style = "top: 240px; left: 550px;"),
-        #   div(class = "label", style = "top: 230px; left: 475px;", "Yes"),
-
-        #   # Node G
-        #   div(
-        #     class = "diamond", style = "top: 200px; left: 600px;",
-        #     div(class = "diamond-text", "Which file type?")
-        #   ),
-
-        #   # Line from B to D (Left)
-        #   div(class = "line horizontal", style = "top: 430px; left: 350px; width: -150px; transform: scaleX(-1);"),
-        #   div(class = "arrow left", style = "top: 420px; left: 200px;"),
-
-        #   # Node D
-        #   div(class = "rectangle", style = "top: 400px; left: 50px;", "Example data"),
-
-        #   # Line from B to C (Right)
-        #   div(class = "line horizontal", style = "top: 430px; left: 400px; width: 200px;"),
-        #   div(class = "arrow right", style = "top: 420px; left: 600px;"),
-
-        #   # Node C
-        #   div(class = "rectangle", style = "top: 400px; left: 600px;", "Simulated BFF/PXF"),
-
-        #   # Line from G to H (Up)
-        #   div(class = "line vertical", style = "top: 150px; left: 650px; height: -80px;"),
-        #   div(class = "arrow up", style = "top: 70px; left: 640px;"),
-
-        #   # Node H
-        #   div(class = "rectangle", style = "top: 20px; left: 600px;", "CSV"),
-
-        #   # Line from G to F (Down)
-        #   div(class = "line vertical", style = "top: 300px; left: 650px; height: 100px;"),
-        #   div(class = "arrow down", style = "top: 400px; left: 640px;"),
-
-        #   # Node F
-        #   div(class = "rectangle", style = "top: 400px; left: 600px;", "BFF/PXF")
-        # ),
         p("
           If you do not have Phenotypic data stored in
           Beacon-friendly format (BFF) or Phenopackets v2(PXF),
