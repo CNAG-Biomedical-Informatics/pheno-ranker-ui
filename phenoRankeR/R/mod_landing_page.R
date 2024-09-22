@@ -168,6 +168,23 @@ mod_landing_page_ui <- function(id) {
           .pxf {
             max-width: 70px;
           }
+          .hover-info {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            width: 400px;
+            top: 100%; /* Position it below the node */
+            left: 50%;
+            transform: translateX(-50%); /* Center it */;
+          }
+          /* Only show the hover-info div when hovering over the parent li element */
+          .tree li:hover > .hover-info {
+            display: block;
+          }
         ")),
         ),
         p(
@@ -175,8 +192,10 @@ mod_landing_page_ui <- function(id) {
           to get started with Pheno-Ranker 🚀"
         ),
         p(
-          "Just hover over the
-          tree nodes to learn how to use it 💡"
+          "Hover the bottom nodes to learn more💡"
+        ),
+        p(
+          "Hint: they are clickable!👇"
         ),
         div(class = "tree",
         tags$ul(
@@ -195,11 +214,27 @@ mod_landing_page_ui <- function(id) {
                 tags$ul(
                   tags$li(tags$a(href = "#", class = "process",
                     div(class = "icon", tags$i(class = "fas fa-flask")),
-                    "Simulate BFF/PXF"
+                    "Simulate BFF/PXF",
+                    div(
+                      class = "hover-info",
+                      "Generate a json array of up to 2500 patients
+                      with random phenotypic data. In order to obtain data
+                      that is more similar to your own,
+                      you can also provide a list of diseases, phenotypic features
+                      and treatments that you would like to be included
+                      in the simulated data.",
+                      tags$a(href = "#", "learn more")
+                    )
                   )),
                   tags$li(tags$a(href = "#", class = "process",
                     div(class = "icon", tags$i(class = "fas fa-hand-pointer")),
-                    "Get example data"
+                    "Get example data",
+                    div(
+                      class = "hover-info",
+                      "Get example data from public sources like the
+                      Phenopacket store",
+                      tags$a(href = "#", "learn more")
+                    )
                   ))
                 )
               ),
@@ -220,7 +255,27 @@ mod_landing_page_ui <- function(id) {
                           tags$img(src = "https://pubcasefinder.dbcls.jp/static/images/pcf/top/logo_phenopackets.png", class = "pxf")
                         )
                       ),
-                      "BFF/PXF"
+                      "BFF/PXF",
+                      div(
+                        class = "hover-info",
+                        p("Pheno-Ranker supports two file formats for phenotypic data right out of the box:"),
+                        p("- Beacon-friendly format (BFF)"),
+                        p("- Phenopackets v2 (PXF)"),
+                        p("Both are data exchange formats supported by the Global Alliance for Genomics and Health (GA4GH)."),
+                        tags$a(href = "#", "learn more"),
+                        p("Jump right in!"),
+                        # two buttons one for patient mode and one for cohort mode
+                        actionButton(
+                          ns("navigateToPatientMode"),
+                          "Patient vs Reference Cohort(s)",
+                          style = "width: 100%;"
+                        ),
+                        actionButton(
+                          ns("navigateToCohortMode"),
+                          "Intra-/Inter-cohort comparison",
+                          style = "width: 100%;"
+                        )
+                      )
                     )
                   ),
                   tags$li(
@@ -310,7 +365,7 @@ mod_landing_page_ui <- function(id) {
     ),
     grid_card(
       area = "modes",
-      card_header("Modes"),
+      card_header("Jump right in!"),
       card_body(
         p(
           "Pheno-Ranker can be used in two different modes: "
