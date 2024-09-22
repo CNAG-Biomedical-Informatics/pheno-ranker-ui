@@ -192,7 +192,7 @@ mod_landing_page_ui <- function(id) {
           to get started with Pheno-Ranker 🚀"
         ),
         p(
-          "Hover the bottom nodes to learn more💡"
+          "Hover over the bottom nodes to learn more💡"
         ),
         p(
           "Hint: they are clickable!👇"
