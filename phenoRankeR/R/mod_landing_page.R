@@ -24,7 +24,6 @@ mod_landing_page_ui <- function(id) {
     layout = c(
       "         1fr         1fr     ",
       "150px    welcome     welcome ",
-      "1fr      flowchart   flowchart",
       "1fr      utilities   modes   ",
       "5px      version     version "
     ),
@@ -40,187 +39,19 @@ mod_landing_page_ui <- function(id) {
         )
       )
     ),
-    grid_place(
-      area = "flowchart",
-      card_body(
-        tags$head(
-          tags$style(HTML("
-          .flowchart-container {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-          }
-          .circle {
-            width: 100px;
-            height: 100px;
-            background-color: lightgreen;
-            border-radius: 50%;
-            position: absolute;
-            text-align: center;
-            line-height: 100px;
-            font-weight: bold;
-          }
-          .rectangle {
-            width: 150px;
-            height: 60px;
-            background-color: lightgrey;
-            position: absolute;
-            text-align: center;
-            line-height: 60px;
-            font-weight: bold;
-          }
-          .diamond {
-            width: 100px;
-            height: 100px;
-            background-color: lightgoldenrodyellow;
-            position: absolute;
-            transform: rotate(45deg);
-            text-align: center;
-            line-height: 100px;
-            font-weight: bold;
-          }
-          .diamond-text {
-            position: relative;
-            top: 25%;
-            transform: rotate(-45deg);
-            width: 100px;
-            height: 50px;
-            margin: 0 auto;
-          }
-          .line {
-            position: absolute;
-            background-color: black;
-          }
-          .line.vertical {
-            width: 2px;
-          }
-          .line.horizontal {
-            height: 2px;
-          }
-          .arrow {
-            position: absolute;
-            width: 0;
-            height: 0;
-          }
-          .arrow.down {
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid black;
-          }
-          .arrow.up {
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 15px solid black;
-          }
-          .arrow.right {
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-left: 15px solid black;
-          }
-          .arrow.left {
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 15px solid black;
-          }
-          .label {
-            position: absolute;
-            background-color: white;
-            padding: 2px 5px;
-            font-weight: bold;
-          }
-        "))
-        ),
-        div(
-          class = "flowchart-container",
-          # Start node
-          div(class = "circle", style = "top: 20px; left: 350px;", "Start"),
-
-          # Line from Start to A
-          div(class = "line vertical", style = "top: 120px; left: 400px; height: 80px;"),
-          div(class = "arrow down", style = "top: 200px; left: 390px;"),
-
-          # Node A
-          div(
-            class = "diamond", style = "top: 200px; left: 350px;",
-            div(class = "diamond-text", "Is input data available?")
-          ),
-
-          # Line from A to B ('No' path)
-          div(class = "line vertical", style = "top: 300px; left: 400px; height: 80px;"),
-          div(class = "arrow down", style = "top: 380px; left: 390px;"),
-          div(class = "label", style = "top: 330px; left: 410px;", "No"),
-
-          # Node B
-          div(
-            class = "diamond", style = "top: 380px; left: 350px;",
-            div(class = "diamond-text", "Which data source?")
-          ),
-
-          # Line from A to G ('Yes' path)
-          div(class = "line horizontal", style = "top: 250px; left: 400px; width: 150px;"),
-          div(class = "arrow right", style = "top: 240px; left: 550px;"),
-          div(class = "label", style = "top: 230px; left: 475px;", "Yes"),
-
-          # Node G
-          div(
-            class = "diamond", style = "top: 200px; left: 600px;",
-            div(class = "diamond-text", "Which file type?")
-          ),
-
-          # Line from B to D (Left)
-          div(class = "line horizontal", style = "top: 430px; left: 350px; width: -150px; transform: scaleX(-1);"),
-          div(class = "arrow left", style = "top: 420px; left: 200px;"),
-
-          # Node D
-          div(class = "rectangle", style = "top: 400px; left: 50px;", "Example data"),
-
-          # Line from B to C (Right)
-          div(class = "line horizontal", style = "top: 430px; left: 400px; width: 200px;"),
-          div(class = "arrow right", style = "top: 420px; left: 600px;"),
-
-          # Node C
-          div(class = "rectangle", style = "top: 400px; left: 600px;", "Simulated BFF/PXF"),
-
-          # Line from G to H (Up)
-          div(class = "line vertical", style = "top: 150px; left: 650px; height: -80px;"),
-          div(class = "arrow up", style = "top: 70px; left: 640px;"),
-
-          # Node H
-          div(class = "rectangle", style = "top: 20px; left: 600px;", "CSV"),
-
-          # Line from G to F (Down)
-          div(class = "line vertical", style = "top: 300px; left: 650px; height: 100px;"),
-          div(class = "arrow down", style = "top: 400px; left: 640px;"),
-
-          # Node F
-          div(class = "rectangle", style = "top: 400px; left: 600px;", "BFF/PXF")
-        )
-      )
-    ),
     grid_card(
       area = "utilities",
       card_header("Obtain input data"),
       card_body(
         tags$head(
           tags$style(HTML("
-          .flowchart {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 900px;
-            width: 100%;
-            text-align: center;
-            position: relative;
-          }
           .tree ul {
             padding-top: 20px;
             position: relative;
             transition: all 0.5s;
             display: flex;
             justify-content: center;
+            padding-left: 0;
           }
           .tree li {
             display: inline-block;
@@ -267,7 +98,6 @@ mod_landing_page_ui <- function(id) {
             content: '';
             position: absolute;
             top: 0;
-            left: 50%;
             border-left: 1px solid #ccc;
             width: 0;
             height: 20px;
@@ -340,61 +170,61 @@ mod_landing_page_ui <- function(id) {
           }
         ")),
         ),
-        div(class = "flowchart tree",
+        div(class = "tree",
         tags$ul(
           tags$li(
             tags$a(href = "#", class = "decision",
-                  div(class = "icon", tags$i(class = "fas fa-question-circle")),
-                  "Do you have data?"
+              div(class = "icon", tags$i(class = "fas fa-question-circle")),
+              "Do you have data?"
             ),
             tags$ul(
               tags$li(
                 div(class = "label label-no", "No"),
                 tags$a(href = "#", class = "decision",
-                      div(class = "icon", tags$i(class = "fas fa-wand-magic-sparkles")),
-                      "Use our utilities to get data"
+                  div(class = "icon", tags$i(class = "fas fa-wand-magic-sparkles")),
+                  "Use our utilities to get data"
                 ),
                 tags$ul(
                   tags$li(tags$a(href = "#", class = "process",
-                                div(class = "icon", tags$i(class = "fas fa-flask")),
-                                "Simulate BFF/PXF"
+                    div(class = "icon", tags$i(class = "fas fa-flask")),
+                    "Simulate BFF/PXF"
                   )),
                   tags$li(tags$a(href = "#", class = "process",
-                                div(class = "icon", tags$i(class = "fas fa-hand-pointer")),
-                                "Get example data"
+                    div(class = "icon", tags$i(class = "fas fa-hand-pointer")),
+                    "Get example data"
                   ))
                 )
               ),
               tags$li(
                 div(class = "label label-yes", "Yes"),
                 tags$a(href = "#", class = "decision",
-                      div(class = "icon", tags$i(class = "fas fa-file-alt")),
-                      "Which file type?"
+                  div(class = "icon", tags$i(class = "fas fa-file-alt")),
+                  "Which file type?"
                 ),
                 tags$ul(
                   tags$li(
                     tags$a(href = "#", class = "process",
-                          div(class = "row",
-                              div(class = "column",
-                                  tags$img(src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4", class = "bff")
-                              ),
-                              div(class = "column",
-                                  tags$img(src = "https://pubcasefinder.dbcls.jp/static/images/pcf/top/logo_phenopackets.png", class = "pxf")
-                              )
-                          ),
-                          "BFF/PXF"
+                      div(class = "row",
+                        div(class = "column",
+                          tags$img(src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4", class = "bff")
+                        ),
+                        div(class = "column",
+                          tags$img(src = "https://pubcasefinder.dbcls.jp/static/images/pcf/top/logo_phenopackets.png", class = "pxf")
+                        )
+                      ),
+                      "BFF/PXF"
                     )
                   ),
                   tags$li(
                     tags$a(href = "#", class = "process",
-                          div(class = "icon", tags$i(class = "fas fa-file-csv")),
-                          "generic CSV"
+                      div(class = "icon", tags$i(class = "fas fa-file-csv")),
+                      "generic CSV"
                     )
                   ),
                   tags$li(
                     tags$a(href = "#", class = "process",
-                          div(class = "icon", tags$i(class = "fas fa-file")),
-                          HTML("RedCap,<br/>OMOP-CDM,<br/>CDISC-ODM<br/>")
+                      div(class = "icon", tags$i(class = "fas fa-file")),
+                      HTML("RedCap,<br/>OMOP-CDM,<br/>CDISC-ODM<br/>")
                     )
                   )
                 )
