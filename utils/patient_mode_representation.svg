@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="full" height="500px" version="1.1" width="500px">
+  <defs>
+    <marker id="start_arrow" markerHeight="6" markerWidth="6" orient="auto" refX="3" refY="3">
+      <path d="M6,0 L0,3 L6,6 Z" fill="black"/>
+    </marker>
+    <marker id="end_arrow" markerHeight="6" markerWidth="6" orient="auto" refX="3" refY="3">
+      <path d="M0,0 L6,3 L0,6 Z" fill="black"/>
+    </marker>
+  </defs>
+  <circle cx="250" cy="230" fill="blue" r="5"/>
+  <line stroke="blue" stroke-width="2" x1="250" x2="250" y1="235" y2="250"/>
+  <line stroke="blue" stroke-width="2" x1="250" x2="245" y1="240" y2="245"/>
+  <line stroke="blue" stroke-width="2" x1="250" x2="255" y1="240" y2="245"/>
+  <line stroke="blue" stroke-width="2" x1="250" x2="245" y1="250" y2="260"/>
+  <line stroke="blue" stroke-width="2" x1="250" x2="255" y1="250" y2="260"/>
+  <circle cx="388.77737983445115" cy="230.0" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="388.77737983445115" x2="388.77737983445115" y1="235.0" y2="250.0"/>
+  <line stroke="grey" stroke-width="2" x1="388.77737983445115" x2="383.77737983445115" y1="240.0" y2="245.0"/>
+  <line stroke="grey" stroke-width="2" x1="388.77737983445115" x2="393.77737983445115" y1="240.0" y2="245.0"/>
+  <line stroke="grey" stroke-width="2" x1="388.77737983445115" x2="383.77737983445115" y1="250.0" y2="260.0"/>
+  <line stroke="grey" stroke-width="2" x1="388.77737983445115" x2="393.77737983445115" y1="250.0" y2="260.0"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="280.0" x2="358.77737983445115" y1="250.0" y2="250.0"/>
+  <circle cx="328.978197681691" cy="308.978197681691" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="328.978197681691" x2="328.978197681691" y1="313.978197681691" y2="328.978197681691"/>
+  <line stroke="grey" stroke-width="2" x1="328.978197681691" x2="323.978197681691" y1="318.978197681691" y2="323.978197681691"/>
+  <line stroke="grey" stroke-width="2" x1="328.978197681691" x2="333.978197681691" y1="318.978197681691" y2="323.978197681691"/>
+  <line stroke="grey" stroke-width="2" x1="328.978197681691" x2="323.978197681691" y1="328.978197681691" y2="338.978197681691"/>
+  <line stroke="grey" stroke-width="2" x1="328.978197681691" x2="333.978197681691" y1="328.978197681691" y2="338.978197681691"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="271.2132034355964" x2="307.76499424609455" y1="271.2132034355964" y2="307.76499424609455"/>
+  <circle cx="250.0" cy="330.06737708545916" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="250.0" x2="250.0" y1="335.06737708545916" y2="350.06737708545916"/>
+  <line stroke="grey" stroke-width="2" x1="250.0" x2="245.0" y1="340.06737708545916" y2="345.06737708545916"/>
+  <line stroke="grey" stroke-width="2" x1="250.0" x2="255.0" y1="340.06737708545916" y2="345.06737708545916"/>
+  <line stroke="grey" stroke-width="2" x1="250.0" x2="245.0" y1="350.06737708545916" y2="360.06737708545916"/>
+  <line stroke="grey" stroke-width="2" x1="250.0" x2="255.0" y1="350.06737708545916" y2="360.06737708545916"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="250.0" x2="250.0" y1="280.0" y2="320.06737708545916"/>
+  <circle cx="119.8097076588736" cy="360.1902923411264" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="119.8097076588736" x2="119.8097076588736" y1="365.1902923411264" y2="380.1902923411264"/>
+  <line stroke="grey" stroke-width="2" x1="119.8097076588736" x2="114.8097076588736" y1="370.1902923411264" y2="375.1902923411264"/>
+  <line stroke="grey" stroke-width="2" x1="119.8097076588736" x2="124.8097076588736" y1="370.1902923411264" y2="375.1902923411264"/>
+  <line stroke="grey" stroke-width="2" x1="119.8097076588736" x2="114.8097076588736" y1="380.1902923411264" y2="390.1902923411264"/>
+  <line stroke="grey" stroke-width="2" x1="119.8097076588736" x2="124.8097076588736" y1="380.1902923411264" y2="390.1902923411264"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="228.78679656440357" x2="141.02291109447003" y1="271.2132034355964" y2="358.97708890552997"/>
+  <circle cx="99.61305718990388" cy="230.00000000000003" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="99.61305718990388" x2="99.61305718990388" y1="235.00000000000003" y2="250.00000000000003"/>
+  <line stroke="grey" stroke-width="2" x1="99.61305718990388" x2="94.61305718990388" y1="240.00000000000003" y2="245.00000000000003"/>
+  <line stroke="grey" stroke-width="2" x1="99.61305718990388" x2="104.61305718990388" y1="240.00000000000003" y2="245.00000000000003"/>
+  <line stroke="grey" stroke-width="2" x1="99.61305718990388" x2="94.61305718990388" y1="250.00000000000003" y2="260.0"/>
+  <line stroke="grey" stroke-width="2" x1="99.61305718990388" x2="104.61305718990388" y1="250.00000000000003" y2="260.0"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="220.0" x2="129.61305718990388" y1="250.0" y2="250.00000000000003"/>
+  <circle cx="162.49892371630025" cy="142.49892371630028" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="162.49892371630025" x2="162.49892371630025" y1="147.49892371630028" y2="162.49892371630028"/>
+  <line stroke="grey" stroke-width="2" x1="162.49892371630025" x2="157.49892371630025" y1="152.49892371630028" y2="157.49892371630028"/>
+  <line stroke="grey" stroke-width="2" x1="162.49892371630025" x2="167.49892371630025" y1="152.49892371630028" y2="157.49892371630028"/>
+  <line stroke="grey" stroke-width="2" x1="162.49892371630025" x2="157.49892371630025" y1="162.49892371630028" y2="172.49892371630028"/>
+  <line stroke="grey" stroke-width="2" x1="162.49892371630025" x2="167.49892371630025" y1="162.49892371630028" y2="172.49892371630028"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="228.78679656440357" x2="183.71212715189668" y1="228.78679656440357" y2="183.7121271518967"/>
+  <circle cx="249.99999999999997" cy="72.73873625709513" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="249.99999999999997" x2="249.99999999999997" y1="77.73873625709513" y2="92.73873625709513"/>
+  <line stroke="grey" stroke-width="2" x1="249.99999999999997" x2="244.99999999999997" y1="82.73873625709513" y2="87.73873625709513"/>
+  <line stroke="grey" stroke-width="2" x1="249.99999999999997" x2="254.99999999999997" y1="82.73873625709513" y2="87.73873625709513"/>
+  <line stroke="grey" stroke-width="2" x1="249.99999999999997" x2="244.99999999999997" y1="92.73873625709513" y2="102.73873625709513"/>
+  <line stroke="grey" stroke-width="2" x1="249.99999999999997" x2="254.99999999999997" y1="92.73873625709513" y2="102.73873625709513"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="250.0" x2="249.99999999999997" y1="220.0" y2="122.73873625709513"/>
+  <circle cx="361.66613363813116" cy="118.33386636186879" fill="grey" r="5"/>
+  <line stroke="grey" stroke-width="2" x1="361.66613363813116" x2="361.66613363813116" y1="123.33386636186879" y2="138.3338663618688"/>
+  <line stroke="grey" stroke-width="2" x1="361.66613363813116" x2="356.66613363813116" y1="128.3338663618688" y2="133.3338663618688"/>
+  <line stroke="grey" stroke-width="2" x1="361.66613363813116" x2="366.66613363813116" y1="128.3338663618688" y2="133.3338663618688"/>
+  <line stroke="grey" stroke-width="2" x1="361.66613363813116" x2="356.66613363813116" y1="138.3338663618688" y2="148.3338663618688"/>
+  <line stroke="grey" stroke-width="2" x1="361.66613363813116" x2="366.66613363813116" y1="138.3338663618688" y2="148.3338663618688"/>
+  <line marker-end="url(#end_arrow)" marker-start="url(#start_arrow)" stroke="black" stroke-width="1.5" x1="271.2132034355964" x2="340.45293020253473" y1="228.78679656440357" y2="159.5470697974652"/>
+</svg>

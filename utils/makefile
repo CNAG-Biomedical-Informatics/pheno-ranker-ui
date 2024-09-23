@@ -1,0 +1,5 @@
+draw_patient_mode_representation:
+	python3 draw_patient_mode_representation.py
+
+convert_to_png:
+	inkscape --export-filename patient_mode_representation.png patient_mode_representation.svg

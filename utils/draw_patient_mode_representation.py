@@ -1,5 +1,6 @@
 import svgwrite
 import math
+import random
 
 # Define the offsets for different parts of the human figure in a dictionary
 HUMAN_PARTS = {
@@ -32,10 +33,9 @@ def draw_human(dwg, center_x, center_y, color):
     )
 
 # Helper function to create arrow markers
-def create_arrow_marker(dwg, marker_id):
+def create_arrow_marker(dwg, marker_id, path_d):
   insert = (3,3)
   size = (6, 6)
-  path_d = "M0,0 L6,3 L0,6 Z"
 
   marker = dwg.marker(
     id=marker_id,
@@ -60,7 +60,7 @@ def draw_double_arrow(dwg, center_x, center_y, end_x, end_y, start_marker, end_m
   length = math.sqrt(direction_x**2 + direction_y**2)
 
   # Calculate the factor to shorten the arrow
-  factor = 50 / length
+  factor = 30 / length
 
   # Calculate the new start and end points
   start_x = center_x + direction_x * factor
@@ -80,24 +80,33 @@ def draw_double_arrow(dwg, center_x, center_y, end_x, end_y, start_marker, end_m
   )
 
 # Create an SVG drawing
-dwg = svgwrite.Drawing('ring_with_arrows.svg', profile='full', size=("500px", "500px"))
+dwg = svgwrite.Drawing(
+  'patient_mode_representation.svg', 
+  profile='full', 
+  size=("500px", "500px")
+)
 center_x = 250
 center_y = 250
 
 # Create arrow markers using the helper function
-start_marker = create_arrow_marker(dwg, "start_arrow")
-end_marker = create_arrow_marker(dwg, "end_arrow")
+start_marker = create_arrow_marker(dwg, "start_arrow", "M6,0 L0,3 L6,6 Z")
+end_marker = create_arrow_marker(dwg, "end_arrow", "M0,0 L6,3 L0,6 Z")
 
 # Draw the central blue human
 draw_human(dwg, center_x, center_y, "blue")
 
 # Define the positions of surrounding grey humans in a circle
 n = 8  # Number of humans in the circle
-radius = 150  # Radius of the circle
+# radius = 100  # Radius of the circle
+
+min_distance = 100  
+max_distance = 200  
+
 for i in range(n):
   angle = (2 * math.pi / n) * i
-  x = center_x + radius * math.cos(angle)
-  y = center_y + radius * math.sin(angle)
+  rnd_radius = random.uniform(min_distance, max_distance)
+  x = center_x + rnd_radius * math.cos(angle)
+  y = center_y + rnd_radius * math.sin(angle)
   
   # Draw grey human at calculated position
   draw_human(dwg, x, y, "grey")
@@ -113,4 +122,7 @@ for i in range(n):
   )
 
 # Save the drawing
-dwg.save()
+dwg.save(
+  pretty=True,
+)
+
