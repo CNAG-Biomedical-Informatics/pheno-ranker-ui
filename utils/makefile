@@ -3,3 +3,4 @@ draw_patient_mode_representation:
 
 convert_to_png:
 	inkscape --export-filename patient_mode_representation.png patient_mode_representation.svg
+	

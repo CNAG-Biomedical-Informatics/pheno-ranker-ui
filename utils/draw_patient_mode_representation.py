@@ -1,47 +1,47 @@
 import svgwrite
 import math
 import random
+from xml.dom import minidom
 
-# Define the offsets for different parts of the human figure in a dictionary
-HUMAN_PARTS = {
-    'body': {'start_offset': (0, -15), 'end_offset': (0, 0)},
-    'left_arm': {'start_offset': (0, -10), 'end_offset': (-5, -5)},
-    'right_arm': {'start_offset': (0, -10), 'end_offset': (5, -5)},
-    'left_leg': {'start_offset': (0, 0), 'end_offset': (-5, 10)},
-    'right_leg': {'start_offset': (0, 0), 'end_offset': (5, 10)},
-}
+def parse_human_svg():
+  doc = minidom.parse("human.svg")
 
-# Create a function to draw a human figure using the dictionary to reduce redundancy
-def draw_human(dwg, center_x, center_y, color):
-  # Draw the head
-  dwg.add(dwg.circle(center=(center_x, center_y - 20), r=5, fill=color))
+  # extract all the circle elements cx="147.037" cy="70" r="20.104"
+  cx = doc.getElementsByTagName('circle')[0].getAttribute('cx')
+  cy = doc.getElementsByTagName('circle')[0].getAttribute('cy')
+  r = doc.getElementsByTagName('circle')[0].getAttribute('r')
+  circle_string = f'<circle cx="{cx}" cy="{cy}" r="{r}" />'
+ 
+  path_string = [path.getAttribute('d') for path
+                  in doc.getElementsByTagName('path')]
   
-  # Draw body parts using the HUMAN_PARTS dictionary
-  for _, offsets in HUMAN_PARTS.items():
-    start_x = center_x + offsets['start_offset'][0]
-    start_y = center_y + offsets['start_offset'][1]
-    end_x = center_x + offsets['end_offset'][0]
-    end_y = center_y + offsets['end_offset'][1]
-    
-    dwg.add(
-      dwg.line(
-        start=(start_x, start_y),
-        end=(end_x, end_y),
-        stroke=color, 
-        stroke_width=2
-      )
-    )
+  # strip the path string
+  path_string = [path.replace("\n", "").replace(" ", "") for path in path_string]
+  
+  print("circle_string", circle_string)
+  print("path_string", path_string)
+  doc.unlink()
+  
+  return circle_string, path_string
 
-def draw_simple_human(dwg, center_x, center_y, color, scale=1.0):
-    # Draw the head as a circle
-    dwg.add(dwg.circle(center=(center_x, center_y - 20 * scale), r=5 * scale, fill='none', stroke=color, stroke_width=2))
+def draw_human_svg(dwg, x, y, circle_strings, path_strings, color="grey", scale=0.1):
+  # Group to contain the entire human SVG element
+  group = dwg.g(transform=f"translate({x},{y}) scale({scale})", fill=color)
+
+  group.add(dwg.circle(cx="147.037", cy="70", r="20.104"))
+  # group.add(dwg.path(d=path_strings[0]))
+
+  body_path = (
+        "M98.402,158.679 L104.963,112.661 C106.644,101.598 116.398,92.253 126.261,92.253 H167.816 "
+        "C177.678,92.253 187.431,101.599 189.114,112.661 L195.687,158.766 L177.734,169.911 "
+        "C175.299,171.423 173.66,173.934 173.256,176.769 L162.956,249.147 "
+        "C162.951,249.184 162.945,249.222 162.94,249.259 C162.697,251.122 161.041,252.485 160.27,252.485 "
+        "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
+        "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
+    )
     
-    # Draw the body as a rounded rectangle (representing the torso)
-    body_width = 10 * scale
-    body_height = 20 * scale
-    dwg.add(dwg.rect(insert=(center_x - body_width / 2, center_y - 20 * scale), 
-                     size=(body_width, body_height), 
-                     fill='none', stroke=color, stroke_width=2, rx=5 * scale, ry=5 * scale))
+  group.add(dwg.path(d=body_path))
+  dwg.add(group)
 
 # Helper function to create arrow markers
 def create_arrow_marker(dwg, marker_id, path_d):
@@ -62,35 +62,6 @@ def create_arrow_marker(dwg, marker_id, path_d):
   )
   dwg.defs.add(marker)
   return marker
-
-# Function to draw double-sided arrows
-def draw_double_arrow(dwg, center_x, center_y, end_x, end_y, start_marker, end_marker):
-   # Calculate the direction vector from the center to the surrounding human
-  direction_x = end_x - center_x
-  direction_y = end_y - center_y
-  length = math.sqrt(direction_x**2 + direction_y**2)
-
-  # Calculate the factor to shorten the arrow
-  shorten_factor = 30 / length
-
-  # Calculate the new start and end points
-  start_x = center_x + direction_x * shorten_factor
-  start_y = center_y + direction_y * shorten_factor
-  end_x = end_x - direction_x * shorten_factor
-  end_y = end_y - direction_y * shorten_factor
-  
-  line = dwg.add(
-    dwg.line(
-      start=(start_x, start_y),
-      end=(end_x, end_y),
-      stroke="black", 
-      stroke_width=1.5, 
-      marker_start=start_marker.get_funciri(),
-      marker_end=end_marker.get_funciri()
-    )
-  )
-
-  return line, start_x, start_y, end_x, end_y, length
 
 # Function to draw a line with vertical bars (|-------|)
 def draw_barred_line(dwg, x1, y1, x2, y2, shorten_by=20, color="black"):
@@ -147,12 +118,21 @@ center_y = 250
 start_marker = create_arrow_marker(dwg, "start_arrow", "M6,0 L0,3 L6,6 Z")
 end_marker = create_arrow_marker(dwg, "end_arrow", "M0,0 L6,3 L0,6 Z")
 
+circle_strings, path_strings = parse_human_svg()
+
 # Draw the central blue human
-draw_human(dwg, center_x, center_y, "blue")
+# draw_human(dwg, center_x, center_y, "blue")
+draw_human_svg(
+  dwg, 
+  center_x, 
+  center_y, 
+  circle_strings,
+  path_strings,
+  color="blue"
+) 
 
 # Define the positions of surrounding grey humans in a circle
 n = 18 # Number of humans in the circle
-# radius = 100  # Radius of the circle
 
 min_distance = 100  
 max_distance = 200  
@@ -172,18 +152,16 @@ for i in range(n):
   y = center_y + rnd_radius * math.sin(angle)
   
   # Draw grey human at calculated position
-  draw_human(dwg, x, y, "grey")
+  # draw_human(dwg, x, y, "grey")
+  draw_human_svg(
+    dwg, 
+    x,
+    y,
+    circle_strings,
+    path_strings,
+    color="grey"
+  )
   
-  # Draw double-sided arrow from center to grey human
-  # line, start_x, start_y, end_x, end_y, length = draw_double_arrow(
-  #   dwg, 
-  #   center_x, 
-  #   center_y, 
-  #   x, y, 
-  #   start_marker, 
-  #   end_marker
-  # )
-
   line, start_x, start_y, end_x, end_y, length = draw_barred_line(
     dwg, center_x, center_y, x, y, shorten_by=20
   )
@@ -217,9 +195,7 @@ if shortest_line_info:
     font_weight="bold"
   ))
 
-
 # Save the drawing
 dwg.save(
   pretty=True,
 )
-
