@@ -172,15 +172,41 @@ mod_landing_page_ui <- function(id) {
             display: none;
             position: absolute;
             background-color: #f9f9f9;
-            border: 1px solid #ccc;
             padding: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             z-index: 100;
             width: 300px;
             top: 100%; /* Position it below the node */
             left: 50%;
-            transform: translateX(-50%); /* Center it */;
+            transform: translateX(-50%); /* Center it */
             text-align: left;
+          }
+
+          .hover-info .process {
+            all: unset;
+          }
+
+          .hover-info ul::before,
+          .hover-info ul::after,
+          .hover-info li::before,
+          .hover-info li::after {
+            display: none;
+          }
+
+          /* Additional reset for any ul  */
+          .hover-info ul {
+            padding: 0;
+            margin: 0;
+          }
+
+          .hover-info li {
+            padding: 5px;
+            margin: 0;
+          }
+
+          .hover-info li a {
+            padding: 0;
+            margin: 0;
           }
           /* Only show the hover-info div when hovering over the parent li element */
           .tree li:hover > .hover-info {
@@ -254,15 +280,25 @@ mod_landing_page_ui <- function(id) {
                       div(
                         class = "hover-info",
                         p("Formats supported out of the box"),
-                        tags$a(
-                          href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
-                          "Beacon-friendly format (BFF)"
+                        tags$ul(
+                          tags$li(
+                            tags$a(
+                              href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
+                              "Beacon-friendly format (BFF)"
+                            ),
+                            tags$a(
+                              href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
+                              "Phenopacket exchange format v2 (PXF)"
+                            ),
+                          )
                         ),
+                        p("Both are data exchange formats established by"),
                         tags$a(
-                          href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
-                          "Phenopacket exchange format v2 (PXF)"
+                          href = "https://beacon-project.io/",
+                          tags$img(
+                            src = "https://www.ga4gh.org/wp-content/themes/ga4gh/dist/assets/svg/logos/logo-full-color.svg",
+                          )
                         ),
-                        p("Both are data exchange formats supported by the Global Alliance for Genomics and Health (GA4GH)."),
                         tags$a(href = "#", "learn more"),
                         p("or jump right in!"),
                         # two buttons one for patient mode and one for cohort mode
