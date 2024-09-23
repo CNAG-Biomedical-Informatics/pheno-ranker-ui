@@ -136,10 +136,12 @@ circle_strings, path_strings = parse_human_svg()
 
 # Draw the central blue human
 # draw_human(dwg, center_x, center_y, "blue")
+vertical_offset = 10
+
 draw_human_svg(
   dwg, 
   center_x, 
-  center_y, 
+  center_y - vertical_offset, 
   circle_strings,
   path_strings,
   color="blue"
@@ -148,8 +150,8 @@ draw_human_svg(
 # Define the positions of surrounding grey humans in a circle
 n = 18 # Number of humans in the circle
 
-min_distance = 100  
-max_distance = 200  
+min_distance = 50  
+max_distance = 100 
 
 # Track shortest distance information
 shortest_distance = float('inf')
