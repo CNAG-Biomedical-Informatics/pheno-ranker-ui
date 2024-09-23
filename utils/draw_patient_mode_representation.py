@@ -25,10 +25,24 @@ def parse_human_svg():
   return circle_string, path_string
 
 def draw_human_svg(dwg, x, y, circle_strings, path_strings, color="grey", scale=0.1):
-  # Group to contain the entire human SVG element
-  group = dwg.g(transform=f"translate({x},{y}) scale({scale})", fill=color)
+  # Calculate the offset to align the human figure correctly
+  head_center_x = 147.037
+  head_center_y = 70
+  
+  # Adjust the translation to center the human figure
+  offset_x = x - head_center_x * scale
+  offset_y = y - head_center_y * scale
 
-  group.add(dwg.circle(cx="147.037", cy="70", r="20.104"))
+  # Group to contain the entire human SVG element
+  group = dwg.g(transform=f"translate({offset_x},{offset_y}) scale({scale})", fill=color)
+
+  # # Group to contain the entire human SVG element
+  # group = dwg.g(transform=f"translate({x},{y}) scale({scale})", fill=color)
+
+   # Add the head (circle)
+  group.add(dwg.circle(center=(head_center_x, head_center_y), r=20.104))
+
+  # group.add(dwg.circle(cx="147.037", cy="70", r="20.104"))
   # group.add(dwg.path(d=path_strings[0]))
 
   body_path = (
