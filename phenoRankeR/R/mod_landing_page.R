@@ -23,8 +23,8 @@ mod_landing_page_ui <- function(id) {
   grid_container(
     layout = c(
       "         1fr         1fr     ",
-      "150px    welcome     welcome ",
-      "1fr      utilities   modes   ",
+      "1fr      welcome     welcome ",
+      "800px    utilities   modes   ",
       "5px      version     version "
     ),
     gap_size = "0px",
@@ -32,11 +32,11 @@ mod_landing_page_ui <- function(id) {
       area = "welcome",
       card_body(
         style = "text-align: center;",
-        h1("Welcome to Pheno-Ranker"),
-        p(
+        h3("Welcome to Pheno-Ranker"),
+        span(
           "Your interactive tool for semantic similarity analyses
           of Phenotypic Data Stored in GA4GH Standards and Beyond"
-        )
+        ),
       )
     ),
     grid_card(
@@ -163,10 +163,10 @@ mod_landing_page_ui <- function(id) {
             flex: 0 0 auto;
           }
           .bff {
-            max-width: 48px;
+            max-width: 20px;
           }
           .pxf {
-            max-width: 70px;
+            max-width: 20px;
           }
           .hover-info {
             display: none;
@@ -176,10 +176,11 @@ mod_landing_page_ui <- function(id) {
             padding: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             z-index: 100;
-            width: 400px;
+            width: 300px;
             top: 100%; /* Position it below the node */
             left: 50%;
             transform: translateX(-50%); /* Center it */;
+            text-align: left;
           }
           /* Only show the hover-info div when hovering over the parent li element */
           .tree li:hover > .hover-info {
@@ -190,12 +191,6 @@ mod_landing_page_ui <- function(id) {
         p(
           "Our interactive decision tree will help you
           to get started with Pheno-Ranker 🚀"
-        ),
-        p(
-          "Hover over the bottom nodes to learn more💡"
-        ),
-        p(
-          "Hint: they are clickable!👇"
         ),
         div(class = "tree",
         tags$ul(
@@ -252,18 +247,24 @@ mod_landing_page_ui <- function(id) {
                           tags$img(src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4", class = "bff")
                         ),
                         div(class = "column",
-                          tags$img(src = "https://pubcasefinder.dbcls.jp/static/images/pcf/top/logo_phenopackets.png", class = "pxf")
+                          tags$img(src = "https://avatars.githubusercontent.com/u/17553567?s=200&v=4", class = "pxf")
                         )
                       ),
                       "BFF/PXF",
                       div(
                         class = "hover-info",
-                        p("Pheno-Ranker supports two file formats for phenotypic data right out of the box:"),
-                        p("- Beacon-friendly format (BFF)"),
-                        p("- Phenopackets v2 (PXF)"),
+                        p("Formats supported out of the box:"),
+                        tags$a(
+                          href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
+                          "Beacon-friendly format (BFF)"
+                        ),
+                        tags$a(
+                          href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
+                          "Phenopacket exchange format v2 (PXF)"
+                        ),
                         p("Both are data exchange formats supported by the Global Alliance for Genomics and Health (GA4GH)."),
                         tags$a(href = "#", "learn more"),
-                        p("Jump right in!"),
+                        p("or jump right in!"),
                         # two buttons one for patient mode and one for cohort mode
                         actionButton(
                           ns("navigateToPatientMode"),
@@ -281,13 +282,46 @@ mod_landing_page_ui <- function(id) {
                   tags$li(
                     tags$a(href = "#", class = "process",
                       div(class = "icon", tags$i(class = "fas fa-file-csv")),
-                      "generic CSV"
+                      "generic CSV",
+                      div(
+                        class = "hover-info",
+                        "Upload your own csv file and convert it
+                        to a json array that can be used as input for Pheno-Ranker.
+                        This utility is designed to handle both
+                        simple CSV files without nested fields in columns,
+                        as well as more complex ones with nested fields",
+                        tags$a(href = "#", "learn more"),
+                        p("or try it right away!"),
+                        actionButton(
+                          ns("navigateToConverter"),
+                          "ConvertCSVs",
+                          style = "width: 100%;"
+                        )
+                      )
                     )
                   ),
                   tags$li(
                     tags$a(href = "#", class = "process",
                       div(class = "icon", tags$i(class = "fas fa-file")),
-                      HTML("RedCap,<br/>OMOP-CDM,<br/>CDISC-ODM<br/>")
+                      HTML("RedCap,<br/>OMOP-CDM,<br/>CDISC-ODM<br/>"),
+                      div(
+                        class = "hover-info",
+                        "Below you find a software toolkit that allows
+                        your own phenotypic data stored in other
+                        common formats like RedCap, OMOP, etc. to BFF/PXF.",
+                        tags$a(
+                          href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
+                          target = "_blank",
+                          img(
+                            src="https://raw.githubusercontent.com/cnag-biomedical-informatics/convert-pheno/main/docs/img/CP-logo.png",
+                            style = "width: 50px;"
+                          ),
+                          img(
+                            src="https://raw.githubusercontent.com/cnag-biomedical-informatics/convert-pheno/main/docs/img/CP-text.png",
+                            style = "width: 200px;"
+                          )
+                        ),
+                      )
                     )
                   )
                 )
@@ -295,72 +329,12 @@ mod_landing_page_ui <- function(id) {
             )
           )
         )),
-        p("
-          If you do not have Phenotypic data stored in
-          Beacon-friendly format (BFF) or Phenopackets v2(PXF),
-          you can use the following utilities to get started:"),
-        h6("Option 1: Simulate a BFF/PXF using our sample data generator "),
-        p(paste(
-          "Generate a json array of up to", max_individuals,
-          "patient with random phenotypic data. In order to obtain data
-          that is more similar to your own,
-          you can also provide a list of diseases, phenotypic features
-          and treatments that you would like to be included
-          in the simulated data."
-        )),
-        actionButton(
-          ns("navigateToSimulator"),
-          "Simulate BFF/PXF",
-          style = "width: 100%;"
+        p(
+          "Hover over the bottom nodes to learn more💡"
         ),
-        hr(),
-        h6("Option 2: Get example data from public sources"),
-        p("
-          Get example data from public sources like the
-        "),
-        a("
-          Phenopacket store",
-          href = "https://monarch-initiative.github.io/phenopacket-store",
-          target = "_blank"
+        p(
+          "Hint: they are clickable!👇"
         ),
-        actionButton(
-          ns("navigateToExamples"),
-          "Get example data",
-          style = "width: 100%;"
-        ),
-        hr(),
-        h6(
-          "Option 3: Convert your own csv data
-          to a json format understandable by Pheno-Ranker"
-        ),
-        p("
-          Upload your own csv file and convert it
-          to a json array that can be used as input for Pheno-Ranker.
-          This utility is designed to handle both
-          simple CSV files without nested fields in columns,
-          as well as more complex ones with nested fields
-        "),
-        actionButton(
-          ns("navigateToConverter"),
-          "ConvertCSVs",
-          style = "width: 100%;"
-        ),
-        hr(),
-        h6("Option 4: Convert your phenotypic data to BFF/PXF"),
-        p("
-          Below you find a software toolkit that allows
-          your own phenotypic data stored in other
-          common formats like RedCap, OMOP, etc. to BFF/PXF.
-        "),
-        div(
-          icon("github"),
-          a(
-            "Convert-Pheno: A software toolkit for the
-            interconversion of standard data models for phenotypic data",
-            href = "https://github.com/CNAG-Biomedical-Informatics/convert-pheno",
-            target = "_blank"
-          )
-        )
       )
     ),
     grid_card(
