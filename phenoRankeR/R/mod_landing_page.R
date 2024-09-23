@@ -212,6 +212,17 @@ mod_landing_page_ui <- function(id) {
           .tree li:hover > .hover-info {
             display: block;
           }
+          #ga4gh-link {
+            display: inline;
+            padding: 0 ;
+            margin: 0 ;
+            border: none;
+            background: none;
+            box-shadow: none;
+            font-weight: normal;
+            text-decoration: underline;
+            color: #1565c0;
+          }
         ")),
         ),
         p(
@@ -292,12 +303,13 @@ mod_landing_page_ui <- function(id) {
                             ),
                           )
                         ),
-                        p("Both are data exchange formats established by"),
-                        tags$a(
-                          href = "https://beacon-project.io/",
-                          tags$img(
-                            src = "https://www.ga4gh.org/wp-content/themes/ga4gh/dist/assets/svg/logos/logo-full-color.svg",
-                          )
+                        span(
+                          "Both are data exchange formats established by",
+                          tags$a(
+                            href = "https://ga4gh.org/",
+                            "GA4GH",
+                            id = "ga4gh-link"
+                          ),
                         ),
                         tags$a(href = "#", "learn more"),
                         p("or jump right in!"),
