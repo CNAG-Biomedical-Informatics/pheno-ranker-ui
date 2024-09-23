@@ -253,7 +253,7 @@ mod_landing_page_ui <- function(id) {
                       "BFF/PXF",
                       div(
                         class = "hover-info",
-                        p("Formats supported out of the box:"),
+                        p("Formats supported out of the box"),
                         tags$a(
                           href = "https://phenopacket-schema.readthedocs.io/en/1.0.0/basics.html",
                           "Beacon-friendly format (BFF)"
