@@ -1,6 +1,11 @@
 draw_patient_mode_representation:
 	python3 draw_patient_mode_representation.py
-
-convert_to_png:
 	inkscape --export-filename patient_mode_representation.png patient_mode_representation.svg
-	
+
+draw_intra_cohort_mode_representation:
+	python3 draw_cohort_mode_representation.py intra
+	inkscape --export-filename intra_cohort_mode_representation.png intra_cohort_mode_representation.svg
+
+draw_inter_cohort_mode_representation:
+	python3 draw_cohort_mode_representation.py inter
+	inkscape --export-filename inter_cohort_mode_representation.png inter_cohort_mode_representation.svg
