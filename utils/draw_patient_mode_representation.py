@@ -3,49 +3,49 @@ import random
 import svgwrite
 
 from draw_human import parse_human_svg, draw_human_svg
+from draw_axes import draw_axes
 
 # Function to draw a line with vertical bars (|-------|)
 def draw_barred_line(dwg, x1, y1, x2, y2, shorten_by=20, color="black"):
-    # Calculate the direction vector from the center to the surrounding human
-    dx = x2 - x1
-    dy = y2 - y1
-    length = math.sqrt(dx**2 + dy**2)
-    
-    # Calculate the factor to shorten the line
-    shorten_factor = shorten_by / length
-    
-    # Calculate the new start and end points
-    new_x1 = x1 + dx * shorten_factor
-    new_y1 = y1 + dy * shorten_factor
-    new_x2 = x2 - dx * shorten_factor
-    new_y2 = y2 - dy * shorten_factor
-    
-    # Draw the main line
-    line = dwg.add(dwg.line(start=(new_x1, new_y1), end=(new_x2, new_y2), stroke=color, stroke_width=1.5))
-    
-    # Calculate the perpendicular direction vector for the vertical bars
-    perp_dx = -dy / length
-    perp_dy = dx / length
-    
-    # Define the length of the vertical bars
-    bar_length = 5
-    
-    # Draw vertical bar at the start
-    bar_start_x1 = new_x1 + perp_dx * bar_length / 2
-    bar_start_y1 = new_y1 + perp_dy * bar_length / 2
-    bar_start_x2 = new_x1 - perp_dx * bar_length / 2
-    bar_start_y2 = new_y1 - perp_dy * bar_length / 2
-    dwg.add(dwg.line(start=(bar_start_x1, bar_start_y1), end=(bar_start_x2, bar_start_y2), stroke=color, stroke_width=1.5))
-    
-    # Draw vertical bar at the end
-    bar_end_x1 = new_x2 + perp_dx * bar_length / 2
-    bar_end_y1 = new_y2 + perp_dy * bar_length / 2
-    bar_end_x2 = new_x2 - perp_dx * bar_length / 2
-    bar_end_y2 = new_y2 - perp_dy * bar_length / 2
-    dwg.add(dwg.line(start=(bar_end_x1, bar_end_y1), end=(bar_end_x2, bar_end_y2), stroke=color, stroke_width=1.5))
-    
-    return line, new_x1, new_y1, new_x2, new_y2, length
-
+  # Calculate the direction vector from the center to the surrounding human
+  dx = x2 - x1
+  dy = y2 - y1
+  length = math.sqrt(dx**2 + dy**2)
+  
+  # Calculate the factor to shorten the line
+  shorten_factor = shorten_by / length
+  
+  # Calculate the new start and end points
+  new_x1 = x1 + dx * shorten_factor
+  new_y1 = y1 + dy * shorten_factor
+  new_x2 = x2 - dx * shorten_factor
+  new_y2 = y2 - dy * shorten_factor
+  
+  # Draw the main line
+  line = dwg.add(dwg.line(start=(new_x1, new_y1), end=(new_x2, new_y2), stroke=color, stroke_width=1.5))
+  
+  # Calculate the perpendicular direction vector for the vertical bars
+  perp_dx = -dy / length
+  perp_dy = dx / length
+  
+  # Define the length of the vertical bars
+  bar_length = 5
+  
+  # Draw vertical bar at the start
+  bar_start_x1 = new_x1 + perp_dx * bar_length / 2
+  bar_start_y1 = new_y1 + perp_dy * bar_length / 2
+  bar_start_x2 = new_x1 - perp_dx * bar_length / 2
+  bar_start_y2 = new_y1 - perp_dy * bar_length / 2
+  dwg.add(dwg.line(start=(bar_start_x1, bar_start_y1), end=(bar_start_x2, bar_start_y2), stroke=color, stroke_width=1.5))
+  
+  # Draw vertical bar at the end
+  bar_end_x1 = new_x2 + perp_dx * bar_length / 2
+  bar_end_y1 = new_y2 + perp_dy * bar_length / 2
+  bar_end_x2 = new_x2 - perp_dx * bar_length / 2
+  bar_end_y2 = new_y2 - perp_dy * bar_length / 2
+  dwg.add(dwg.line(start=(bar_end_x1, bar_end_y1), end=(bar_end_x2, bar_end_y2), stroke=color, stroke_width=1.5))
+  
+  return line, new_x1, new_y1, new_x2, new_y2, length
 
 # Create an SVG drawing
 svg_size = 500
@@ -55,62 +55,20 @@ dwg = svgwrite.Drawing(
   profile='full', 
   size=(svg_size, svg_size)
 )
-center_x = 250
-center_y = 250
-
-axis_color = "black"
-axis_stroke_width = 1
 
 # pixels from the edge of the SVG canvas towards the center
 # increase the value to move the axes closer to human figures
 padding = 140 
+draw_axes(dwg, svg_size, padding)
     
-# Draw the axes
-# X axis
-dwg.add(
-  dwg.line(
-    start=(padding, svg_size - padding),
-    end=(svg_size - padding, svg_size - padding),
-    stroke=axis_color, stroke_width=axis_stroke_width
-  )
-)
-
-# Y axis
-dwg.add(
-  dwg.line(
-    start=(padding, svg_size - padding),
-    end=(padding, padding),
-    stroke=axis_color, 
-    stroke_width=axis_stroke_width
-  )
-)
-
-# Add axis labels "ΔD"
-# Middle of the X axis
-x_axis_label_x = (padding + (svg_size - padding)) / 2  # Middle X position
-x_axis_label_y = svg_size - padding + 20  # Slightly below the X axis
-
-dwg.add(dwg.text(
-  "ΔD", insert=(x_axis_label_x, x_axis_label_y), 
-  font_size=14, 
-  fill=axis_color, 
-  text_anchor="middle"
-))
-
-# Middle of the Y axis
-y_axis_label_x = padding - 20  # Slightly left of the Y axis
-y_axis_label_y = (padding + (svg_size - padding)) / 2  # Middle Y position
-dwg.add(dwg.text(
-  "ΔD", insert=(y_axis_label_x, y_axis_label_y),
-  font_size=14, 
-  fill=axis_color, 
-  text_anchor="middle"
-))
-
+# Parse the SVG file for the human figure
 circle_dict, body_path = parse_human_svg()
 
 # Draw the central blue human
+center_x = 250
+center_y = 250
 vertical_offset = 10
+
 draw_human_svg(
   dwg, 
   center_x, 
@@ -141,11 +99,8 @@ for i in range(n):
   y = center_y + rnd_radius * math.sin(angle)
   
   # Draw grey human at calculated position
-  # draw_human(dwg, x, y, "grey")
   draw_human_svg(
-    dwg, 
-    x,
-    y,
+    dwg, x,y,
     circle_dict,
     body_path,
     color="grey"
