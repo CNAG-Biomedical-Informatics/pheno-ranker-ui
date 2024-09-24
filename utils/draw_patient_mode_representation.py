@@ -24,7 +24,7 @@ def parse_human_svg():
   _,circle_dict = attributes
   circle_dict = {key: float(value) for key, value in circle_dict.items()}
 
-  # Convert each path to a formatted SVG path string with support for 'H' and 'V'
+  # Convert each path to a formatted SVG path
   formatted_paths = []
   for path in paths:
     path_string = ""
@@ -34,9 +34,8 @@ def parse_human_svg():
     start_x, start_y = start_segment.start.real, start_segment.start.imag
     path_string += f"M{start_x},{start_y} "
 
-    # Iterate through the segments of the path
     for segment in path:
-      # Handle Line segments
+
       if segment.__class__.__name__ == 'Line':
         end_x, end_y = segment.end.real, segment.end.imag
 
@@ -48,7 +47,6 @@ def parse_human_svg():
             # Regular line command
             path_string += f"L{end_x},{end_y} "
 
-      # Handle Cubic Bezier segments
       elif segment.__class__.__name__ == 'CubicBezier':
         path_string += (
           f"C{segment.control1.real},{segment.control1.imag} "
@@ -56,14 +54,12 @@ def parse_human_svg():
           f"{segment.end.real},{segment.end.imag} "
         )
 
-      # Handle Quadratic Bezier segments
       elif segment.__class__.__name__ == 'QuadraticBezier':
         path_string += (
           f"Q{segment.control.real},{segment.control.imag} "
           f"{segment.end.real},{segment.end.imag} "
         )
 
-      # Handle Arc segments
       elif segment.__class__.__name__ == 'Arc':
         path_string += (
           f"A{segment.radius.real},{segment.radius.imag} "
