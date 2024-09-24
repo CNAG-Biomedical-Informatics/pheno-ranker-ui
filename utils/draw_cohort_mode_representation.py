@@ -22,7 +22,7 @@ def setup(filename):
 
   # pixels from the edge of the SVG canvas towards the center
   # increase the value to move the axes closer to human figures
-  padding = 140 
+  padding = 100
   draw_axes(dwg, svg_size, padding)
       
   # Parse the SVG file for the human figure
@@ -121,7 +121,6 @@ def inter_cohort_mode_representation(pats_count):
 
   # Save the drawing
   dwg.save(pretty=True)
-
 
 pats_count = 18
 
