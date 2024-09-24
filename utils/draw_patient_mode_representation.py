@@ -99,26 +99,6 @@ def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
   group.add(dwg.path(d=body_path))
   dwg.add(group)
 
-# Helper function to create arrow markers
-def create_arrow_marker(dwg, marker_id, path_d):
-  insert = (3,3)
-  size = (6, 6)
-
-  marker = dwg.marker(
-    id=marker_id,
-    insert=insert, 
-    size=size, 
-    orient="auto"
-  )
-  marker.add(
-    dwg.path(
-      d=path_d,
-      fill="black"
-    )
-  )
-  dwg.defs.add(marker)
-  return marker
-
 # Function to draw a line with vertical bars (|-------|)
 def draw_barred_line(dwg, x1, y1, x2, y2, shorten_by=20, color="black"):
     # Calculate the direction vector from the center to the surrounding human
@@ -223,14 +203,6 @@ dwg.add(dwg.text(
   text_anchor="middle"
 ))
 
-# Create arrow markers using the helper function
-start_marker = create_arrow_marker(
-  dwg,"start_arrow", "M6,0 L0,3 L6,6 Z"
-)
-end_marker = create_arrow_marker(
-  dwg, "end_arrow", "M0,0 L6,3 L0,6 Z"
-)
-
 circle_dict, body_path = parse_human_svg()
 
 # Draw the central blue human
@@ -307,8 +279,6 @@ if shortest_line_info:
     font_size="15px", 
     font_weight="bold"
   ))
-
-
 
 # Save the drawing
 dwg.save(

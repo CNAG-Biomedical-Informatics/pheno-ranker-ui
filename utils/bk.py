@@ -74,7 +74,25 @@ def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
   group.add(dwg.path(d=body_path_hardcoded))
   dwg.add(group)
 
+# Helper function to create arrow markers
+def create_arrow_marker(dwg, marker_id, path_d):
+  insert = (3,3)
+  size = (6, 6)
 
+  marker = dwg.marker(
+    id=marker_id,
+    insert=insert, 
+    size=size, 
+    orient="auto"
+  )
+  marker.add(
+    dwg.path(
+      d=path_d,
+      fill="black"
+    )
+  )
+  dwg.defs.add(marker)
+  return marker
 
 def draw_double_arrow(dwg, center_x, center_y, end_x, end_y, start_marker, end_marker):
    # Calculate the direction vector from the center to the surrounding human
