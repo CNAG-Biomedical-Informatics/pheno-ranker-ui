@@ -53,20 +53,21 @@ svg_size = 500
 dwg = svgwrite.Drawing(
   'patient_mode_representation.svg', 
   profile='full', 
-  size=(svg_size, svg_size)
+  size=(svg_size, svg_size),
+  viewBox=f"0 0 {svg_size} {svg_size}"
 )
 
 # pixels from the edge of the SVG canvas towards the center
 # increase the value to move the axes closer to human figures
-padding = 140 
+padding = 30 
 draw_axes(dwg, svg_size, padding)
     
 # Parse the SVG file for the human figure
 circle_dict, body_path = parse_human_svg()
 
 # Draw the central blue human
-center_x = 250
-center_y = 250
+center_x = svg_size / 2
+center_y = svg_size / 2
 vertical_offset = 10
 
 draw_human_svg(
@@ -81,8 +82,11 @@ draw_human_svg(
 # Define the positions of surrounding grey humans in a circle
 n = 18 # Number of humans in the circle
 
-min_distance = 50  
-max_distance = 100 
+min_distance = svg_size / 4
+max_distance = svg_size / 2.2
+
+# min_distance = 50  
+# max_distance = 100 
 
 # Track shortest distance information
 shortest_distance = float('inf')

@@ -53,6 +53,10 @@ mod_landing_page_ui <- function(id) {
         p(
           "Pheno-Ranker can be used in two different modes: "
         ),
+        tags$img(
+          src = "www/images/patient_mode_representation.svg",
+          style = "width: 100%;"
+        ),
         h6("Mode 1: Compare your patient to one or multiple reference cohorts"),
         p("
           Rank all the individuals in your
