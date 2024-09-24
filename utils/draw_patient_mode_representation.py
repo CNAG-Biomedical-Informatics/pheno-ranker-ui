@@ -176,11 +176,15 @@ center_y = 250
 axis_color = "black"
 axis_stroke_width = 1
 
+# pixels from the edge of the SVG canvas towards the center
+# increase the value to move the axes closer to human figures
+padding = 140 
+    
 # Draw the axes
 dwg.add(
   dwg.line(
-    start=(50, svg_size - 50),
-    end=(svg_size - 50, svg_size - 50),
+    start=(padding, svg_size - padding),
+    end=(svg_size - padding, svg_size - padding),
     stroke=axis_color, stroke_width=axis_stroke_width
   )
 )
@@ -188,8 +192,8 @@ dwg.add(
 # Draw Y axis
 dwg.add(
   dwg.line(
-    start=(50, svg_size - 50),
-    end=(50, 50),
+    start=(padding, svg_size - padding),
+    end=(padding, padding),
     stroke=axis_color, 
     stroke_width=axis_stroke_width
   )
