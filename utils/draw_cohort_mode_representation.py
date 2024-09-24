@@ -95,12 +95,12 @@ def inter_cohort_mode_representation(pats_count):
     attempts = 0
     while attempts < max_attempts:
       x = random.randint(
-          max(padding, quadrant["x_center"] - cluster_radius), 
-          min(svg_size - padding, quadrant["x_center"] + cluster_radius)
+        max(padding, quadrant["x_center"] - cluster_radius), 
+        min(svg_size - padding, quadrant["x_center"] + cluster_radius)
       )
       y = random.randint(
-          max(padding, quadrant["y_center"] - cluster_radius), 
-          min(svg_size - padding, quadrant["y_center"] + cluster_radius)
+        max(padding, quadrant["y_center"] - cluster_radius), 
+        min(svg_size - padding, quadrant["y_center"] + cluster_radius)
       )
       
       # Check for collision with existing figures
