@@ -781,6 +781,10 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "patient")
   })
 
+  observeEvent(input[["landing_page-navigateToPatientMode2"]], {
+    updateNavbarPage(session, "nav", "patient")
+  })
+
   observeEvent(input[["landing_page-navigateToCohortMode"]], {
     updateNavbarPage(session, "nav", "cohort")
   })
