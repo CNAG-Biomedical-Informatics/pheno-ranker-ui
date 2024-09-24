@@ -181,6 +181,7 @@ axis_stroke_width = 1
 padding = 140 
     
 # Draw the axes
+# X axis
 dwg.add(
   dwg.line(
     start=(padding, svg_size - padding),
@@ -189,7 +190,7 @@ dwg.add(
   )
 )
 
-# Draw Y axis
+# Y axis
 dwg.add(
   dwg.line(
     start=(padding, svg_size - padding),
@@ -198,6 +199,29 @@ dwg.add(
     stroke_width=axis_stroke_width
   )
 )
+
+
+# Add axis labels "ΔD"
+# Middle of the X axis
+x_axis_label_x = (padding + (svg_size - padding)) / 2  # Middle X position
+x_axis_label_y = svg_size - padding + 20  # Slightly below the X axis
+
+dwg.add(dwg.text(
+  "ΔD", insert=(x_axis_label_x, x_axis_label_y), 
+  font_size=14, 
+  fill=axis_color, 
+  text_anchor="middle"
+))
+
+# Middle of the Y axis
+y_axis_label_x = padding - 20  # Slightly left of the Y axis
+y_axis_label_y = (padding + (svg_size - padding)) / 2  # Middle Y position
+dwg.add(dwg.text(
+  "ΔD", insert=(y_axis_label_x, y_axis_label_y),
+  font_size=14, 
+  fill=axis_color, 
+  text_anchor="middle"
+))
 
 # Create arrow markers using the helper function
 start_marker = create_arrow_marker(
