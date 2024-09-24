@@ -1,9 +1,89 @@
 import svgwrite
 import math
 import random
-from xml.dom import minidom
+from svgpathtools import svg2paths2
+import re
 
 def parse_human_svg():
+
+  # Function to round the floating-point numbers to a reasonable precision
+  def round_floats_in_path(path_string, precision=5):
+    # Regex to find floating-point numbers
+    float_regex = re.compile(r"-?\d+\.\d+")
+    
+    # Replace each match with a rounded version
+    def round_match(match):
+        return str(round(float(match.group()), precision))
+    
+    return float_regex.sub(round_match, path_string)
+
+
+  # Read the SVG file using svgpathtools
+  paths, attributes, _ = svg2paths2('human.svg')
+
+  _,circle_dict = attributes
+  circle_dict = {key: float(value) for key, value in circle_dict.items()}
+
+  # Convert each path to a formatted SVG path string with support for 'H' and 'V'
+  formatted_paths = []
+  for path in paths:
+    path_string = ""
+    
+    # Start with the 'M' command to set the initial position
+    start_segment = path[0]
+    start_x, start_y = start_segment.start.real, start_segment.start.imag
+    path_string += f"M{start_x},{start_y} "
+
+    # Iterate through the segments of the path
+    for segment in path:
+      # Handle Line segments
+      if segment.__class__.__name__ == 'Line':
+        end_x, end_y = segment.end.real, segment.end.imag
+
+        if start_x == end_x:  # Vertical line
+            path_string += f"V{end_y} "
+        elif start_y == end_y:  # Horizontal line
+            path_string += f"H{end_x} "
+        else:
+            # Regular line command
+            path_string += f"L{end_x},{end_y} "
+
+      # Handle Cubic Bezier segments
+      elif segment.__class__.__name__ == 'CubicBezier':
+        path_string += (
+          f"C{segment.control1.real},{segment.control1.imag} "
+          f"{segment.control2.real},{segment.control2.imag} "
+          f"{segment.end.real},{segment.end.imag} "
+        )
+
+      # Handle Quadratic Bezier segments
+      elif segment.__class__.__name__ == 'QuadraticBezier':
+        path_string += (
+          f"Q{segment.control.real},{segment.control.imag} "
+          f"{segment.end.real},{segment.end.imag} "
+        )
+
+      # Handle Arc segments
+      elif segment.__class__.__name__ == 'Arc':
+        path_string += (
+          f"A{segment.radius.real},{segment.radius.imag} "
+          f"{segment.rotation} {int(segment.large_arc)},{int(segment.sweep)} "
+          f"{segment.end.real},{segment.end.imag} "
+        )
+
+    path_string += "Z"  # Close the path
+    formatted_paths.append(path_string.strip())
+
+  print("formatted_paths", formatted_paths)
+
+  body_path = formatted_paths[0]
+
+  # Round the floating-point numbers in the path string
+  body_path = round_floats_in_path(body_path)
+  
+  return circle_dict, body_path
+
+def parse_human_svg_bk():
   doc = minidom.parse("human.svg")
 
   # extract all the circle elements cx="147.037" cy="70" r="20.104"
@@ -24,10 +104,10 @@ def parse_human_svg():
   
   return circle_string, path_string
 
-def draw_human_svg(dwg, x, y, circle_strings, path_strings, color="grey", scale=0.1):
+def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
   # Calculate the offset to align the human figure correctly
-  head_center_x = 147.037
-  head_center_y = 70
+  head_center_x = circle_dict['cx']
+  head_center_y = circle_dict['cy']
   
   # Adjust the translation to center the human figure
   offset_x = x - head_center_x * scale
@@ -36,24 +116,30 @@ def draw_human_svg(dwg, x, y, circle_strings, path_strings, color="grey", scale=
   # Group to contain the entire human SVG element
   group = dwg.g(transform=f"translate({offset_x},{offset_y}) scale({scale})", fill=color)
 
-  # # Group to contain the entire human SVG element
-  # group = dwg.g(transform=f"translate({x},{y}) scale({scale})", fill=color)
-
    # Add the head (circle)
-  group.add(dwg.circle(center=(head_center_x, head_center_y), r=20.104))
-
-  # group.add(dwg.circle(cx="147.037", cy="70", r="20.104"))
-  # group.add(dwg.path(d=path_strings[0]))
-
-  body_path = (
-        "M98.402,158.679 L104.963,112.661 C106.644,101.598 116.398,92.253 126.261,92.253 H167.816 "
-        "C177.678,92.253 187.431,101.599 189.114,112.661 L195.687,158.766 L177.734,169.911 "
-        "C175.299,171.423 173.66,173.934 173.256,176.769 L162.956,249.147 "
-        "C162.951,249.184 162.945,249.222 162.94,249.259 C162.697,251.122 161.041,252.485 160.27,252.485 "
-        "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
-        "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
+  group.add(
+    dwg.circle(
+      center=(head_center_x,head_center_y),
+      r=circle_dict['r']
     )
+  )
+
+  body_path_hardcoded = (
+    "M98.402,158.679 L104.963,112.661 C106.644,101.598 116.398,92.253 126.261,92.253 H167.816 "
+    "C177.678,92.253 187.431,101.599 189.114,112.661 L195.687,158.766 L177.734,169.911 "
+    "C175.299,171.423 173.66,173.934 173.256,176.769 L162.956,249.147 "
+    "C162.951,249.184 162.945,249.222 162.94,249.259 C162.697,251.122 161.041,252.485 160.27,252.485 "
+    "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
+    "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
+  )
+
+  print("body_path")
+  print(body_path)
+  print("----------------------------------------------------")
+  print("body_path_hardcoded")
+  print(body_path_hardcoded)
     
+  # group.add(dwg.path(d=body_path))
   group.add(dwg.path(d=body_path))
   dwg.add(group)
 
@@ -132,18 +218,16 @@ center_y = 250
 start_marker = create_arrow_marker(dwg, "start_arrow", "M6,0 L0,3 L6,6 Z")
 end_marker = create_arrow_marker(dwg, "end_arrow", "M0,0 L6,3 L0,6 Z")
 
-circle_strings, path_strings = parse_human_svg()
+circle_dict, body_path = parse_human_svg()
 
 # Draw the central blue human
-# draw_human(dwg, center_x, center_y, "blue")
 vertical_offset = 10
-
 draw_human_svg(
   dwg, 
   center_x, 
   center_y - vertical_offset, 
-  circle_strings,
-  path_strings,
+  circle_dict,
+  body_path,
   color="blue"
 ) 
 
@@ -173,8 +257,8 @@ for i in range(n):
     dwg, 
     x,
     y,
-    circle_strings,
-    path_strings,
+    circle_dict,
+    body_path,
     color="grey"
   )
   
