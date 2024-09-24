@@ -1,8 +1,8 @@
-import svgwrite
+import re
 import math
 import random
+import svgwrite
 from svgpathtools import svg2paths2
-import re
 
 def parse_human_svg():
 
