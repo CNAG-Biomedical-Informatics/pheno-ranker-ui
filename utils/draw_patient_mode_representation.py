@@ -70,12 +70,8 @@ def parse_human_svg():
     path_string += "Z"  # Close the path
     formatted_paths.append(path_string.strip())
 
-  print("formatted_paths", formatted_paths)
-
-  body_path = formatted_paths[0]
-
   # Round the floating-point numbers in the path string
-  body_path = round_floats_in_path(body_path)
+  body_path = round_floats_in_path(formatted_paths[0])
   
   return circle_dict, body_path
 
@@ -98,16 +94,7 @@ def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
       r=circle_dict['r']
     )
   )
-
-  body_path_hardcoded = (
-    "M98.402,158.679 L104.963,112.661 C106.644,101.598 116.398,92.253 126.261,92.253 H167.816 "
-    "C177.678,92.253 187.431,101.599 189.114,112.661 L195.687,158.766 L177.734,169.911 "
-    "C175.299,171.423 173.66,173.934 173.256,176.769 L162.956,249.147 "
-    "C162.951,249.184 162.945,249.222 162.94,249.259 C162.697,251.122 161.041,252.485 160.27,252.485 "
-    "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
-    "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
-  )
-    
+  
   # group.add(dwg.path(d=body_path))
   group.add(dwg.path(d=body_path))
   dwg.add(group)
@@ -174,18 +161,47 @@ def draw_barred_line(dwg, x1, y1, x2, y2, shorten_by=20, color="black"):
     
     return line, new_x1, new_y1, new_x2, new_y2, length
 
+
 # Create an SVG drawing
+svg_size = 500
+
 dwg = svgwrite.Drawing(
   'patient_mode_representation.svg', 
   profile='full', 
-  size=("500px", "500px")
+  size=(svg_size, svg_size)
 )
 center_x = 250
 center_y = 250
 
+axis_color = "black"
+axis_stroke_width = 1
+
+# Draw the axes
+dwg.add(
+  dwg.line(
+    start=(50, svg_size - 50),
+    end=(svg_size - 50, svg_size - 50),
+    stroke=axis_color, stroke_width=axis_stroke_width
+  )
+)
+
+# Draw Y axis
+dwg.add(
+  dwg.line(
+    start=(50, svg_size - 50),
+    end=(50, 50),
+    stroke=axis_color, 
+    stroke_width=axis_stroke_width
+  )
+)
+
 # Create arrow markers using the helper function
-start_marker = create_arrow_marker(dwg, "start_arrow", "M6,0 L0,3 L6,6 Z")
-end_marker = create_arrow_marker(dwg, "end_arrow", "M0,0 L6,3 L0,6 Z")
+start_marker = create_arrow_marker(
+  dwg,"start_arrow", "M6,0 L0,3 L6,6 Z"
+)
+end_marker = create_arrow_marker(
+  dwg, "end_arrow", "M0,0 L6,3 L0,6 Z"
+)
 
 circle_dict, body_path = parse_human_svg()
 
@@ -263,6 +279,8 @@ if shortest_line_info:
     font_size="15px", 
     font_weight="bold"
   ))
+
+
 
 # Save the drawing
 dwg.save(
