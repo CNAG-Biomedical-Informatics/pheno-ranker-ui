@@ -75,14 +75,14 @@ mod_landing_page_ui <- function(id) {
             area = "patient_btn",
             actionButton(
               ns("navigateToPatientMode2"),
-              "Patient vs Reference Cohort(s)",
+              "Go to Patient vs Reference Cohort(s) comparison",
             )
           ),
           grid_place(
             area = "cohort_btn",
             actionButton(
               ns("navigateToCohortMode2"),
-              "Cohort comparison",
+              "Go to Cohort comparison",
             )
           ),
           grid_place(
@@ -102,8 +102,8 @@ mod_landing_page_ui <- function(id) {
           grid_place(
             area = "intra_cohort_svg",
             tags$img(
-              src = "www/images/patient_mode_representation.svg",
-              # src = "www/images/intra_cohort_mode_representation.svg"
+              # src = "www/images/patient_mode_representation.svg",
+              src = "www/images/intra_cohort_mode_representation.svg",
               style = "height: 320px;"
             )
           ),
@@ -117,8 +117,8 @@ mod_landing_page_ui <- function(id) {
           grid_place(
             area = "inter_cohort_svg",
             tags$img(
-              src = "www/images/patient_mode_representation.svg",
-              # src = "www/images/inter_cohort_mode_representation.svg"
+              # src = "www/images/patient_mode_representation.svg",
+              src = "www/images/inter_cohort_mode_representation.svg",
               style = "height: 320px;"
             )
           )
