@@ -8,12 +8,12 @@ def parse_human_svg():
 
   # Function to round the floating-point numbers to a reasonable precision
   def round_floats_in_path(path_string, precision=5):
-    # Regex to find floating-point numbers
+    #find floating-point numbers
     float_regex = re.compile(r"-?\d+\.\d+")
     
     # Replace each match with a rounded version
     def round_match(match):
-        return str(round(float(match.group()), precision))
+      return str(round(float(match.group()), precision))
     
     return float_regex.sub(round_match, path_string)
 
@@ -79,27 +79,6 @@ def parse_human_svg():
   
   return circle_dict, body_path
 
-def parse_human_svg_bk():
-  doc = minidom.parse("human.svg")
-
-  # extract all the circle elements cx="147.037" cy="70" r="20.104"
-  cx = doc.getElementsByTagName('circle')[0].getAttribute('cx')
-  cy = doc.getElementsByTagName('circle')[0].getAttribute('cy')
-  r = doc.getElementsByTagName('circle')[0].getAttribute('r')
-  circle_string = f'<circle cx="{cx}" cy="{cy}" r="{r}" />'
- 
-  path_string = [path.getAttribute('d') for path
-                  in doc.getElementsByTagName('path')]
-  
-  # strip the path string
-  path_string = [path.replace("\n", "").replace(" ", "") for path in path_string]
-  
-  print("circle_string", circle_string)
-  print("path_string", path_string)
-  doc.unlink()
-  
-  return circle_string, path_string
-
 def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
   # Calculate the offset to align the human figure correctly
   head_center_x = circle_dict['cx']
@@ -128,12 +107,6 @@ def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
     "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
     "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
   )
-
-  print("body_path")
-  print(body_path)
-  print("----------------------------------------------------")
-  print("body_path_hardcoded")
-  print(body_path_hardcoded)
     
   # group.add(dwg.path(d=body_path))
   group.add(dwg.path(d=body_path))

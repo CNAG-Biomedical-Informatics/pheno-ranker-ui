@@ -40,6 +40,40 @@ def draw_simple_human(dwg, center_x, center_y, color, scale=1.0):
   dwg.add(dwg.rect(insert=(center_x - body_width / 2, center_y - 20 * scale), 
                     size=(body_width, body_height), 
                     fill='none', stroke=color, stroke_width=2, rx=5 * scale, ry=5 * scale))
+  
+def draw_human_svg(dwg, x, y, circle_dict, body_path, color="grey", scale=0.1):
+  # Calculate the offset to align the human figure correctly
+  head_center_x = circle_dict['cx']
+  head_center_y = circle_dict['cy']
+  
+  # Adjust the translation to center the human figure
+  offset_x = x - head_center_x * scale
+  offset_y = y - head_center_y * scale
+
+  # Group to contain the entire human SVG element
+  group = dwg.g(transform=f"translate({offset_x},{offset_y}) scale({scale})", fill=color)
+
+   # Add the head (circle)
+  group.add(
+    dwg.circle(
+      center=(head_center_x,head_center_y),
+      r=circle_dict['r']
+    )
+  )
+
+  body_path_hardcoded = (
+    "M98.402,158.679 L104.963,112.661 C106.644,101.598 116.398,92.253 126.261,92.253 H167.816 "
+    "C177.678,92.253 187.431,101.599 189.114,112.661 L195.687,158.766 L177.734,169.911 "
+    "C175.299,171.423 173.66,173.934 173.256,176.769 L162.956,249.147 "
+    "C162.951,249.184 162.945,249.222 162.94,249.259 C162.697,251.122 161.041,252.485 160.27,252.485 "
+    "H133.833 C133.062,252.485 131.406,251.123 131.163,249.259 C131.158,249.222 131.152,249.184 "
+    "131.147,249.147 L120.845,176.769 C120.442,173.933 118.802,171.423 116.368,169.911 L98.402,158.679 Z"
+  )
+    
+  # group.add(dwg.path(d=body_path))
+  group.add(dwg.path(d=body_path_hardcoded))
+  dwg.add(group)
+
 
 
 def draw_double_arrow(dwg, center_x, center_y, end_x, end_y, start_marker, end_marker):
