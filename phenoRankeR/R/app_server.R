@@ -205,6 +205,8 @@ app_server <- function(input, output, session) {
     alignmentDf = NULL,
     id = NULL,
     mdsPlot = NULL,
+    useBeaconReference = FALSE,
+    useBeaconTarget = FALSE,
     useExampleReference = FALSE,
     useExampleTarget = FALSE,
     useSimulatedReference = FALSE,

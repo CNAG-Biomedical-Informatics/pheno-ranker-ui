@@ -649,6 +649,7 @@ observeSimulatedDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useSimulatedReference <- TRUE
+      rv$useBeaconReference <- FALSE
       rv$useExampleReference <- FALSE
       rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
@@ -656,6 +657,7 @@ observeSimulatedDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useSimulatedTarget <- TRUE
+      rv$useBeaconTarget <- FALSE
       rv$useExampleTarget <- FALSE
       rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
@@ -977,14 +979,14 @@ observeBeaconApiDataChange <- function(
     if (grepl("reference", input_id)) {
       id_prefix <- "R"
       file_info <- "Reference"
-      rv$useBeaconApiReference <- TRUE
-      rv$useBeaconApiTarget <- FALSE
+      rv$useBeaconReference <- TRUE
+      rv$useBeaconTarget <- FALSE
       mapping_df <- create_new_mapping_df()
     } else if (grepl("target", input_id)) {
       id_prefix <- "T"
       file_info <- "Target"
-      rv$useBeaconApiReference <- FALSE
-      rv$useBeaconApiTarget <- TRUE
+      rv$useBeaconReference <- FALSE
+      rv$useBeaconTarget <- TRUE
       print("mapping_df before subset")
       print(mapping_df)
       mapping_df <- subset(mapping_df, file_info != "Target")
@@ -1006,6 +1008,12 @@ observeBeaconApiDataChange <- function(
 
       print("rv_beacon_api$queryId")
       print(queryId)
+
+      print("rv$inputFormat")
+      print(rv$inputFormat)
+
+      # hard coded for now
+      rv$inputFormat <- "bff"
 
       row <- data.frame(
         file_info = file_info,
@@ -1089,6 +1097,7 @@ observeExampleDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useExampleReference <- TRUE
+      rv$useBeaconReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
@@ -1096,6 +1105,7 @@ observeExampleDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useExampleTarget <- TRUE
+      rv$useBeaconTarget <- FALSE
       rv$useSimulatedTarget <- FALSE
       rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
@@ -1206,6 +1216,7 @@ observeConvertedDataChange <- function(
     if (grepl("reference", input_id)) {
       id_prefix <- "R"
       file_info <- "Reference"
+      rv$useBeaconReference <- FALSE
       rv$useExampleReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- TRUE
@@ -1215,6 +1226,7 @@ observeConvertedDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useExampleTarget <- FALSE
+      rv$useBeaconTarget <- FALSE
       rv$useSimulatedTarget <- FALSE
       rv$useConvertedTarget <- TRUE
       print("mapping_df before subset")

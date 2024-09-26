@@ -180,7 +180,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Retrieved Examples",
+                      title = "Beacon API",
                       card_body(
                         selectInput(
                           ns("patient_beacon_api_target"),
@@ -629,6 +629,7 @@ mod_patient_mode_server <- function(
       "Target",
       function() {
         is.null(rv_patient$uploadedReferenceFile) &&
+          rv_patient$useBeaconReference == FALSE &&
           rv_patient$useExampleReference == FALSE &&
           rv_patient$useSimulatedReference == FALSE &&
           rv_patient$useConvertedReference == FALSE
@@ -909,6 +910,7 @@ mod_patient_mode_server <- function(
     })
 
     set_input_paths <- function(rv,
+                                rv_beacon_api,
                                 rv_input_examples,
                                 rv_sim,
                                 rv_conversion,
@@ -917,6 +919,14 @@ mod_patient_mode_server <- function(
       print("set_input_paths")
       print("rv_input_examples$retrievalId")
       print(rv_input_examples$retrievalId)
+
+      beaconApiDataPath <- paste0(
+        rv_general$user_dirs$output$beacon,
+        "/",
+        # get_golem_options("beaconOutputFolder"),
+        rv_beacon_api$queryId,
+        ".bff.json"
+      )
 
       exampleDataPath <- paste0(
         # get_golem_options("inputExamplesOutputFolder"),
@@ -972,6 +982,10 @@ mod_patient_mode_server <- function(
       )
       print(file_paths)
 
+      if (mode == "patientMode" && rv$useBeaconReference) {
+        file_paths["reference_file_path"] <- beaconApiDataPath
+      }
+
       if (mode == "patientMode" && rv$useExampleReference) {
         file_paths["reference_file_path"] <- exampleDataPath
       }
@@ -982,6 +996,15 @@ mod_patient_mode_server <- function(
 
       if (mode == "patientMode" && rv$useConvertedReference) {
         file_paths["reference_file_path"] <- convDataPath
+      }
+
+      if (mode == "patientMode" && rv$useBeaconTarget) {
+        file_paths["target_file_path"] <- generate_target_based_on_beacon_data(
+          rv,
+          rv_beacon_api,
+          rv_general,
+          beaconApiDataPath
+        )
       }
 
       if (mode == "patientMode" && rv$useExampleTarget) {
@@ -1058,12 +1081,15 @@ mod_patient_mode_server <- function(
 
       paths <- set_input_paths(
         rv_patient,
+        rv_beacon_api,
         rv_input_examples,
         rv_sim,
         rv_conversion,
         rv_general,
         "patientMode"
       )
+
+      # For what "reference_file_path1" is used?
 
       if ("reference_file_path1" %in% names(paths)) {
         inputReferenceFilePath <- paths["reference_file_path1"]
@@ -1075,6 +1101,12 @@ mod_patient_mode_server <- function(
       # TODO
       # put it in a extra files called errorHandlers.R
       if (is.null(inputReferenceFilePath[[1]]) || is.null(inputTargetFilePath[[1]])) {
+        print("inputReferenceFilePath[[1]]")
+        print(inputReferenceFilePath[[1]])
+
+        print("inputTargetFilePath[[1]]")
+        print(inputTargetFilePath[[1]])
+
         showNotification(
           "Please upload or select a example/simulated reference and target file!",
           type = "error"
@@ -1646,6 +1678,47 @@ mod_patient_mode_server <- function(
         "/",
         paste0(rv_conversion$id, "/"),
         rv_conversion$id,
+        ".target.json"
+      )
+      file.create(targetFilePath)
+
+      fileConn <- file(
+        targetFilePath,
+        open = "w"
+      )
+      writeLines(
+        toJSON(
+          jsonObj,
+          pretty = TRUE,
+          auto_unbox = TRUE
+        ),
+        con = fileConn
+      )
+      close(fileConn)
+      return(targetFilePath)
+    }
+
+    generate_target_based_on_beacon_data <- function(rv, rv_beacon_api, rv_general, beaconApiDataPath) {
+      print("generate_target_based_on_beacon_data")
+
+      targetFilePath <- beaconApiDataPath
+      print("targetFilePath")
+      print(targetFilePath)
+
+      jsonArray <- fromJSON(
+        normalizePath(
+          file.path(
+            targetFilePath
+          )
+        ),
+        simplifyDataFrame = FALSE,
+      )
+      jsonObj <- jsonArray[[1]]
+
+      targetFilePath <- paste0(
+        rv_general$user_dirs$output$beacon,
+        "/",
+        rv_beacon_api$queryId,
         ".target.json"
       )
       file.create(targetFilePath)
