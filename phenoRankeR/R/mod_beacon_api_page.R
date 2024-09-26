@@ -137,6 +137,35 @@ mod_beacon_api_page_ui <- function(id) {
   )
 }
 
+query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) {
+  # working APIs:
+  # https://beacon-spain.ega-archive.org
+  # https://staging-beacon.gdi.nbis.se
+  # https://beacon.biodata.pt
+
+  # endpoint: /api/individuals
+
+  beacon <- "beacon.biodata.pt"
+  beacon <- "beacon-spain.ega-archive.org"
+  endpoint <- "api/individuals"
+
+  url <- paste0("https://", beacon, "/", endpoint)
+
+  req <- request(url)
+
+  res <- req_perform(
+    req,
+    verbosity = TRUE
+  )
+
+  res_content <- req_content(res, as = "text")
+
+
+
+
+  return(query)
+}
+
 get_input_examples <- function(queryId, number_of_individuals, cohort_names, rv_general) {
   inputFolder <- get_golem_options("inputExamplesInputFolder")
   # ouputFolder <- get_golem_options("inputExamplesOutputFolder")
@@ -264,12 +293,13 @@ mod_beacon_api_page_server <- function(
 
       output$queryId <- renderText(paste0("RUN ID: ", queryId))
 
-      rv_input_examples$inputExamples <- get_input_examples(
-        queryId,
-        input$arraySizeInput,
-        input$textInput,
-        rv_general
-      )
+      rv_beacon_api$queryId <-
+        rv_input_examples$inputExamples <- get_input_examples(
+          queryId,
+          input$arraySizeInput,
+          input$textInput,
+          rv_general
+        )
 
       selectedOutputFormats <- "BFF"
       number_of_individuals <- input$arraySizeInput
