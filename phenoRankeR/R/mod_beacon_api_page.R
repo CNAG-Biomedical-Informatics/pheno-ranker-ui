@@ -10,6 +10,7 @@
 #' @importFrom listviewer renderReactjson reactjson
 #' @importFrom shinyvalidate InputValidator sv_between
 #' @importFrom jsonlite read_json fromJSON toJSON
+#' @importFrom httr2 request req_perform resp_body_json
 #' @import reactR
 #' @noRd
 
@@ -145,6 +146,8 @@ query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) 
 
   # endpoint: /api/individuals
 
+  print("inside query_beacon_api")
+
   beacon <- "beacon.biodata.pt"
   beacon <- "beacon-spain.ega-archive.org"
   endpoint <- "api/individuals"
@@ -152,25 +155,64 @@ query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) 
   url <- paste0("https://", beacon, "/", endpoint)
 
   req <- request(url)
+  print("req")
+  print(req)
 
   res <- req_perform(
     req,
-    verbosity = TRUE
+    verbosity = 1
   )
 
-  res_content <- req_content(res, as = "text")
+  print("res")
+  print(res)
 
+  resp_body_json <- resp_body_json(res)
 
+  print("names(resp_body_json)")
+  print(names(resp_body_json))
 
+  res_content <- NULL
+  if ("response" %in% names(resp_body_json)) {
+    res_content <- resp_body_json$response
+  } else {
+    # throw error
+  }
 
-  return(query)
+  # print("res_content")
+  # print(res_content)
+
+  return(res_content)
+}
+
+process_beacon_api_response <- function(res_content) {
+  print("inside process_beacon_api_results")
+  print(names(res_content))
+
+  if ("resultSets" %in% names(res_content)) {
+    print("names(res_content$resultSets[[1]])")
+    print(names(res_content$resultSets[[1]]))
+
+    # get the results from the first result set
+    results <- res_content$resultSets[[1]]$results
+    # print("results")
+    # print(results)
+
+    # results <- res_content$resultSets[1]$results
+  } else {
+    # throw error
+  }
+
+  print("results")
+  print(results)
+
+  return(results)
 }
 
 get_input_examples <- function(queryId, number_of_individuals, cohort_names, rv_general) {
   inputFolder <- get_golem_options("inputExamplesInputFolder")
   # ouputFolder <- get_golem_options("inputExamplesOutputFolder")
 
-  ouputFolder <- rv_general$user_dirs$output$examples
+  ouputFolder <- rv_general$user_dirs$output$beacon
 
   json_files <- list.files(
     path = inputFolder,
@@ -223,7 +265,7 @@ mod_beacon_api_page_server <- function(
     session,
     db_conn,
     db_driver,
-    rv_input_examples,
+    rv_beacon_api,
     rv_general) {
   # NOTE somehow this function is only working with the
   # namespace defined here
@@ -241,7 +283,7 @@ mod_beacon_api_page_server <- function(
       "queryBeaconApi",
       submit_clicked,
       "Beacon API Query",
-      "Please wait while the queryz is ongoing...",
+      "Please wait while the query is ongoing...",
       input$arraySizeInput
     )
 
@@ -265,7 +307,7 @@ mod_beacon_api_page_server <- function(
       req(rv_beacon_api$queryId)
 
       path <- paste0(
-        rv_general$user_dirs$output$examples,
+        rv_general$user_dirs$output$beacon,
         "/",
         # retrieved_examples_folder,
         rv_beacon_api$queryId
@@ -293,13 +335,22 @@ mod_beacon_api_page_server <- function(
 
       output$queryId <- renderText(paste0("RUN ID: ", queryId))
 
-      rv_beacon_api$queryId <-
-        rv_input_examples$inputExamples <- get_input_examples(
-          queryId,
-          input$arraySizeInput,
-          input$textInput,
-          rv_general
-        )
+      response <- query_beacon_api(
+        input$beaconSelector,
+        input$textInput,
+        input$arraySizeInput
+      )
+
+      rv_beacon_api$beaconApiResults <- process_beacon_api_response(
+        response
+      )
+
+      # rv_input_examples$inputExamples <- get_input_examples(
+      #   queryId,
+      #   input$arraySizeInput,
+      #   input$textInput,
+      #   rv_general
+      # )
 
       selectedOutputFormats <- "BFF"
       number_of_individuals <- input$arraySizeInput
@@ -307,8 +358,8 @@ mod_beacon_api_page_server <- function(
       mod_json_viewer_server(
         ns("json_viewer_input_examples"),
         selectedOutputFormats,
-        rv_input_examples$inputExamples,
-        rv_input_examples$inputExamples,
+        rv_beacon_api$beaconApiResults,
+        rv_beacon_api$beaconApiResults,
         number_of_individuals
       )
 
@@ -332,7 +383,7 @@ mod_beacon_api_page_server <- function(
       store_job_in_db(
         queryId,
         rv_general$user_email,
-        "input_examples",
+        "beacon_api",
         label,
         settings,
         db_conn

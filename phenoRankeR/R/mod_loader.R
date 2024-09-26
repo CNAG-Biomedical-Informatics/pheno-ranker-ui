@@ -13,6 +13,7 @@ mod_loader_ui <- function(id) {
       script = "www/handlers.js",
       functions = c(
         "getInputs",
+        "beaconApiRequestTriggered",
         "exampleRequestTriggered",
         "conversionStartTriggered",
         "cohortRankingStartTriggered",
@@ -33,20 +34,18 @@ send_custom_message <- function(session, text, element = "span") {
 }
 
 mod_loader_server <- function(
-  id,
-  session,
-  target_selector,
-  submit_clicked,
-  title,
-  sub_title,
-  requested_individuals) {
-
+    id,
+    session,
+    target_selector,
+    submit_clicked,
+    title,
+    sub_title,
+    requested_individuals) {
   ns <- session$ns
   print("ns(target_selector)")
   print(ns(target_selector))
 
   moduleServer(id, function(input, output, session) {
-
     print("session$ns(elementFound)")
     print(session$ns("elementFound"))
 
@@ -86,7 +85,7 @@ mod_loader_server <- function(
         return()
       }
 
-      if (requested_individuals < json_viewer_preview_limit)  {
+      if (requested_individuals < json_viewer_preview_limit) {
         send_custom_message(session, "root")
       } else {
         send_custom_message(
@@ -99,8 +98,13 @@ mod_loader_server <- function(
         )
       }
 
+      print("target_selector")
+      print(target_selector)
+
       if (target_selector == "retrieveExampleCohorts") {
         js$exampleRequestTriggered()
+      } else if (target_selector == "queryBeaconApi") {
+        js$beaconApiRequestTriggered()
       } else if (target_selector == "simulateCohort") {
         js$getInputs()
       } else {

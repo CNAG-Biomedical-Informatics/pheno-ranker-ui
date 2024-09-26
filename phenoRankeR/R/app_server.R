@@ -175,7 +175,7 @@ app_server <- function(input, output, session) {
 
   rv_beacon_api <- reactiveValues(
     queryId = NULL,
-    beaconApiResult = NULL
+    beaconApiResults = NULL
   )
 
   rv_input_examples <- reactiveValues(
