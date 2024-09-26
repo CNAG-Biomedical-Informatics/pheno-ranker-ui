@@ -147,8 +147,8 @@ query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) 
 
   print("inside query_beacon_api")
 
-  # beacon <- "beacon.biodata.pt"
-  beacon <- "beacon-spain.ega-archive.org" # not working
+  beacon <- "beacon.biodata.pt"
+  # beacon <- "beacon-spain.ega-archive.org" # not working
   endpoint <- "api/individuals"
 
   url <- paste0("https://", beacon, "/", endpoint)
