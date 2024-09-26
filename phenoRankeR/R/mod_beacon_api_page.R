@@ -103,12 +103,12 @@ mod_beacon_api_page_ui <- function(id) {
         grid_container(
           layout = c(
             "     1fr   ",
-            "25px pxfDl "
+            "25px bffDl "
           ),
           gap_size = "5px",
           grid_place(
-            area = "pxfDl",
-            downloadButton(ns("pxfDl"), "PXF")
+            area = "bffDl",
+            downloadButton(ns("bffDl"), "BFF")
           )
         )
       )
@@ -183,7 +183,7 @@ query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) 
   return(res_content)
 }
 
-process_beacon_api_response <- function(res_content) {
+process_beacon_api_response <- function(queryId, res_content, rv_general) {
   print("inside process_beacon_api_results")
   print(names(res_content))
 
@@ -200,6 +200,19 @@ process_beacon_api_response <- function(res_content) {
   } else {
     # throw error
   }
+
+  # store the results in a file
+  fn <- paste0(
+    queryId,
+    ".bff.json"
+  )
+
+  beaconApiOutputFolder <- rv_general$user_dirs$output$beacon
+
+  write(
+    toJSON(results, pretty = TRUE, auto_unbox = TRUE),
+    file = paste0(beaconApiOutputFolder, "/", fn)
+  )
 
   print("results")
   print(results)
@@ -341,7 +354,9 @@ mod_beacon_api_page_server <- function(
       )
 
       rv_beacon_api$beaconApiResults <- process_beacon_api_response(
-        response
+        queryId,
+        response,
+        rv_general
       )
 
       # rv_input_examples$inputExamples <- get_input_examples(

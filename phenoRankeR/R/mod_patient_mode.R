@@ -77,7 +77,7 @@ mod_patient_mode_ui <- function(id) {
                     # TODO as soon there is file uploaded
                     # select simulated data should be disabled
                     tabPanel(
-                      title = "Example data",
+                      title = "Retrieved Examples",
                       grid_container(
                         layout = c(
                           "      1fr",
@@ -95,7 +95,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Simulated data",
+                      title = "Simulation",
                       grid_container(
                         layout = c(
                           "     1fr      1fr   ",
@@ -117,7 +117,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Converted data",
+                      title = "Conversion",
                       card_body(
                         selectInput(
                           ns("patient_conv_reference"),
@@ -162,7 +162,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Example data",
+                      title = "Retrieved Examples",
                       card_body(
                         selectInput(
                           ns("patient_example_target"),
@@ -172,7 +172,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Simulated data",
+                      title = "Simulation",
                       card_body(
                         selectInput(
                           ns("patient_sim_target"),
@@ -182,7 +182,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Converted data",
+                      title = "Conversion",
                       card_body(
                         selectInput(
                           ns("patient_conv_target"),
@@ -467,7 +467,7 @@ mod_patient_mode_server <- function(
     observeEvent(input$patientRankerReferenceTabsetPanel, {
       print(input$patientRankerReferenceTabsetPanel)
 
-      if (input$patientRankerReferenceTabsetPanel == "Example data") {
+      if (input$patientRankerReferenceTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
         rv_patient$inputFormat <- "pxf"
 
@@ -481,7 +481,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerReferenceTabsetPanel == "Simulated data") {
+      if (input$patientRankerReferenceTabsetPanel == "Simulation") {
         observeTabChangeToSimulateData(
           input,
           session,
@@ -492,7 +492,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerReferenceTabsetPanel == "Converted data") {
+      if (input$patientRankerReferenceTabsetPanel == "Conversion") {
         observeTabChangeToConvertedData(
           input,
           session,
@@ -508,7 +508,7 @@ mod_patient_mode_server <- function(
       print("input$patientRankerTargetTabsetPanel")
       print(input$patientRankerTargetTabsetPanel)
 
-      if (input$patientRankerTargetTabsetPanel == "Example data") {
+      if (input$patientRankerTargetTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
         if (rv_patient$inputFormat == "bff") {
           showNotification(
@@ -518,7 +518,7 @@ mod_patient_mode_server <- function(
           updateTabsetPanel(
             session,
             "patientRankerTargetTabsetPanel",
-            "Simulated data"
+            "Simulation"
           )
           return()
         }
@@ -533,7 +533,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerTargetTabsetPanel == "Simulated data") {
+      if (input$patientRankerTargetTabsetPanel == "Simulation") {
         observeTabChangeToSimulateData(
           input,
           session,
@@ -544,7 +544,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerTargetTabsetPanel == "Converted data") {
+      if (input$patientRankerTargetTabsetPanel == "Conversion") {
         observeTabChangeToConvertedData(
           input,
           session,

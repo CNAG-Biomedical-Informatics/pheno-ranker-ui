@@ -474,11 +474,48 @@ observeTabChangeToExampleData <- function(
     input,
     session,
     panel_id,
-    "Example data",
+    "Retrieved Examples",
     function() {
       nrow(res) == 0
     },
-    "Please run example data first",
+    "Please run get example input first",
+    "Upload"
+  )
+}
+
+observeTabChangeToBeaconApiData <- function(
+    input,
+    session,
+    db_conn,
+    panel_id,
+    dropdown_id,
+    user_email) {
+  user_id <- get_user_id(user_email, db_conn)
+
+  query <- sprintf(
+    "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'beacon_api' AND status = 'success' ORDER BY submitted_at DESC",
+    user_id
+  )
+
+  res <- dbGetQuery(db_conn, query)
+  choices <- setNames(res$run_id, res$label)
+
+  updateSelectInput(
+    session,
+    dropdown_id,
+    choices = choices,
+    selected = NULL
+  )
+
+  observeTabChangeEvent(
+    input,
+    session,
+    panel_id,
+    "Beacon API",
+    function() {
+      nrow(res) == 0
+    },
+    "Please run query Beacon API first",
     "Upload"
   )
 }
@@ -491,9 +528,6 @@ observeTabChangeToSimulateData <- function(
     panel_id,
     dropdown_id,
     user_email) {
-  # should not be hardcoded
-  # user_id <- 1
-
   user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
@@ -515,7 +549,7 @@ observeTabChangeToSimulateData <- function(
     input,
     session,
     panel_id,
-    "Simulated data",
+    "Simulation",
     function() {
       nrow(res) == 0
     },
@@ -555,7 +589,7 @@ observeTabChangeToConvertedData <- function(
     input,
     session,
     panel_id,
-    "Converted data",
+    "Conversion",
     function() {
       nrow(res) == 0
     },
@@ -909,6 +943,112 @@ observeSimulatedDataChange <- function(
   })
 }
 
+observeBeaconApiDataChange <- function(
+    session,
+    input,
+    output,
+    rv,
+    rv_beacon_api,
+    rv_general,
+    input_id,
+    yaml_editor_id,
+    expected_row_count) {
+  # possible values:
+  # input_id <-
+  # "patient_beacon_api"
+
+  observeEvent(input[[input_id]], {
+    rv_beacon_api$queryId <- input[[input_id]]
+
+
+    if (is.null(rv$mappingDf)) {
+      mapping_df <- create_new_mapping_df()
+    } else {
+      mapping_df <- rv$mappingDf
+    }
+
+    file_info <- "Cohort"
+    if (grepl("reference", input_id)) {
+      id_prefix <- "R"
+      file_info <- "Reference"
+      rv$useBeaconApiReference <- TRUE
+      rv$useBeaconApiTarget <- FALSE
+      mapping_df <- create_new_mapping_df()
+    } else if (grepl("target", input_id)) {
+      id_prefix <- "T"
+      file_info <- "Target"
+      rv$useBeaconApiReference <- FALSE
+      rv$useBeaconApiTarget <- TRUE
+      print("mapping_df before subset")
+      print(mapping_df)
+      mapping_df <- subset(mapping_df, file_info != "Target")
+      print("mapping_df after subset")
+      print(mapping_df)
+    } else {
+      id_prefix <- "C"
+      mapping_df <- create_new_mapping_df()
+    }
+
+    rows <- lapply(1:expected_row_count, function(i) {
+      id_prefix_new <- paste0(id_prefix, i)
+
+      # Use ifelse to handle the different cases for simulationId
+      queryId <- ifelse(expected_row_count == 1, rv_beacon_api$queryId, rv_beacon_api$queryId[i])
+
+      print("expected_row_count")
+      print(expected_row_count)
+
+      print("rv_beacon_api$queryId")
+      print(queryId)
+
+      row <- data.frame(
+        file_info = file_info,
+        original_fn = paste0(
+          queryId,
+          ".",
+          rv$inputFormat,
+          ".json"
+        ),
+        new_fn = normalizePath(
+          paste0(
+            rv_general$user_dirs$output$beacon_api,
+            queryId,
+            ".",
+            rv$inputFormat,
+            ".json"
+          )
+        ),
+        id_prefixes = id_prefix_new,
+        simulatedData = FALSE,
+        stringsAsFactors = FALSE
+      )
+      return(row)
+    })
+
+    rows_df <- do.call(rbind, rows)
+    print("rows_df")
+    print(rows_df)
+
+    rv$mappingDf <- rbind(mapping_df, rows_df)
+
+    editor_val <- ""
+    for (i in 1:nrow(rv$mappingDf)) {
+      editor_val <- paste0(
+        editor_val,
+        rv$mappingDf$original_fn[i],
+        ":",
+        rv$mappingDf$id_prefixes[i],
+        "\n"
+      )
+    }
+    updateAceEditor(
+      session,
+      yaml_editor_id,
+      value = editor_val
+    )
+  })
+}
+
 observeExampleDataChange <- function(
     session,
     input,
@@ -960,9 +1100,6 @@ observeExampleDataChange <- function(
       id_prefix <- "C"
       mapping_df <- create_new_mapping_df()
     }
-
-    # exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
-    # exampleDataInputDir <- rv_general$user_dirs$output$examples
 
     rows <- lapply(1:expected_row_count, function(i) {
       id_prefix_new <- paste0(id_prefix, i)
