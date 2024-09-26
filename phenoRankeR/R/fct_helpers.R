@@ -763,7 +763,7 @@ observeSimulatedDataChange <- function(
     # 20230804143923.bff.json:T
 
     # simulatedData_input_dir <- "./data/output/simulatedData/"
-    simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+    # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
 
     rows <- lapply(1:expected_row_count, function(i) {
       id_prefix_new <- paste0(id_prefix, i)
@@ -787,7 +787,9 @@ observeSimulatedDataChange <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            simulatedData_input_dir,
+            rv_general$user_dirs$output$sim,
+            "/",
+            # simulatedData_input_dir,
             simulationId,
             ".",
             rv$inputFormat,

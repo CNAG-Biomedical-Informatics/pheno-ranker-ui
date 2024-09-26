@@ -77,6 +77,24 @@ mod_patient_mode_ui <- function(id) {
                     # TODO as soon there is file uploaded
                     # select simulated data should be disabled
                     tabPanel(
+                      title = "Beacon API",
+                      grid_container(
+                        layout = c(
+                          "      1fr",
+                          "150px dropdown"
+                        ),
+                        grid_place(
+                          area = "dropdown",
+                          selectInput(
+                            ns("patient_beacon_api_reference"),
+                            "Select cohort(s)",
+                            choices = NULL,
+                            multiple = TRUE
+                          )
+                        )
+                      )
+                    ),
+                    tabPanel(
                       title = "Retrieved Examples",
                       grid_container(
                         layout = c(
@@ -87,7 +105,7 @@ mod_patient_mode_ui <- function(id) {
                           area = "dropdown",
                           selectInput(
                             ns("patient_example_reference"),
-                            "Select example cohort(s)",
+                            "Select cohort(s)",
                             choices = NULL,
                             multiple = TRUE
                           )
@@ -165,8 +183,18 @@ mod_patient_mode_ui <- function(id) {
                       title = "Retrieved Examples",
                       card_body(
                         selectInput(
+                          ns("patient_beacon_api_target"),
+                          "Select individual",
+                          choices = NULL
+                        )
+                      )
+                    ),
+                    tabPanel(
+                      title = "Retrieved Examples",
+                      card_body(
+                        selectInput(
                           ns("patient_example_target"),
-                          "Select an example individual",
+                          "Select individual",
                           choices = NULL
                         )
                       )
@@ -467,6 +495,17 @@ mod_patient_mode_server <- function(
     observeEvent(input$patientRankerReferenceTabsetPanel, {
       print(input$patientRankerReferenceTabsetPanel)
 
+      if (input$patientRankerReferenceTabsetPanel == "Beacon API") {
+        observeTabChangeToBeaconApiData(
+          input,
+          session,
+          db_conn,
+          "patientRankerReferenceTabsetPanel",
+          "patient_beacon_api_reference",
+          rv_general$user_email
+        )
+      }
+
       if (input$patientRankerReferenceTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
         rv_patient$inputFormat <- "pxf"
@@ -507,6 +546,32 @@ mod_patient_mode_server <- function(
     observeEvent(input$patientRankerTargetTabsetPanel, {
       print("input$patientRankerTargetTabsetPanel")
       print(input$patientRankerTargetTabsetPanel)
+
+      if (input$patientRankerTargetTabsetPanel == "Beacon API") {
+        req(rv_patient$inputFormat)
+
+        if(rv_patient$inputFormat == "pxf") {
+          showNotification(
+            "Beacon API data is only available for BFF format",
+            type = "error"
+          )
+          updateTabsetPanel(
+            session,
+            "patientRankerTargetTabsetPanel",
+            "Simulation"
+          )
+          return()
+        }
+
+        observeTabChangeToBeaconApiData(
+          input,
+          session,
+          db_conn,
+          "patientRankerTargetTabsetPanel",
+          "patient_beacon_api_target",
+          rv_general$user_email
+        )
+      }
 
       if (input$patientRankerTargetTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
@@ -1387,6 +1452,36 @@ mod_patient_mode_server <- function(
         "patient_conv_target",
         "yamlEditorIdPrefixes",
         "yamlEditor_config",
+        expectedRowCount
+      )
+    })
+
+    observeEvent(input$patient_beacon_api_reference, {
+      req(input$patient_beacon_api_referece)
+      expectedRowCount <- length(input$patient_beacon_api_reference)
+      observeBeaconApiDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_general,
+        "patient_beacon_api_reference",
+        "yamlEditorIdPrefixes",
+        expectedRowCount
+      )
+    })
+
+    observeEvent(input$patient_beacon_api_target, {
+      req(input$patient_beacon_api_target)
+      expectedRowCount <- length(input$patient_beacon_api_target)
+      observeBeaconApiDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_general,
+        "patient_beacon_api_target",
+        "yamlEditorIdPrefixes",
         expectedRowCount
       )
     })
