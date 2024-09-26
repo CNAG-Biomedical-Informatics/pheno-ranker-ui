@@ -980,13 +980,17 @@ observeBeaconApiDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useBeaconReference <- TRUE
-      rv$useBeaconTarget <- FALSE
+      rv$useExampleReference <- FALSE
+      rv$useSimulatedReference <- FALSE
+      rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
     } else if (grepl("target", input_id)) {
       id_prefix <- "T"
       file_info <- "Target"
-      rv$useBeaconReference <- FALSE
       rv$useBeaconTarget <- TRUE
+      rv$useExampleTarget <- FALSE
+      rv$useSimulatedTarget <- FALSE
+      rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
       print(mapping_df)
       mapping_df <- subset(mapping_df, file_info != "Target")
