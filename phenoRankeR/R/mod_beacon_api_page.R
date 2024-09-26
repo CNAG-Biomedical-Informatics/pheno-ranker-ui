@@ -14,14 +14,13 @@
 #' @import reactR
 #' @noRd
 
-mode_input_examples_layout <- c(
+mode_beacon_api_layout <- c(
   "         500px       1fr     40px                           ",
-  "30px     btn         examplesRes  btn_show_retrieval_history",
-  "800px    table       examplesRes  btn_show_retrieval_history",
-  "70px     download    examplesRes  btn_show_retrieval_history",
+  "30px     btn         beaconRes  btn_show_beacon_query_history",
+  "800px    table       beaconRes  btn_show_beacon_query_history",
+  "70px     download    beaconRes  btn_show_beacon_query_history",
   "1px      version     version version                        "
 )
-
 
 mod_beacon_api_page_ui <- function(id) {
   ns <- NS(id)
@@ -29,7 +28,7 @@ mod_beacon_api_page_ui <- function(id) {
   max_individuals <- get_golem_options("maxIndividuals")
 
   grid_container(
-    layout = mode_input_examples_layout,
+    layout = mode_beacon_api_layout,
     gap_size = "0px",
     grid_place(
       area = "btn",
@@ -115,17 +114,17 @@ mod_beacon_api_page_ui <- function(id) {
       )
     ),
     grid_card(
-      area = "examplesRes",
+      area = "beaconRes",
       card_header("Query Results"),
       full_screen = TRUE,
       card_body(
         verbatimTextOutput("queryId"),
-        mod_json_viewer_ui(ns("json_viewer_input_examples"))
+        mod_json_viewer_ui(ns("json_viewer_beacon_api"))
       ),
       height = "890px"
     ),
     grid_place(
-      area = "btn_show_retrieval_history",
+      area = "btn_show_beacon_query_history",
       mod_show_history_button_ui(ns("BeaconApiHistorySidebar"))
     ),
     grid_place(
@@ -356,14 +355,14 @@ mod_beacon_api_page_server <- function(
       number_of_individuals <- input$arraySizeInput
 
       mod_json_viewer_server(
-        ns("json_viewer_input_examples"),
+        ns("json_viewer_beacon_api"),
         selectedOutputFormats,
         rv_beacon_api$beaconApiResults,
         rv_beacon_api$beaconApiResults,
         number_of_individuals
       )
 
-      rv_input_examples$queryId <- queryId
+      rv_beacon_api$queryId <- queryId
 
       settings <- list(
         numberOfIndividuals = number_of_individuals
@@ -380,6 +379,7 @@ mod_beacon_api_page_server <- function(
       # JSONB is only available in sqlite > 3.45.0
       # planned for 2024-01-31
 
+      print("before store_job_in_db")
       store_job_in_db(
         queryId,
         rv_general$user_email,
@@ -388,6 +388,7 @@ mod_beacon_api_page_server <- function(
         settings,
         db_conn
       )
+      print("after store_job_in_db")
 
       # settings_json <- toJSON(settings)
       # # print("settings_json")

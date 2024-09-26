@@ -338,11 +338,14 @@ app_server <- function(input, output, session) {
   # maybe better to put this in a separate module(?)
   getPastRunResults <- function(query, rv_general) {
     print("inside getPastRunResults")
+
+    mode <- query[["mode"]]
     print("mode")
     print(mode)
 
-    mode <- query[["mode"]]
     runId <- query[["id"]]
+    print("runId")
+    print(runId)
 
     # TODO
     # maybe better to put this in the simulation module
@@ -351,11 +354,11 @@ app_server <- function(input, output, session) {
 
     if (mode == "beacon_api") {
       print("inside getPastRunResults beacon_api")
-      rv_beacon_api$queryId <- runId
-      output$queryId <- renderText(paste0("QUERY ID: ", runId))
 
-      print("runId")
-      print(runId)
+      print(rv_beacon_api)
+      rv_beacon_api$queryId <- runId
+
+      output$queryId <- renderText(paste0("QUERY ID: ", runId))
 
       # query the database
       query <- sprintf(
@@ -363,13 +366,21 @@ app_server <- function(input, output, session) {
         runId
       )
 
+      print("before query")
       res <- dbGetQuery(db_conn, query)
+      print("after query")
+      print("res")
+      print(res)
+
       settings <- fromJSON(res$settings)
       print("settings")
+      print(settings)
 
       number_of_individuals <- as.numeric(settings$numberOfIndividuals)
 
-      beaconApiOutputFolder <- rv_general$user_dirs$output$beacon_api
+      beaconApiOutputFolder <- rv_general$user_dirs$output$beacon
+      print("beaconApiOutputFolder")
+      print(beaconApiOutputFolder)
 
       files <- list.files(
         beaconApiOutputFolder,

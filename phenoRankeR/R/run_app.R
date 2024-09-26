@@ -31,6 +31,7 @@ run_app <- function(
         ),
         output = list(
           sim = "simulatedData",
+          beacon = "beaconApi",
           examples = "inputExamples",
           conv = "convertedData",
           pats_ranked = "rankedPatients",

@@ -13,26 +13,27 @@ run_app(
     subDirs = list(uploads = list(rankInput = "rankInput", refs =
     "rankInput/patientMode/references", targets = "rankInput/patientMode/targets",
     cohorts = "rankInput/cohortMode/cohorts", weights = "weights", ontologies =
-    "ontologies", config = "config"), output = list(sim = "simulatedData", examples =
-    "inputExamples", conv = "convertedData", pats_ranked = "rankedPatients",
-    cohorts_ranked = "rankedCohorts")), rankInputFolder = "../data/uploads/rankInput/", 
-
-        patientRankInputRefsFolder = "../data/uploads/rankInput/patientMode/references",
-    cohortRankInputFolder = "../data/uploads/rankInput/cohortMode/cohorts",
-    weightsUploadFolder = "../data/uploads/weights", extraConfigsUploadFolder =
-    "../data/uploads/config", ontologyUploadFolder = "../data/uploads/ontologies/",
-    inputExamplesInputFolder = "../data/input_examples/phenopacket_store/0.1.18/",
-    inputExamplesOutputFolder = "../data/output/inputExamples/", simulationOutputFolder =
-    "../data/output/simulatedData/", 
-     conversionOutputFolder =
+    "ontologies", config = "config"), output = list(sim = "simulatedData", beacon =
+    "beaconApi", examples = "inputExamples", conv = "convertedData", pats_ranked =
+    "rankedPatients", cohorts_ranked = "rankedCohorts")), 
+     rankInputFolder =
+    "../data/uploads/rankInput/", patientRankInputRefsFolder =
+    "../data/uploads/rankInput/patientMode/references", cohortRankInputFolder =
+    "../data/uploads/rankInput/cohortMode/cohorts", weightsUploadFolder =
+    "../data/uploads/weights", extraConfigsUploadFolder = "../data/uploads/config",
+    ontologyUploadFolder = "../data/uploads/ontologies/", inputExamplesInputFolder =
+    "../data/input_examples/phenopacket_store/0.1.18/", inputExamplesOutputFolder =
+    "../data/output/inputExamples/", 
+     simulationOutputFolder =
+    "../data/output/simulatedData/", conversionOutputFolder =
     "../data/output/convertedData/", patientModeOutputFolder =
     "../data/output/rankedPatients/", cohortModeOutputFolder =
     "../data/output/rankedCohortMatrixes/", maxIndividuals = 2500, jsonViewerPreviewLimit
     = 10000, tempFolder = "../data/temp/", runWithDocker = FALSE, PHENO_SIM_BIN =
     "bff-pxf-simulator", PHENO_RANK_BIN = "pheno-ranker", PHENO_CSV_CONV_BIN =
     "csv2pheno-ranker", ODBCSYSINI = "../config/odbc", dbDriver =
-    Sys.getenv("DB_DRIVER"), dbServer = Sys.getenv("DB_IP"), 
-     dbPort = 5432,
+    Sys.getenv("DB_DRIVER"), 
+     dbServer = Sys.getenv("DB_IP"), dbPort = 5432,
     dbDatabase = Sys.getenv("DB_NAME"), dbUser = Sys.getenv("DB_USER"), dbPassword =
     Sys.getenv("DB_PW"), shinyProxyDeployed = TRUE, keycloakSecured = TRUE,
     playgroundDummyEmail = "pheno.ranker@playground.com"),
