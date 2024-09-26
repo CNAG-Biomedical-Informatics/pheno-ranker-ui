@@ -173,6 +173,11 @@ app_server <- function(input, output, session) {
     user_email = user_email
   )
 
+  rv_beacon_api <- reactiveValues(
+    queryId = NULL,
+    beaconApiResult = NULL
+  )
+
   rv_input_examples <- reactiveValues(
     retrievalId = NULL,
     inputExamples = NULL
@@ -241,6 +246,15 @@ app_server <- function(input, output, session) {
     rv_general
   )
 
+  mod_beacon_api_page_server(
+    "beacon_api",
+    session,
+    db_conn,
+    db_driver,
+    rv_beacon_api,
+    rv_general
+  )
+
   mod_sim_mode_server(
     "sim_mode",
     session,
@@ -285,7 +299,8 @@ app_server <- function(input, output, session) {
     "ConvertHistorySidebar",
     "PatientHistorySidebar",
     "CohortHistorySidebar",
-    "InputExamplesRetrievalHistorySidebar"
+    "InputExamplesRetrievalHistorySidebar",
+    "BeaconApiHistorySidebar"
   )
 
   lapply(historySidebars, function(sidebar) {
@@ -333,6 +348,58 @@ app_server <- function(input, output, session) {
     # maybe better to put this in the simulation module
     # with a flag
     # if history=True then run below
+
+    if (mode == "beacon_api") {
+      print("inside getPastRunResults beacon_api")
+      rv_beacon_api$queryId <- runId
+      output$queryId <- renderText(paste0("QUERY ID: ", runId))
+
+      print("runId")
+      print(runId)
+
+      # query the database
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'beacon_api'",
+        runId
+      )
+
+      res <- dbGetQuery(db_conn, query)
+      settings <- fromJSON(res$settings)
+      print("settings")
+
+      number_of_individuals <- as.numeric(settings$numberOfIndividuals)
+
+      beaconApiOutputFolder <- rv_general$user_dirs$output$beacon_api
+
+      files <- list.files(
+        beaconApiOutputFolder,
+        pattern = paste0(runId, "*.bff.json")
+      )
+
+      if (length(files) == 0) {
+        print("no files found")
+        return()
+      }
+
+      file_type <- "bff"
+
+      rv_beacon_api$beaconApiResult <- read_json(
+        paste0(
+          beaconApiOutputFolder,
+          "/",
+          files[1]
+        )
+      )
+
+      mod_json_viewer_server(
+        "beacon_api-json_viewer_beacon_api",
+        toupper(file_type),
+        rv_beacon_api$beaconApiResult,
+        rv_beacon_api$beaconApiResult,
+        number_of_individuals
+      )
+    }
+
 
     if (mode == "input_examples") {
       print("inside getPastRunResults input_examples")
@@ -789,9 +856,8 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "cohort")
   })
 
-  renderInteractiveComplexHeatmap <- function(
-      ht_list,
-      output_id) {
+  renderInteractiveComplexHeatmap <- function(ht_list,
+                                              output_id) {
     default_opts <- list(
       close_button = FALSE,
       layout = "1|23",

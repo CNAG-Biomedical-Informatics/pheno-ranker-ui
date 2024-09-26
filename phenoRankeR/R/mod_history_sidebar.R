@@ -34,7 +34,8 @@ mod_history_sidebar_ui <- function(id) {
     SimulateHistorySidebar = "sim_mode",
     PatientHistorySidebar = "patient_mode",
     CohortHistorySidebar = "cohort_mode",
-    InputExamplesRetrievalHistorySidebar = "input_examples"
+    InputExamplesRetrievalHistorySidebar = "input_examples",
+    BeaconApiHistorySidebar = "beacon_api"
   )
 
   mode <- id_mode_mapping[id]
@@ -346,7 +347,8 @@ mod_history_sidebar_server <- function(id, db_conn, user_email) {
         SimulateHistorySidebar = "sim",
         PatientHistorySidebar = "patient",
         CohortHistorySidebar = "cohort",
-        InputExamplesRetrievalHistorySidebar = "input_examples"
+        InputExamplesRetrievalHistorySidebar = "input_examples",
+        BeaconApiHistorySidebar = "beacon_api"
       )
 
       mode <- namespace_to_mode_mapping[namespace]
@@ -413,7 +415,8 @@ mod_history_sidebar_server <- function(id, db_conn, user_email) {
         SimulateHistorySidebar = "sim",
         PatientHistorySidebar = "patient",
         CohortHistorySidebar = "cohort",
-        InputExamplesRetrievalHistorySidebar = "input_examples"
+        InputExamplesRetrievalHistorySidebar = "input_examples",
+        BeaconApiHistorySidebar = "beacon_api"
       )
 
       mode <- namespace_to_mode_mapping[namespace]

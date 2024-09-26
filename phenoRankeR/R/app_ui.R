@@ -78,6 +78,16 @@ app_ui <- function(request) {
           )
         ),
         tabPanel(
+          title = "Query Beacon API",
+          value = "beacon_api",
+          mod_history_sidebar_ui(
+            "BeaconApiHistorySidebar"
+          ),
+          mod_beacon_api_page_ui(
+            "beacon_api"
+          )
+        ),
+        tabPanel(
           title = "Simulate BFF/PXF",
           value = "sim",
           mod_history_sidebar_ui(
