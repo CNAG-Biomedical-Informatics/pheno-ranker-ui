@@ -65,7 +65,7 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
-      Shiny.setInputValue("input_examples-loader_beacon_api-elementFound", Math.random());
+      Shiny.setInputValue("beacon_api-loader_beacon_api-elementFound", Math.random());
       Shiny.setInputValue("input_examples-loader_example_retrieval-elementFound", Math.random());
       Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
       Shiny.setInputValue("conv_mode-loader_conv-elementFound", Math.random());
