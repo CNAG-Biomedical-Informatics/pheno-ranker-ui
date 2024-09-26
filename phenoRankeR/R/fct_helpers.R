@@ -1011,7 +1011,8 @@ observeBeaconApiDataChange <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            rv_general$user_dirs$output$beacon_api,
+            rv_general$user_dirs$output$beacon,
+            "/",
             queryId,
             ".",
             rv$inputFormat,
@@ -1125,7 +1126,6 @@ observeExampleDataChange <- function(
           paste0(
             rv_general$user_dirs$output$examples,
             "/",
-            # exampleDataInputDir,
             retrievalId,
             ".",
             rv$inputFormat,

@@ -56,7 +56,7 @@ mod_beacon_api_page_ui <- function(id) {
             selectInput(
               ns("beaconSelector"),
               "Public beacon:",
-              c("beacon-spain.ega")
+              c("beacon.biodata.pt")
             )
           ),
           grid_place(
@@ -64,8 +64,8 @@ mod_beacon_api_page_ui <- function(id) {
             div(
               p("Info about the selected beacon:"),
               a("
-                beacon-spain.ega",
-                href = "https://beacon.ega-archive.org",
+                beacon.biodata.pt",
+                href = "https://beacon.biodata.pt",
                 target = "_blank"
               )
             )
@@ -147,8 +147,8 @@ query_beacon_api <- function(queryId, beacon, datasetId, number_of_individuals) 
 
   print("inside query_beacon_api")
 
-  beacon <- "beacon.biodata.pt"
-  beacon <- "beacon-spain.ega-archive.org"
+  # beacon <- "beacon.biodata.pt"
+  beacon <- "beacon-spain.ega-archive.org" # not working
   endpoint <- "api/individuals"
 
   url <- paste0("https://", beacon, "/", endpoint)
