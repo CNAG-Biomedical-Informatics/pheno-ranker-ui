@@ -959,6 +959,10 @@ observeBeaconApiDataChange <- function(
   # input_id <-
   # "patient_beacon_api"
 
+  print("in observeBeaconApiDataChange in fct_helpers.R")
+  print("expected_row_count")
+  print(expected_row_count)
+
   observeEvent(input[[input_id]], {
     rv_beacon_api$queryId <- input[[input_id]]
 

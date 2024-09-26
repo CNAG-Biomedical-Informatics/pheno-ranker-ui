@@ -370,6 +370,7 @@ mod_patient_mode_server <- function(
     session,
     db_conn,
     rv_patient,
+    rv_beacon_api,
     rv_input_examples,
     rv_sim,
     rv_conversion,
@@ -550,7 +551,7 @@ mod_patient_mode_server <- function(
       if (input$patientRankerTargetTabsetPanel == "Beacon API") {
         req(rv_patient$inputFormat)
 
-        if(rv_patient$inputFormat == "pxf") {
+        if (rv_patient$inputFormat == "pxf") {
           showNotification(
             "Beacon API data is only available for BFF format",
             type = "error"
@@ -1459,11 +1460,17 @@ mod_patient_mode_server <- function(
     observeEvent(input$patient_beacon_api_reference, {
       req(input$patient_beacon_api_referece)
       expectedRowCount <- length(input$patient_beacon_api_reference)
+
+      print("observeEvent input$patient_beacon_api_reference")
+      print("expectedRowCount")
+      print(expectedRowCount)
+
       observeBeaconApiDataChange(
         session,
         input,
         output,
         rv_patient,
+        rv_beacon_api,
         rv_general,
         "patient_beacon_api_reference",
         "yamlEditorIdPrefixes",
@@ -1479,6 +1486,7 @@ mod_patient_mode_server <- function(
         input,
         output,
         rv_patient,
+        rv_beacon_api,
         rv_general,
         "patient_beacon_api_target",
         "yamlEditorIdPrefixes",
