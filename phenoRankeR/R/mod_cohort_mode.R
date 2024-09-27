@@ -127,7 +127,7 @@ mod_cohort_mode_ui <- function(id) {
                 )
               )
             ),
-            p("set individuals id prefix for each cohort"),
+            span("set individuals id prefix for each cohort"),
             aceEditor(
               ns("yamlCohortEditorIdPrefixes"),
               value = "",

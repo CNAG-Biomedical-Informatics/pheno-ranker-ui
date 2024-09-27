@@ -47,6 +47,8 @@ mod_patient_mode_ui <- function(id) {
     grid_card(
       area = "opts",
       card_header("Options"),
+      # TODO
+      # missed CSS class to remove the top padding
       grid_container(
         layout = patient_opts_layout,
         gap_size = "0px",
@@ -60,6 +62,8 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Reference(s)",
                 card_body(
+                  style = "padding: 0px;",
+                  span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerReferenceTabsetPanel"),
                     selected = "Upload",
@@ -73,47 +77,32 @@ mod_patient_mode_ui <- function(id) {
                           ".json"
                         )
                       )
+                      # TODO
+                      # add css to remove the bottom margin
                     ),
                     # TODO as soon there is file uploaded
                     # select simulated data should be disabled
                     tabPanel(
                       title = "Beacon API",
-                      grid_container(
-                        layout = c(
-                          "      1fr",
-                          "150px dropdown"
-                        ),
-                        grid_place(
-                          area = "dropdown",
-                          selectInput(
-                            ns("patient_beacon_api_reference"),
-                            "Select cohort(s)",
-                            choices = NULL,
-                            multiple = TRUE
-                          )
-                        )
+                      selectInput(
+                        ns("patient_beacon_api_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     ),
                     tabPanel(
                       title = "Retrieved Examples",
-                      grid_container(
-                        layout = c(
-                          "      1fr",
-                          "150px dropdown"
-                        ),
-                        grid_place(
-                          area = "dropdown",
-                          selectInput(
-                            ns("patient_example_reference"),
-                            "Select cohort(s)",
-                            choices = NULL,
-                            multiple = TRUE
-                          )
-                        )
+                      selectInput(
+                        ns("patient_example_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     ),
                     tabPanel(
                       title = "Simulation",
+                      # TODO drop the grid_container
                       grid_container(
                         layout = c(
                           "     1fr      1fr   ",
@@ -136,13 +125,11 @@ mod_patient_mode_ui <- function(id) {
                     ),
                     tabPanel(
                       title = "Conversion",
-                      card_body(
-                        selectInput(
-                          ns("patient_conv_reference"),
-                          "Select a converted cohort",
-                          choices = NULL,
-                          multiple = TRUE
-                        )
+                      selectInput(
+                        ns("patient_conv_reference"),
+                        "Select a converted cohort",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     )
                   )
@@ -151,6 +138,8 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Target",
                 card_body(
+                  style = "padding: 0px;",
+                  span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerTargetTabsetPanel"),
                     selected = "Upload",
@@ -243,9 +232,7 @@ mod_patient_mode_ui <- function(id) {
                 )
               )
             ),
-            br(),
-            br(),
-            p("set individuals id prefix for each cohort"),
+            span("set individuals id prefix for each cohort"),
             aceEditor(
               ns("yamlEditorIdPrefixes"),
               value = "",

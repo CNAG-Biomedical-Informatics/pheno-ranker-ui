@@ -348,7 +348,6 @@ mod_table_phenoRanking_server <- function(
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
-        # get_golem_options("patientModeOutputFolder"),
         runId,
         "/",
         runId,
@@ -494,8 +493,6 @@ mod_table_phenoHeadsUp_server <- function(
         alignment_file_path <- paste0(
           rv_general$user_dirs$output$pats_ranked,
           "/",
-          # get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients/",
           runId,
           "/",
           runId,
@@ -557,7 +554,7 @@ mod_table_phenoHeadsUp_server <- function(
         ))
       }
 
-      renderTable <- function(output, values) {
+      renderTable <- function(output, values, col_colors) {
         # print("in renderTable")
         # print("values")
         # print(values)
@@ -576,23 +573,57 @@ mod_table_phenoHeadsUp_server <- function(
             )
           )
         })
-        output$phenoHeadsUpTable <- renderDT({
-          datatable(
-            filtered_df,
-            rownames = FALSE,
-            options = list(
-              paging = FALSE,
-              info = FALSE,
-              scrollY = "500px",
-              scrollX = TRUE
+
+        dt <- datatable(
+          filtered_df,
+          rownames = FALSE,
+          options = list(
+            paging = FALSE,
+            info = FALSE,
+            scrollY = "500px",
+            scrollX = TRUE
+          )
+        )
+
+        # convert col_colors to row_colors
+        row_colors <- vector("character", nrow(filtered_df))
+        for (i in 1:nrow(filtered_df)) {
+          row_colors[i] <- col_colors[filtered_df[i, "Indicator"]]
+        }
+
+        # Apply color to each row based on the named list
+        for (i in 1:nrow(filtered_df)) {
+          dt <- do.call(
+            "formatStyle",
+            list(
+              dt,
+              target = "row",
+              backgroundColor = row_colors[i]
             )
           )
+        }
+
+        output$phenoHeadsUpTable <- renderDT({
+          dt
         })
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   datatable(
+        #     filtered_df,
+        #     rownames = FALSE,
+        #     options = list(
+        #       paging = FALSE,
+        #       info = FALSE,
+        #       scrollY = "500px",
+        #       scrollX = TRUE
+        #     )
+        #   )
+        # })
         print("rendered table")
       }
 
       tableVals <- prepareTable(rv_patient, rv_general)
-      renderTable(output, tableVals)
+      renderTable(output, tableVals, rv_patient$col_colors)
     }
 
     if (is.null(rv_patient)) {
