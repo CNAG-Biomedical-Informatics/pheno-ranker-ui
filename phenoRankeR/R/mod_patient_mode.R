@@ -172,62 +172,54 @@ mod_patient_mode_ui <- function(id) {
                     ),
                     tabPanel(
                       title = "Beacon API",
-                      card_body(
-                        selectInput(
-                          ns("patient_beacon_api_target"),
-                          HTML(
-                            "
-                              Select individual<br>
-                              <small>(the first individual will be used)</small>
-                            "
-                          ),
-                          choices = NULL
-                        )
+                      selectInput(
+                        ns("patient_beacon_api_target"),
+                        HTML(
+                          "
+                            Select individual<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     ),
                     tabPanel(
                       title = "Retrieved Examples",
-                      card_body(
-                        selectInput(
-                          ns("patient_example_target"),
-                          HTML(
-                            "
-                              Select individual<br>
-                              <small>(the first individual will be used)</small>
-                            "
-                          ),
-                          choices = NULL
-                        )
+                      selectInput(
+                        ns("patient_example_target"),
+                        HTML(
+                          "
+                            Select individual<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     ),
                     tabPanel(
                       title = "Simulation",
-                      card_body(
-                        selectInput(
-                          ns("patient_sim_target"),
-                          HTML(
-                            "
-                              Select a simulated BFF/PXF<br>
-                              <small>(the first individual will be used)</small>
-                            "
-                          ),
-                          choices = NULL
-                        )
+                      selectInput(
+                        ns("patient_sim_target"),
+                        HTML(
+                          "
+                            Select a simulated BFF/PXF<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     ),
                     tabPanel(
                       title = "Conversion",
-                      card_body(
-                        selectInput(
-                          ns("patient_conv_target"),
-                          HTML(
-                            "
-                              Select a converted target<br>
-                              <small>(the first individual will be used)</small>
-                            "
-                          ),
-                          choices = NULL
-                        )
+                      selectInput(
+                        ns("patient_conv_target"),
+                        HTML(
+                          "
+                            Select a converted target<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     )
                   )
