@@ -84,25 +84,42 @@ mod_patient_mode_ui <- function(id) {
                     # select simulated data should be disabled
                     tabPanel(
                       title = "Beacon API",
-                      selectInput(
-                        ns("patient_beacon_api_reference"),
-                        "Select cohort(s)",
-                        choices = NULL,
-                        multiple = TRUE
+                      grid_container(
+                        layout = c(
+                          "      1fr",
+                          "150px dropdown"
+                        ),
+                        grid_place(
+                          area = "dropdown",
+                          selectInput(
+                            ns("patient_beacon_api_reference"),
+                            "Select cohort(s)",
+                            choices = NULL,
+                            multiple = TRUE
+                          )
+                        )
                       )
                     ),
                     tabPanel(
                       title = "Retrieved Examples",
-                      selectInput(
-                        ns("patient_example_reference"),
-                        "Select cohort(s)",
-                        choices = NULL,
-                        multiple = TRUE
+                      grid_container(
+                        layout = c(
+                          "      1fr",
+                          "150px dropdown"
+                        ),
+                        grid_place(
+                          area = "dropdown",
+                          selectInput(
+                            ns("patient_example_reference"),
+                            "Select cohort(s)",
+                            choices = NULL,
+                            multiple = TRUE
+                          )
+                        )
                       )
                     ),
                     tabPanel(
                       title = "Simulation",
-                      # TODO drop the grid_container
                       grid_container(
                         layout = c(
                           "     1fr      1fr   ",
@@ -125,11 +142,13 @@ mod_patient_mode_ui <- function(id) {
                     ),
                     tabPanel(
                       title = "Conversion",
-                      selectInput(
-                        ns("patient_conv_reference"),
-                        "Select a converted cohort",
-                        choices = NULL,
-                        multiple = TRUE
+                      card_body(
+                        selectInput(
+                          ns("patient_conv_reference"),
+                          "Select a converted cohort",
+                          choices = NULL,
+                          multiple = TRUE
+                        )
                       )
                     )
                   )
@@ -138,7 +157,6 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Target",
                 card_body(
-                  style = "padding: 0px;",
                   span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerTargetTabsetPanel"),
