@@ -623,6 +623,7 @@ observeSimulatedDataChange <- function(
     db_conn,
     rv,
     rv_sim,
+    rv_general,
     input_id,
     yaml_editor_id,
     expected_row_count) {

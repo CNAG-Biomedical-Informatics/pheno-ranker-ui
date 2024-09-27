@@ -1116,6 +1116,7 @@ mod_cohort_mode_server <- function(
         db_conn,
         rv_cohort,
         rv_sim,
+        rv_general,
         "cohort_sim",
         "yamlCohortEditorIdPrefixes",
         expectedRowCount

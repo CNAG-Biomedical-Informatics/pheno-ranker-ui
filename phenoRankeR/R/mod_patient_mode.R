@@ -1571,6 +1571,7 @@ mod_patient_mode_server <- function(
         db_conn,
         rv_patient,
         rv_sim,
+        rv_general,
         "patient_sim_reference",
         "yamlEditorIdPrefixes",
         expectedRowCount
@@ -1589,6 +1590,7 @@ mod_patient_mode_server <- function(
         db_conn,
         rv_patient,
         rv_sim,
+        rv_general,
         "patient_sim_target",
         "yamlEditorIdPrefixes",
         expectedRowCount
