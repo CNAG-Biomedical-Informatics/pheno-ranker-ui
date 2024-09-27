@@ -219,7 +219,8 @@ app_server <- function(input, output, session) {
     ht = NULL,
     blastData = NULL,
     rankingDf = NULL,
-    allowedTerms = NULL
+    allowedTerms = NULL,
+    col_colors = NULL
   )
 
   rv_cohort <- reactiveValues(
