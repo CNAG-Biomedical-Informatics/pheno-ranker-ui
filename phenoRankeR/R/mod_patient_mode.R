@@ -55,6 +55,7 @@ mod_patient_mode_ui <- function(id) {
         grid_card(
           area = "rankerInput",
           card_body(
+            style = "padding-top: 5px; padding-left: 16px;",
             tabsetPanel(
               id = ns("patientRankerTabsetPanel"),
               selected = "Reference(s)",
@@ -62,7 +63,7 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Reference(s)",
                 card_body(
-                  style = "padding: 0px;",
+                  style = "padding-top: 0px; padding-left: 16px;",
                   span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerReferenceTabsetPanel"),
@@ -84,38 +85,20 @@ mod_patient_mode_ui <- function(id) {
                     # select simulated data should be disabled
                     tabPanel(
                       title = "Beacon API",
-                      grid_container(
-                        layout = c(
-                          "      1fr",
-                          "150px dropdown"
-                        ),
-                        grid_place(
-                          area = "dropdown",
-                          selectInput(
-                            ns("patient_beacon_api_reference"),
-                            "Select cohort(s)",
-                            choices = NULL,
-                            multiple = TRUE
-                          )
-                        )
+                      selectInput(
+                        ns("patient_beacon_api_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     ),
                     tabPanel(
                       title = "Retrieved Examples",
-                      grid_container(
-                        layout = c(
-                          "      1fr",
-                          "150px dropdown"
-                        ),
-                        grid_place(
-                          area = "dropdown",
-                          selectInput(
-                            ns("patient_example_reference"),
-                            "Select cohort(s)",
-                            choices = NULL,
-                            multiple = TRUE
-                          )
-                        )
+                      selectInput(
+                        ns("patient_example_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     ),
                     tabPanel(
@@ -123,7 +106,7 @@ mod_patient_mode_ui <- function(id) {
                       grid_container(
                         layout = c(
                           "     1fr      1fr   ",
-                          "150px dropdown radio "
+                          "1fr  dropdown radio "
                         ),
                         grid_place(
                           area = "dropdown",
@@ -158,6 +141,7 @@ mod_patient_mode_ui <- function(id) {
                 title = "Target",
                 card_body(
                   span("Select your data source:"),
+                  style = "padding: 0px;",
                   tabsetPanel(
                     id = ns("patientRankerTargetTabsetPanel"),
                     selected = "Upload",
@@ -250,7 +234,7 @@ mod_patient_mode_ui <- function(id) {
                 )
               )
             ),
-            span("set individuals id prefix for each cohort"),
+            span("Set individuals id prefix for each cohort"),
             aceEditor(
               ns("yamlEditorIdPrefixes"),
               value = "",
