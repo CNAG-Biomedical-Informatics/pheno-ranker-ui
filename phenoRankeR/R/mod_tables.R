@@ -574,51 +574,51 @@ mod_table_phenoHeadsUp_server <- function(
           )
         })
 
-        dt <- datatable(
-          filtered_df,
-          rownames = FALSE,
-          options = list(
-            paging = FALSE,
-            info = FALSE,
-            scrollY = "500px",
-            scrollX = TRUE
-          )
-        )
+        # dt <- datatable(
+        #   filtered_df,
+        #   rownames = FALSE,
+        #   options = list(
+        #     paging = FALSE,
+        #     info = FALSE,
+        #     scrollY = "500px",
+        #     scrollX = TRUE
+        #   )
+        # )
 
-        # convert col_colors to row_colors
-        row_colors <- vector("character", nrow(filtered_df))
-        for (i in 1:nrow(filtered_df)) {
-          row_colors[i] <- col_colors[filtered_df[i, "Indicator"]]
-        }
+        # # convert col_colors to row_colors
+        # row_colors <- vector("character", nrow(filtered_df))
+        # for (i in 1:nrow(filtered_df)) {
+        #   row_colors[i] <- col_colors[filtered_df[i, "Indicator"]]
+        # }
 
-        # Apply color to each row based on the named list
-        for (i in 1:nrow(filtered_df)) {
-          dt <- do.call(
-            "formatStyle",
-            list(
-              dt,
-              target = "row",
-              backgroundColor = row_colors[i]
-            )
-          )
-        }
-
-        output$phenoHeadsUpTable <- renderDT({
-          dt
-        })
-
-        # output$phenoHeadsUpTable <- renderDT({
-        #   datatable(
-        #     filtered_df,
-        #     rownames = FALSE,
-        #     options = list(
-        #       paging = FALSE,
-        #       info = FALSE,
-        #       scrollY = "500px",
-        #       scrollX = TRUE
+        # # Apply color to each row based on the named list
+        # for (i in 1:nrow(filtered_df)) {
+        #   dt <- do.call(
+        #     "formatStyle",
+        #     list(
+        #       dt,
+        #       target = "row",
+        #       backgroundColor = row_colors[i]
         #     )
         #   )
+        # }
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   dt
         # })
+
+        output$phenoHeadsUpTable <- renderDT({
+          datatable(
+            filtered_df,
+            rownames = FALSE,
+            options = list(
+              paging = FALSE,
+              info = FALSE,
+              scrollY = "500px",
+              scrollX = TRUE
+            )
+          )
+        })
         print("rendered table")
       }
 

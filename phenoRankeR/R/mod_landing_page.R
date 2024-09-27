@@ -32,7 +32,7 @@ mod_landing_page_ui <- function(id) {
     layout = c(
       "         1fr           1fr     ",
       "1fr      welcome       welcome ",
-      "200px    patient_mode  cohort_modes",
+      "200px    cohort_mode   patient_mode",
       "600px    new_user      new_user",
       "5px      version       version "
     ),
@@ -49,22 +49,22 @@ mod_landing_page_ui <- function(id) {
       )
     ),
     grid_card(
+      area = "cohort_mode",
+      card_header("Intra-/Inter-cohort comparison"),
+      card_body(
+        actionButton(
+          ns("navigateToCohortMode2"),
+          "Go to Cohort comparison",
+        )
+      )
+    ),
+    grid_card(
       area = "patient_mode",
       card_header("Patient vs Reference Cohort(s)"),
       card_body(
         actionButton(
           ns("navigateToPatientMode2"),
           "Go to Patient vs Reference Cohort(s) comparison",
-        )
-      )
-    ),
-    grid_card(
-      area = "cohort_modes",
-      card_header("Intra-/Inter-cohort comparison"),
-      card_body(
-        actionButton(
-          ns("navigateToCohortMode2"),
-          "Go to Cohort comparison",
         )
       )
     ),
