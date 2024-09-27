@@ -15,7 +15,7 @@
 #' @importFrom utils write.csv
 
 mod_patient_mode_layout <- c(
-  "         450px   1fr           40px",
+  "         480px   1fr           40px",
   "35px     btn     phenoBlast    btn_show_patient_history",
   "320px    opts    phenoBlast    btn_show_patient_history",
   "1fr      opts    phenoHeadsUp  btn_show_patient_history",

@@ -14,14 +14,14 @@
 #' @importFrom utils write.csv
 
 cohort_layout <- c(
-  "           500px     1fr           40px                    ",
+  "           480px     1fr           40px                    ",
   "35px       btn       tabbedView    btn_show_cohort_history ",
   "1100px     opts      tabbedView    btn_show_cohort_history ",
   "1px        version   version       version                 "
 )
 
 cohort_opts_layout <- c(
-  "         500px        ",
+  "         1fr        ",
   "380px    rankerInput  ",
   "340px    configYamls  ",
   "350px    variables    "
