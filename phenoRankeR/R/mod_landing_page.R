@@ -32,7 +32,7 @@ mod_landing_page_ui <- function(id) {
     layout = c(
       "         1fr           1fr     ",
       "1fr      welcome       welcome ",
-      "200px    cohort_mode   patient_mode",
+      "300px    cohort_mode   patient_mode",
       "600px    new_user      new_user",
       "5px      version       version "
     ),
@@ -55,6 +55,10 @@ mod_landing_page_ui <- function(id) {
         actionButton(
           ns("navigateToCohortMode2"),
           "Go to Cohort comparison",
+        ),
+        img(
+          src = "www/images/cohort_mode_icon.svg",
+          style = "width: 100%;"
         )
       )
     ),
@@ -65,6 +69,10 @@ mod_landing_page_ui <- function(id) {
         actionButton(
           ns("navigateToPatientMode2"),
           "Go to Patient vs Reference Cohort(s) comparison",
+        ),
+        img(
+          src = "www/images/patient_mode_icon.svg",
+          style = "width: 100%;"
         )
       )
     ),
