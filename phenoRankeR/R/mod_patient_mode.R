@@ -184,7 +184,12 @@ mod_patient_mode_ui <- function(id) {
                       card_body(
                         selectInput(
                           ns("patient_beacon_api_target"),
-                          "Select individual",
+                          HTML(
+                            "
+                              Select individual<br>
+                              <small>(the first individual will be used)</small>
+                            "
+                          ),
                           choices = NULL
                         )
                       )
@@ -194,7 +199,12 @@ mod_patient_mode_ui <- function(id) {
                       card_body(
                         selectInput(
                           ns("patient_example_target"),
-                          "Select individual",
+                          HTML(
+                            "
+                              Select individual<br>
+                              <small>(the first individual will be used)</small>
+                            "
+                          ),
                           choices = NULL
                         )
                       )
@@ -204,7 +214,12 @@ mod_patient_mode_ui <- function(id) {
                       card_body(
                         selectInput(
                           ns("patient_sim_target"),
-                          "Select a simulated BFF/PXF",
+                          HTML(
+                            "
+                              Select a simulated BFF/PXF<br>
+                              <small>(the first individual will be used)</small>
+                            "
+                          ),
                           choices = NULL
                         )
                       )
