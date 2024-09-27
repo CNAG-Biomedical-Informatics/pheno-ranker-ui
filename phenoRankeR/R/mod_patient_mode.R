@@ -15,7 +15,7 @@
 #' @importFrom utils write.csv
 
 mod_patient_mode_layout <- c(
-  "         480px   1fr           40px",
+  "         550px   1fr           40px",
   "35px     btn     phenoBlast    btn_show_patient_history",
   "320px    opts    phenoBlast    btn_show_patient_history",
   "1fr      opts    phenoHeadsUp  btn_show_patient_history",
@@ -140,8 +140,8 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Target",
                 card_body(
+                  style = "padding-top: 0px; padding-left: 16px;",
                   span("Select your data source:"),
-                  style = "padding: 0px;",
                   tabsetPanel(
                     id = ns("patientRankerTargetTabsetPanel"),
                     selected = "Upload",
