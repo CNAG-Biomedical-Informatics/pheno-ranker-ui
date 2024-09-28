@@ -15,19 +15,23 @@ function waitForElementWithText(selector, text, callback) {
 
 
 $(document).ready(function () {
+
+  const docsUrl = 'https://cnag-biomedical-informatics.github.io/pheno-ranker-ui';
+  const githubUrl = 'https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui'
   
   const docsLink = document.createElement('a');
-  docsLink.href = 'https://cnag-biomedical-informatics.github.io/pheno-ranker-ui';
+  docsLink.href = docsUrl;
   docsLink.target = '_blank';
   docsLink.innerHTML = '<i class="fas fa-book-open-reader"></i>';
   docsLink.style = 'font-size: 2.5em; color: black;';
 
   const githubLink = document.createElement('a');
-  githubLink.href = 'https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui';
+  githubLink.href = githubUrl;
   githubLink.target = '_blank';
   githubLink.innerHTML = '<i class="fab fa-github"></i>';
   githubLink.style = 'font-size: 2.5em; color: black;';
 
+  // add icons to the header
   const header = document.querySelector('.navbar > .container-fluid');
   if (!header.querySelector('.fa-book-open-reader')) {
     header.appendChild(docsLink);
@@ -35,6 +39,39 @@ $(document).ready(function () {
 
   if (!header.querySelector('.fa-github')) {
     header.appendChild(githubLink);
+  }
+
+  const docsLinkLi = document.createElement('li');
+  const githubLinkLi = document.createElement('li');
+
+  function addToCollapsedNavbar(docsLinkLi, githubLinkLi) {
+    const collapsedNavbar = document.querySelector('ul.nav.navbar-nav.nav-underline.shiny-tab-input.shiny-bound-input');
+
+    console.log(collapsedNavbar);
+    
+    // only add the links without the icons
+    const docsLinkA = document.createElement('a');
+    docsLinkA.href = docsUrl;
+    docsLinkA.target = '_blank';
+    docsLinkA.innerHTML = 'Documentation';
+    docsLinkLi.style = 'display: None;';
+    docsLinkLi.appendChild(docsLinkA);
+
+    
+    const githubLinkA = document.createElement('a');
+    githubLinkA.href = githubUrl;
+    githubLinkA.target = '_blank';
+    githubLinkA.innerHTML = 'GitHub Repository';
+    githubLinkLi.style = 'display: None;';
+    githubLinkLi.appendChild(githubLinkA);
+    
+    if (!collapsedNavbar.querySelector('a[href="' + docsUrl + '"]')) {
+      collapsedNavbar.appendChild(docsLinkLi);
+    }
+
+    if (!collapsedNavbar.querySelector('a[href="' + githubUrl + '"]')) {
+      collapsedNavbar.appendChild(githubLinkLi);
+    }
   }
 
   // Function to wait for the parentElement to appear
@@ -48,6 +85,12 @@ $(document).ready(function () {
           if (parentElement) {
             // Call the callback function with the parentElement
             callback(parentElement);
+            // Add the links to the collapsed navbar
+            addToCollapsedNavbar(
+              docsLinkLi,
+              githubLinkLi
+            );
+
 
             // Stop observing the document once the parent element has been found
             observer.disconnect();
@@ -60,20 +103,24 @@ $(document).ready(function () {
     parentObserver.observe(document.body, { childList: true, subtree: true });
   }
 
-  function hideShowIcons(navbarCollapsed) {
+  function hideShowIconsOrLinks(navbarCollapsed) {
     if (navbarCollapsed) {
       githubLink.style.display = 'none';
       docsLink.style.display = 'none';
+      docsLinkLi.style.display = 'block';
+      githubLinkLi.style.display = 'block';
     }
     else {
       githubLink.style.display = 'block';
       docsLink.style.display = 'block';
+      docsLinkLi.style.display = 'none';
+      githubLinkLi.style.display = 'none';
     }
   }
 
   function checkButtonVisibility(button) {
     const isVisible = button.clientHeight > 0 && button.clientWidth > 0;
-    hideShowIcons(isVisible);
+    hideShowIconsOrLinks(isVisible);
   }
 
   // Function to observe the display change of the button
