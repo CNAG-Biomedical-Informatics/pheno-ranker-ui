@@ -57,7 +57,7 @@ mod_landing_page_ui <- function(id) {
       "         1fr           1fr     ",
       "1fr      welcome       welcome ",
       "300px    cohort_mode   patient_mode",
-      "600px    new_user      new_user",
+      "500px    new_user      new_user",
       "5px      version       version "
     ),
     gap_size = "0px",
