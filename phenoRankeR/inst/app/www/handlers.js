@@ -23,13 +23,13 @@ $(document).ready(function () {
   docsLink.href = docsUrl;
   docsLink.target = '_blank';
   docsLink.innerHTML = '<i class="fas fa-book-open-reader"></i>';
-  docsLink.style = 'font-size: 2.5em; color: black;';
+  docsLink.style = 'font-size: 1.8em; color: black; padding-right: 5px;';
 
   const githubLink = document.createElement('a');
   githubLink.href = githubUrl;
   githubLink.target = '_blank';
   githubLink.innerHTML = '<i class="fab fa-github"></i>';
-  githubLink.style = 'font-size: 2.5em; color: black;';
+  githubLink.style = 'font-size: 1.8em; color: black;';
 
   // add icons to the header
   const header = document.querySelector('.navbar > .container-fluid');
@@ -81,18 +81,15 @@ $(document).ready(function () {
         if (mutation.type === 'childList') {
           // Check if the parent element is now present
           const parentElement = document.querySelector(selector);
+
+          if (!callback) {
+            addToCollapsedNavbar(docsLinkLi, githubLinkLi);
+            observer.disconnect();
+            break;
+          }
           
           if (parentElement) {
-            // Call the callback function with the parentElement
             callback(parentElement);
-            // Add the links to the collapsed navbar
-            addToCollapsedNavbar(
-              docsLinkLi,
-              githubLinkLi
-            );
-
-
-            // Stop observing the document once the parent element has been found
             observer.disconnect();
             break;
           }
@@ -146,7 +143,13 @@ $(document).ready(function () {
   }
 
   // Call the function to wait for the parent element
-  waitForParentElement('.navbar-header', observeButtonVisibility);
+  waitForParentElement(
+    'ul.nav.navbar-nav.nav-underline.shiny-tab-input.shiny-bound-input',
+  );
+  waitForParentElement(
+    '.navbar-header',
+    observeButtonVisibility
+  );
 
   console.log("handlers.js loaded");
   Shiny.addCustomMessageHandler('changeURL', function (message) {

@@ -9,6 +9,7 @@
 #' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
+#' @importFrom bsicons bs_icon
 
 
 render_decision_tree <- function(ns) {
@@ -105,6 +106,8 @@ render_decision_tree <- function(ns) {
         background-color: #e3f2fd;
         color: #1565c0;
         padding: 10px 15px;
+        min-height: 115px;
+        min-width: 115px;
       }
       .label {
         position: absolute;
@@ -134,10 +137,10 @@ render_decision_tree <- function(ns) {
         flex: 0 0 auto;
       }
       .bff {
-        max-width: 20px;
+        max-height: 50px;
       }
       .pxf {
-        max-width: 20px;
+        max-width: 50px;
       }
       .hover-info {
         display: none;
@@ -224,7 +227,7 @@ render_decision_tree <- function(ns) {
                     class = "icon",
                     tags$i(class = "fas fa-flask")
                   ),
-                  "Simulate BFF/PXF",
+                  HTML("Simulate <br/>BFF/<br/>PXF"),
                   div(
                     class = "hover-info",
                     "Generate a json array of up to 2500 patients
@@ -242,7 +245,9 @@ render_decision_tree <- function(ns) {
                     class = "icon",
                     tags$i(class = "fas fa-hand-pointer")
                   ),
-                  "Get example data",
+                  HTML(
+                    "Get <br/>example <br/>data"
+                  ),
                   div(
                     class = "hover-info",
                     "Get example data from public sources like the
@@ -270,24 +275,51 @@ render_decision_tree <- function(ns) {
                   tags$a(
                     href = "#",
                     class = "process",
-                    div(
-                      class = "row",
-                      div(
-                        class = "column",
-                        tags$img(
-                          src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4",
+                    # div(
+                    #   class = "icon",
+                    #   bs_icon(
+                    #     "filetype-json",
+                    #   ),
+                    # ),
+                    grid_container(
+                      layout = c(
+                        "     1fr 1fr  ",
+                        "1fr  bff  pxf  "
+                      ),
+                      gap_size = "0px",
+                      grid_place(
+                        area = "bff",
+                        img(
+                          src = "https://beacon.biodata.pt/static/beacon/img/beacon_logo.png",
                           class = "bff"
                         )
                       ),
-                      div(
-                        class = "column",
-                        tags$img(
+                      grid_place(
+                        area = "pxf",
+                        img(
                           src = "https://avatars.githubusercontent.com/u/17553567?s=200&v=4",
                           class = "pxf"
                         )
                       )
                     ),
-                    "BFF/PXF",
+                    # div(
+                    #   class = "row",
+                    #   div(
+                    #     class = "column",
+                    #     tags$img(
+                    #       src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4",
+                    #       class = "bff"
+                    #     )
+                    #   ),
+                    #   div(
+                    #     class = "column",
+                    #     tags$img(
+                    #       src = "https://avatars.githubusercontent.com/u/17553567?s=200&v=4",
+                    #       class = "pxf"
+                    #     )
+                    #   )
+                    # ),
+                    HTML("BFF/PXF</br>(JSON)"),
                     div(
                       class = "hover-info",
                       p("Formats supported out of the box"),
@@ -338,7 +370,7 @@ render_decision_tree <- function(ns) {
                       class = "icon",
                       tags$i(class = "fas fa-file-csv")
                     ),
-                    "generic CSV",
+                    "generic tabular data (CSV)",
                     div(
                       class = "hover-info",
                       "Upload your own csv file and convert it
@@ -405,7 +437,7 @@ grid_layout <- new_gridlayout(
       "       250px            1fr     ",
       "1fr    explanation      tree    "
     ),
-    width_bounds =  c(max = 1000)
+    width_bounds =  c(max = 1100)
   )
 )
 
