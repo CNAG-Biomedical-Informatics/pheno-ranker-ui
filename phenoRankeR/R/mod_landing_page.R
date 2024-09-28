@@ -16,6 +16,12 @@
 
 # Utility function to create a card with an action button and image
 create_mode_card <- function(ns, area, header, button_id, button_text, img_src) {
+  
+  img_style <- "height: 200px; margin-top: -12px;"
+  if (area == "patient_mode") {
+    img_style <- "height: 150px; margin-top: 37px;"
+  }
+  
   grid_card(
     area = area,
     card_header(header),
@@ -26,7 +32,10 @@ create_mode_card <- function(ns, area, header, button_id, button_text, img_src) 
         button_text,
         style = "background-color: #1976d2; color: white;"
       ),
-      img(src = img_src, style = "height: 200px;")
+      img(
+        src = img_src,
+        style = img_style
+      )
     )
   )
 }
@@ -68,15 +77,15 @@ mod_landing_page_ui <- function(id) {
       "cohort_mode",
       "Intra-/Inter-cohort comparison",
       "navigateToCohortMode2",
-      "Go to Cohort comparison",
+      "Go to Cohort mode",
       "www/images/cohort_mode_icon.svg"
     ),
-    create__mode_card(
+    create_mode_card(
       ns,
       "patient_mode",
       "Patient vs Reference Cohort(s)",
       "navigateToPatientMode2",
-      "Go to Patient vs Reference Cohort(s) comparison",
+      "Go to Patient mode",
       "www/images/patient_mode_icon.svg"
     ),
     grid_card(
