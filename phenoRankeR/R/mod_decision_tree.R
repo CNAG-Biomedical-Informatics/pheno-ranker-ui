@@ -397,20 +397,22 @@ render_decision_tree <- function(ns) {
   )
 }
 
+grid_layout <- new_gridlayout(
+  c("explanation tree"),
+  col_sizes = c("610px", "1fr"),
+  alternate_layouts = list(
+    layout = c(
+      "       250px            1fr     ",
+      "1fr    explanation      tree    "
+    ),
+    width_bounds =  c(max = 1000)
+  )
+)
+
 mod_decision_tree_ui <- function(id, ns) {
   card_body(
     grid_container(
-      new_gridlayout(
-        c("explanation tree"),
-        col_sizes = c("610px", "1fr"),
-        alternate_layouts = list(
-          layout = c(
-            "       200px            1fr     ",
-            "1fr    explanation      tree    "
-          ),
-          width_bounds =  c(max = 600)
-        )
-      ),
+      layout = grid_layout,
       gap_size = "0px",
       grid_place(
         area = "explanation",
