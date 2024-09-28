@@ -15,6 +15,95 @@ function waitForElementWithText(selector, text, callback) {
 
 
 $(document).ready(function () {
+  
+  const docsLink = document.createElement('a');
+  docsLink.href = 'https://cnag-biomedical-informatics.github.io/pheno-ranker-ui';
+  docsLink.target = '_blank';
+  docsLink.innerHTML = '<i class="fas fa-book-open-reader"></i>';
+  docsLink.style = 'font-size: 2.5em; color: black;';
+
+  const githubLink = document.createElement('a');
+  githubLink.href = 'https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui';
+  githubLink.target = '_blank';
+  githubLink.innerHTML = '<i class="fab fa-github"></i>';
+  githubLink.style = 'font-size: 2.5em; color: black;';
+
+  const header = document.querySelector('.navbar > .container-fluid');
+  if (!header.querySelector('.fa-book-open-reader')) {
+    header.appendChild(docsLink);
+  }
+
+  if (!header.querySelector('.fa-github')) {
+    header.appendChild(githubLink);
+  }
+
+   // Function to wait for the parentElement to appear
+  function waitForParentElement(selector, callback) {
+    const parentObserver = new MutationObserver((mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          // Check if the parent element is now present
+          const parentElement = document.querySelector(selector);
+          
+          if (parentElement) {
+              console.log("The parent element is now present.");
+              // Call the callback function with the parentElement
+              callback(parentElement);
+
+              // Stop observing the document once the parent element has been found
+              observer.disconnect();
+              break;
+          }
+        }
+      }
+    });
+    // Start observing the document body or a broader container until the parentElement appears
+    parentObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Function to check the visibility of the button
+  function checkButtonVisibility(button) {
+    const isVisible = button.clientHeight > 0 && button.clientWidth > 0;
+    
+    if (isVisible) {
+        console.log("The button with class 'navbar-toggle collapsed' is visible.");
+        // Add any logic you need when the button is visible
+    } else {
+        console.log("The button with class 'navbar-toggle collapsed' is hidden.");
+        // Add any logic you need when the button is hidden
+    }
+  }
+
+  // Function to observe the display change of the button
+  function observeButtonVisibility(parentElement) {
+    // Find the button within the parent element
+
+    console.log(parentElement);
+    const button = parentElement.querySelector('button.navbar-toggle.collapsed');
+    console.log(button);
+    
+    // Create a MutationObserver to monitor attribute changes
+    const buttonObserver = new MutationObserver(() => {
+      checkButtonVisibility(button);
+    });
+    
+    // Start observing the button for attribute changes
+    buttonObserver.observe(
+      button, 
+      { attributes: true, childList: false, subtree: false }
+    );
+    // Check the visibility of the button initially
+    checkButtonVisibility(button);
+
+    // Add a resize event listener to check the visibility of the button
+    window.addEventListener('resize', () => {
+      checkButtonVisibility(button);
+    });
+  }
+
+  // Call the function to wait for the parent element
+  waitForParentElement('.navbar-header', observeButtonVisibility);
+
   console.log("handlers.js loaded");
   Shiny.addCustomMessageHandler('changeURL', function (message) {
     console.log(message);
