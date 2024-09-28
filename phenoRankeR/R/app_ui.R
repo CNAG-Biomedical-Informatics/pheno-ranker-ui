@@ -16,6 +16,12 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     navbarPage(
+      tags$script(
+        HTML("
+          var header = $('.navbar > .container-fluid');
+          header.append('<div style=\"float:right\"><h3>This is R</h3></div>');"
+        )
+      ),
       useShinyjs(),
       id = "nav",
       collapsible = TRUE,
@@ -108,7 +114,7 @@ app_ui <- function(request) {
         title = "About",
         mod_about_page_ui("about_page")
       ),
-      mod_headerbar_ui("headerbar")
+      # mod_headerbar_ui("headerbar")
     )
   )
 }
