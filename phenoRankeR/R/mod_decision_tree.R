@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
 
@@ -22,6 +22,7 @@ render_decision_tree <- function(ns) {
         display: flex;
         justify-content: center;
         padding-left: 0;
+        max-width: 600px;
       }
       .tree li {
         display: inline-block;
@@ -398,192 +399,17 @@ render_decision_tree <- function(ns) {
 
 mod_decision_tree_ui <- function(id, ns) {
   card_body(
-    # tags$head(
-    #   tags$style(HTML("
-    #   .tree ul {
-    #     padding-top: 20px;
-    #     position: relative;
-    #     transition: all 0.5s;
-    #     display: flex;
-    #     justify-content: center;
-    #     padding-left: 0;
-    #   }
-    #   .tree li {
-    #     display: inline-block;
-    #     text-align: center;
-    #     list-style-type: none;
-    #     position: relative;
-    #     padding: 20px 5px 0 5px;
-    #     transition: all 0.5s;
-    #   }
-    #   .tree li::before,
-    #   .tree li::after {
-    #     content: '';
-    #     position: absolute;
-    #     top: 0;
-    #     right: 50%;
-    #     border-top: 1px solid #ccc;
-    #     width: 50%;
-    #     height: 20px;
-    #   }
-    #   .tree li::after {
-    #     right: auto;
-    #     left: 50%;
-    #     border-left: 1px solid #ccc;
-    #   }
-    #   .tree li:only-child::after,
-    #   .tree li:only-child::before {
-    #     display: none;
-    #   }
-    #   .tree li:only-child {
-    #     padding-top: 0;
-    #   }
-    #   .tree li:first-child::before,
-    #   .tree li:last-child::after {
-    #     border: 0 none;
-    #   }
-    #   .tree li:last-child::before {
-    #     border-right: 1px solid #ccc;
-    #     border-radius: 0 5px 0 0;
-    #   }
-    #   .tree li:first-child::after {
-    #     border-radius: 5px 0 0 0;
-    #   }
-    #   .tree ul ul::before {
-    #     content: '';
-    #     position: absolute;
-    #     top: 0;
-    #     border-left: 1px solid #ccc;
-    #     width: 0;
-    #     height: 20px;
-    #   }
-    #   .tree li a {
-    #     border: 1px solid #ccc;
-    #     padding: 10px 15px;
-    #     text-decoration: none;
-    #     color: #666;
-    #     font-size: 14px;
-    #     display: inline-block;
-    #     border-radius: 5px;
-    #     transition: all 0.3s ease;
-    #     background-color: #e3f2fd;
-    #     color: #1565c0;
-    #     position: relative;
-    #     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    #   }
-    #   .tree li a:hover {
-    #     background-color: #c8e4f8;
-    #     color: #000;
-    #     border: 1px solid #94a0b4;
-    #   }
-    #   .icon {
-    #     font-size: 20px;
-    #     margin-right: 5px;
-    #   }
-    #   .decision {
-    #     background-color: #fff9c4;
-    #     color: #f57f17;
-    #     padding: 10px 15px;
-    #   }
-    #   .process {
-    #     background-color: #e3f2fd;
-    #     color: #1565c0;
-    #     padding: 10px 15px;
-    #   }
-    #   .label {
-    #     position: absolute;
-    #     background-color: #fff;
-    #     padding: 2px 5px;
-    #     font-size: 12px;
-    #     color: #333;
-    #     border: 1px solid #ccc;
-    #     border-radius: 3px;
-    #     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    #     z-index: 999;
-    #   }
-    #   .label-no {
-    #     right: 20%;
-    #     top: -5%;
-    #   }
-    #   .label-yes {
-    #     right: 70%;
-    #     top: -5%;
-    #   }
-    #   .row {
-    #     display: flex;
-    #     align-items: center;
-    #     justify-content: flex-start;
-    #   }
-    #   .column {
-    #     flex: 0 0 auto;
-    #   }
-    #   .bff {
-    #     max-width: 20px;
-    #   }
-    #   .pxf {
-    #     max-width: 20px;
-    #   }
-    #   .hover-info {
-    #     display: none;
-    #     position: absolute;
-    #     background-color: #f9f9f9;
-    #     padding: 10px;
-    #     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    #     z-index: 100;
-    #     width: 300px;
-    #     top: 100%; /* Position it below the node */
-    #     left: 50%;
-    #     transform: translateX(-50%); /* Center it */
-    #     text-align: left;
-    #   }
-
-    #   .hover-info .process {
-    #     all: unset;
-    #   }
-
-    #   .hover-info ul::before,
-    #   .hover-info ul::after,
-    #   .hover-info li::before,
-    #   .hover-info li::after {
-    #     display: none;
-    #   }
-
-    #   /* Additional reset for any ul  */
-    #   .hover-info ul {
-    #     padding: 0;
-    #     margin: 0;
-    #   }
-
-    #   .hover-info li {
-    #     padding: 5px;
-    #     margin: 0;
-    #   }
-
-    #   .hover-info li a {
-    #     padding: 0;
-    #     margin: 0;
-    #   }
-    #   /* Only show the hover-info div when hovering over the parent li element */
-    #   .tree li:hover > .hover-info {
-    #     display: block;
-    #   }
-    #   #ga4gh-link {
-    #     display: inline;
-    #     padding: 0 ;
-    #     margin: 0 ;
-    #     border: none;
-    #     background: none;
-    #     box-shadow: none;
-    #     font-weight: normal;
-    #     text-decoration: underline;
-    #     color: #1565c0;
-    #   }
-    # "))
-    # ),
     grid_container(
-      layout = c(
-        "       200px             1fr     ",
-        "1fr     explanation      tree    "
+      new_gridlayout(
+        c("explanation tree"),
+        col_sizes = c("610px", "1fr"),
+        alternate_layouts = list(
+          layout = c(
+            "       200px            1fr     ",
+            "1fr    explanation      tree    "
+          ),
+          width_bounds =  c(max = 600)
+        )
       ),
       gap_size = "0px",
       grid_place(
@@ -599,7 +425,6 @@ mod_decision_tree_ui <- function(id, ns) {
           span(
             "Hint: they are clickable!👇"
           ),
-          style = "text-align: top;"
         )
       ),
       grid_place(
