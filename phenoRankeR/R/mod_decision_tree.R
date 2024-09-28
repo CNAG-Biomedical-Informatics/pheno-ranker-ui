@@ -117,7 +117,7 @@ render_decision_tree <- function(ns) {
         border: 1px solid #ccc;
         border-radius: 3px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 999;
+        z-index: 99;
       }
       .label-no {
         right: 5%;
@@ -141,9 +141,8 @@ render_decision_tree <- function(ns) {
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         z-index: 100;
         width: 300px;
-        top: 100%; /* Position it below the node */
-        left: 50%;
-        transform: translateX(-50%); /* Center it */
+        top: -100%; /* Position it above the node */
+        left: 100%;
         text-align: left;
       }
 
