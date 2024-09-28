@@ -127,14 +127,6 @@ render_decision_tree <- function(ns) {
         right: 65%;
         top: -5%;
       }
-      .row {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-      }
-      .column {
-        flex: 0 0 auto;
-      }
       .bff {
         max-height: 50px;
       }
@@ -274,7 +266,7 @@ render_decision_tree <- function(ns) {
                   tags$a(
                     href = "#",
                     class = "process",
-                    grid_container(
+                    grid_container( 
                       layout = c(
                         "     1fr 1fr  ",
                         "1fr  bff  pxf  "
@@ -295,23 +287,6 @@ render_decision_tree <- function(ns) {
                         )
                       )
                     ),
-                    # div(
-                    #   class = "row",
-                    #   div(
-                    #     class = "column",
-                    #     tags$img(
-                    #       src = "https://avatars.githubusercontent.com/u/33450937?s=48&v=4",
-                    #       class = "bff"
-                    #     )
-                    #   ),
-                    #   div(
-                    #     class = "column",
-                    #     tags$img(
-                    #       src = "https://avatars.githubusercontent.com/u/17553567?s=200&v=4",
-                    #       class = "pxf"
-                    #     )
-                    #   )
-                    # ),
                     HTML("BFF/PXF</br>(JSON)"),
                     div(
                       class = "hover-info",
