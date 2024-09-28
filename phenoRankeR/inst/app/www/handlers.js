@@ -37,7 +37,7 @@ $(document).ready(function () {
     header.appendChild(githubLink);
   }
 
-   // Function to wait for the parentElement to appear
+  // Function to wait for the parentElement to appear
   function waitForParentElement(selector, callback) {
     const parentObserver = new MutationObserver((mutationsList, observer) => {
       for (const mutation of mutationsList) {
@@ -46,13 +46,12 @@ $(document).ready(function () {
           const parentElement = document.querySelector(selector);
           
           if (parentElement) {
-              console.log("The parent element is now present.");
-              // Call the callback function with the parentElement
-              callback(parentElement);
+            // Call the callback function with the parentElement
+            callback(parentElement);
 
-              // Stop observing the document once the parent element has been found
-              observer.disconnect();
-              break;
+            // Stop observing the document once the parent element has been found
+            observer.disconnect();
+            break;
           }
         }
       }
@@ -61,28 +60,26 @@ $(document).ready(function () {
     parentObserver.observe(document.body, { childList: true, subtree: true });
   }
 
-  // Function to check the visibility of the button
+  function hideShowIcons(navbarCollapsed) {
+    if (navbarCollapsed) {
+      githubLink.style.display = 'none';
+      docsLink.style.display = 'none';
+    }
+    else {
+      githubLink.style.display = 'block';
+      docsLink.style.display = 'block';
+    }
+  }
+
   function checkButtonVisibility(button) {
     const isVisible = button.clientHeight > 0 && button.clientWidth > 0;
-    
-    if (isVisible) {
-        console.log("The button with class 'navbar-toggle collapsed' is visible.");
-        // Add any logic you need when the button is visible
-    } else {
-        console.log("The button with class 'navbar-toggle collapsed' is hidden.");
-        // Add any logic you need when the button is hidden
-    }
+    hideShowIcons(isVisible);
   }
 
   // Function to observe the display change of the button
   function observeButtonVisibility(parentElement) {
-    // Find the button within the parent element
-
-    console.log(parentElement);
     const button = parentElement.querySelector('button.navbar-toggle.collapsed');
-    console.log(button);
     
-    // Create a MutationObserver to monitor attribute changes
     const buttonObserver = new MutationObserver(() => {
       checkButtonVisibility(button);
     });
@@ -92,10 +89,10 @@ $(document).ready(function () {
       button, 
       { attributes: true, childList: false, subtree: false }
     );
-    // Check the visibility of the button initially
+    // initial visibility check
     checkButtonVisibility(button);
 
-    // Add a resize event listener to check the visibility of the button
+    // check visibility on resize
     window.addEventListener('resize', () => {
       checkButtonVisibility(button);
     });
