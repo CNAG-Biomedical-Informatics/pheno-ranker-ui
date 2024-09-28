@@ -856,6 +856,12 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "input_examples")
   })
 
+  observeEvent(input[["landing_page-navigateToBeaconAPIs"]], {
+    print("navigate to beacon api")
+    updateNavbarPage(session, "nav", "beacon_api")
+  })
+
+
   observeEvent(input[["landing_page-navigateToConverter"]], {
     updateNavbarPage(session, "nav", "conv")
   })

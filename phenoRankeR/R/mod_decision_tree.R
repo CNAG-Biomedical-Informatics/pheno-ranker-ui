@@ -8,7 +8,7 @@
 #'
 #' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom bslib card_header card_body
-#' @importFrom shiny NS actionButton
+#' @importFrom shiny NS actionButton icon
 
 
 render_decision_tree <- function(ns) {
@@ -104,7 +104,6 @@ render_decision_tree <- function(ns) {
       .process {
         background-color: #e3f2fd;
         color: #1565c0;
-        padding: 10px 15px;
         min-height: 115px;
         min-width: 115px;
       }
@@ -141,8 +140,8 @@ render_decision_tree <- function(ns) {
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         z-index: 100;
         width: 300px;
-        top: -100%; /* Position it above the node */
-        left: 100%;
+        top: -120%; /* Position it on the height of the node */
+        left: 100%; /* Position it to the right of the node */
         text-align: left;
       }
 
@@ -176,7 +175,8 @@ render_decision_tree <- function(ns) {
       .tree li:hover > .hover-info {
         display: block;
       }
-      #ga4gh-link {
+      
+      .hover-info .link {
         display: inline;
         padding: 0 ;
         margin: 0 ;
@@ -212,12 +212,21 @@ render_decision_tree <- function(ns) {
               ),
               tags$ul(
                 tags$li(tags$a(
-                  href = "#", class = "process",
-                  div(
-                    class = "icon",
-                    tags$i(class = "fas fa-flask")
+                  style = "padding: 0;",
+                  actionButton(
+                    ns("navigateToSimulator"),
+                    class = "process",
+                    icon = icon(
+                      "flask",
+                      class = "icon"
+                    ),
+                    # )
+                    # div(
+                    #   class = "icon",
+                    #   tags$i(class = "fas fa-flask")
+                    # ),
+                    HTML("Simulate <br/>BFF/<br/>PXF"),
                   ),
-                  HTML("Simulate <br/>BFF/<br/>PXF"),
                   div(
                     class = "hover-info",
                     "Generate a json array of up to 2500 patients
@@ -226,8 +235,14 @@ render_decision_tree <- function(ns) {
                   you can also provide a list of diseases, phenotypic features
                   and treatments that you would like to be included
                   in the simulated data.",
-                    tags$a(href = "#", "learn more")
-                  )
+                    tags$a(href = "#", "learn more"),
+                    "or jump right in!",
+                    actionButton(
+                      ns("navigateToSimulator"),
+                      "Simulate",
+                      style = "width: 100%;"
+                    )
+                  ),
                 )),
                 tags$li(tags$a(
                   href = "#", class = "process",
@@ -241,10 +256,21 @@ render_decision_tree <- function(ns) {
                   div(
                     class = "hover-info",
                     "Get example data from public sources like the
-                  Phenopacket store",
+                  Phenopacket store or public Beacon APIs.",
                     tags$a(
                       href = "#",
                       "learn more"
+                    ),
+                    "or jump right in!",
+                    actionButton(
+                      ns("navigateToExamples"),
+                      "Get example data",
+                      style = "width: 100%;"
+                    ),
+                    actionButton(
+                      ns("navigateToBeaconAPIs"),
+                      "Query Beacon API",
+                      style = "width: 100%;"
                     )
                   )
                 ))
@@ -303,11 +329,11 @@ render_decision_tree <- function(ns) {
                         )
                       ),
                       span(
-                        "Both are data exchange formats established by",
+                        "Both are data exchange formats established by Global Alliance for Genomics and Health",
                         tags$a(
                           href = "https://ga4gh.org/",
-                          "GA4GH",
-                          id = "ga4gh-link"
+                          class = "link",
+                          "(GA4GH)",
                         )
                       ),
                       tags$a(
