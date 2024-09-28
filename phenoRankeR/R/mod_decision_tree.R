@@ -9,7 +9,6 @@
 #' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom bslib card_header card_body
 #' @importFrom shiny NS actionButton
-#' @importFrom bsicons bs_icon
 
 
 render_decision_tree <- function(ns) {
@@ -121,11 +120,11 @@ render_decision_tree <- function(ns) {
         z-index: 999;
       }
       .label-no {
-        right: 20%;
+        right: 5%;
         top: -5%;
       }
       .label-yes {
-        right: 70%;
+        right: 65%;
         top: -5%;
       }
       .row {
@@ -275,12 +274,6 @@ render_decision_tree <- function(ns) {
                   tags$a(
                     href = "#",
                     class = "process",
-                    # div(
-                    #   class = "icon",
-                    #   bs_icon(
-                    #     "filetype-json",
-                    #   ),
-                    # ),
                     grid_container(
                       layout = c(
                         "     1fr 1fr  ",
@@ -290,14 +283,14 @@ render_decision_tree <- function(ns) {
                       grid_place(
                         area = "bff",
                         img(
-                          src = "https://beacon.biodata.pt/static/beacon/img/beacon_logo.png",
+                          src = "www/img/beacon_logo.png",
                           class = "bff"
                         )
                       ),
                       grid_place(
                         area = "pxf",
                         img(
-                          src = "https://avatars.githubusercontent.com/u/17553567?s=200&v=4",
+                          src = "www/img/PhenoPackets_Logo.png",
                           class = "pxf"
                         )
                       )
@@ -437,7 +430,7 @@ grid_layout <- new_gridlayout(
       "       250px            1fr     ",
       "1fr    explanation      tree    "
     ),
-    width_bounds =  c(max = 1100)
+    width_bounds = c(max = 1100)
   )
 )
 

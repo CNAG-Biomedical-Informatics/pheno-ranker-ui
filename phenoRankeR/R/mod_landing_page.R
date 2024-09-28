@@ -78,7 +78,7 @@ mod_landing_page_ui <- function(id) {
       "Intra-/Inter-cohort comparison",
       "navigateToCohortMode2",
       "Go to Cohort mode",
-      "www/images/cohort_mode_icon.svg"
+      "www/img/cohort_mode_icon.svg"
     ),
     create_mode_card(
       ns,
@@ -86,7 +86,7 @@ mod_landing_page_ui <- function(id) {
       "Patient vs Reference Cohort(s)",
       "navigateToPatientMode2",
       "Go to Patient mode",
-      "www/images/patient_mode_icon.svg"
+      "www/img/patient_mode_icon.svg"
     ),
     grid_card(
       area = "new_user",
