@@ -16,12 +16,12 @@
 
 # Utility function to create a card with an action button and image
 create_mode_card <- function(ns, area, header, button_id, button_text, img_src) {
-  
+
   img_style <- "height: 200px; margin-top: -12px;"
   if (area == "patient_mode") {
     img_style <- "height: 150px; margin-top: 37px;"
   }
-  
+
   grid_card(
     area = area,
     card_header(header),

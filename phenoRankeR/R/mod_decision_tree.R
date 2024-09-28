@@ -341,7 +341,6 @@ render_decision_tree <- function(ns) {
                         "learn more"
                       ),
                       p("or jump right in!"),
-                      # two buttons one for patient mode and one for cohort mode
                       actionButton(
                         ns("navigateToPatientMode"),
                         "Patient vs Reference Cohort(s)",
@@ -450,7 +449,7 @@ mod_decision_tree_ui <- function(id, ns) {
             "Hover over the bottom nodes to learn more💡"
           ),
           span(
-            "Hint: they are clickable!👇"
+            "Hint: certain nodes are clickable!👇"
           ),
         )
       ),
