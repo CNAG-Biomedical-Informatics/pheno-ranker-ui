@@ -409,7 +409,7 @@ app_server <- function(input, output, session) {
       )
 
       mod_json_viewer_server(
-        "beacon_api-json_viewer_beacon_api",
+        "beacon_api_mode-json_viewer_beacon_api",
         toupper(file_type),
         rv_beacon_api$beaconApiResult,
         rv_beacon_api$beaconApiResult,
@@ -474,7 +474,7 @@ app_server <- function(input, output, session) {
       )
 
       mod_json_viewer_server(
-        "input_examples-json_viewer_input_examples",
+        "input_examples_mode-json_viewer_input_examples",
         toupper(file_type),
         rv_input_examples$inputExamples,
         rv_input_examples$inputExamples,

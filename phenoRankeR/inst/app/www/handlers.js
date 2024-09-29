@@ -175,12 +175,12 @@ $(document).ready(function () {
 
   shinyjs.beaconApiRequestTriggered = function () {
     console.log("setBeaconApiRequestTriggered");
-    Shiny.setInputValue("beacon_api-queryBeaconApiClicked", Math.random());
+    Shiny.setInputValue("beacon_api_mode-queryBeaconApiClicked", Math.random());
   };
 
   shinyjs.exampleRequestTriggered = function () {
     console.log("setExampleRequestTriggered");
-    Shiny.setInputValue("input_examples-getExampleInputClicked", Math.random());
+    Shiny.setInputValue("input_examples_mode-getExampleInputClicked", Math.random());
   };
 
   shinyjs.conversionStartTriggered = function () {
@@ -201,8 +201,8 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler("triggerWaitForElement", function (message) {
     console.log("Waiting for:", message.text, "in element:", message.element);
     waitForElementWithText(message.element, message.text, function (element) {
-      Shiny.setInputValue("beacon_api-loader_beacon_api-elementFound", Math.random());
-      Shiny.setInputValue("input_examples-loader_example_retrieval-elementFound", Math.random());
+      Shiny.setInputValue("beacon_api_mode-loader_beacon_api-elementFound", Math.random());
+      Shiny.setInputValue("input_examples_mode-loader_example_retrieval-elementFound", Math.random());
       Shiny.setInputValue("sim_mode-loader_simulate-elementFound", Math.random());
       Shiny.setInputValue("conv_mode-loader_conv-elementFound", Math.random());
       Shiny.setInputValue("cohort_mode-loader_cohort_mode-elementFound", Math.random());
