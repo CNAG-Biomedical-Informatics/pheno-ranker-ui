@@ -450,6 +450,7 @@ mod_decision_tree_ui <- function(id, ns) {
           span(
             "Hint: certain nodes are clickable!👇"
           ),
+          style = "min-height: 425px;"
         )
       ),
       grid_place(
