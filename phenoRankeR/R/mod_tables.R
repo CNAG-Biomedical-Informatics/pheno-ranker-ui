@@ -585,12 +585,56 @@ mod_table_phenoHeadsUp_server <- function(
         #   )
         # )
 
+        print("col_colors")
+        print(col_colors)
+
+        print("filtered_df")
+        print(filtered_df)
+
         # # convert col_colors to row_colors
         # row_colors <- vector("character", nrow(filtered_df))
         # for (i in 1:nrow(filtered_df)) {
         #   row_colors[i] <- col_colors[filtered_df[i, "Indicator"]]
         # }
 
+        # add a new column to the data frame with the colors
+        temp_df <- filtered_df
+
+        # Clean the labels to avoid mismatches
+        temp_df$label_cleaned <- trimws(filtered_df$Label) # Remove leading/trailing whitespace
+        temp_df$label_cleaned <- tolower(filtered_df$Label)
+        temp_df$label_cleaned <- gsub("\\.", "-", temp_df$label_cleaned)
+        temp_df$label_cleaned <- gsub(":", "-", temp_df$label_cleaned)
+        temp_df$label_cleaned <- gsub("\\s+", "-", temp_df$label_cleaned) # Replace one or more spaces with a hyphen
+        temp_df$label_cleaned <- gsub("\\(", "-", temp_df$label_cleaned)
+        temp_df$label_cleaned <- gsub("\\)", "-", temp_df$label_cleaned)
+
+        # Ensure col_colors names are also cleaned in the same way
+        names(col_colors) <- tolower(names(col_colors))
+        names(col_colors) <- gsub("^x", "", names(col_colors))
+        names(col_colors) <- gsub("\\.", "-", names(col_colors))  # Replace dots with hyphens
+        names(col_colors) <- gsub("\\s+", "-", names(col_colors)) # Replace one or more spaces with a hyphen
+        names(col_colors) <- trimws(names(col_colors))
+
+        print("names(col_colors)")
+        print(names(col_colors))
+
+        temp_df$color <- col_colors[temp_df$label_cleaned]
+
+        print("temp_df")
+        print(temp_df)
+
+        # apply color to each row based on the named list
+        for (i in 1:nrow(temp_df)) {
+          dt <- do.call(
+            "formatStyle",
+            list(
+              filtered_df[i, ],
+              target = "row",
+              backgroundColor = temp_df[i, "color"]
+            )
+          )
+        }
         # # Apply color to each row based on the named list
         # for (i in 1:nrow(filtered_df)) {
         #   dt <- do.call(
@@ -603,13 +647,9 @@ mod_table_phenoHeadsUp_server <- function(
         #   )
         # }
 
-        # output$phenoHeadsUpTable <- renderDT({
-        #   dt
-        # })
-
         output$phenoHeadsUpTable <- renderDT({
           datatable(
-            filtered_df,
+            dt,
             rownames = FALSE,
             options = list(
               paging = FALSE,
@@ -619,6 +659,19 @@ mod_table_phenoHeadsUp_server <- function(
             )
           )
         })
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   datatable(
+        #     filtered_df,
+        #     rownames = FALSE,
+        #     options = list(
+        #       paging = FALSE,
+        #       info = FALSE,
+        #       scrollY = "500px",
+        #       scrollX = TRUE
+        #     )
+        #   )
+        # })
         print("rendered table")
       }
 
