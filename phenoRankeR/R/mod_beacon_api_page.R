@@ -47,7 +47,7 @@ mod_beacon_api_page_ui <- function(id) {
             "       1fr           ",
             "85px   beaconSelector ",
             "85px   sourceInfo     ",
-            "200px   addBeacon      ",
+            "200px  addBeacon      ",
             "85px   textInput     ",
             "85px   arraySizeInput"
           ),
@@ -380,13 +380,6 @@ mod_beacon_api_page_server <- function(
         rv_general
       )
 
-      # rv_input_examples$inputExamples <- get_input_examples(
-      #   queryId,
-      #   input$arraySizeInput,
-      #   input$textInput,
-      #   rv_general
-      # )
-
       selectedOutputFormats <- "BFF"
       number_of_individuals <- input$arraySizeInput
 
@@ -403,11 +396,6 @@ mod_beacon_api_page_server <- function(
       settings <- list(
         numberOfIndividuals = number_of_individuals
       )
-
-      # TODO
-      # it would be good to have the
-      # ids more self explanatory
-      # simulationId <- paste0("sim",simulationId)
 
       label <- paste0("Query ID: ", queryId)
 
@@ -426,31 +414,108 @@ mod_beacon_api_page_server <- function(
       )
       print("after store_job_in_db")
 
-      # settings_json <- toJSON(settings)
-      # # print("settings_json")
-      # # print(settings_json)
-
-      # query_string <- "
-      #   INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-      #   VALUES (%s,%s,'%s','%s',cast('%s' as JSONB),'%s')
-      # "
-
-      # if (db_driver == "SQLite") {
-      #   print("db_driver SQLite")
-      #   query_string <- "
-      #     INSERT INTO jobs (run_id, user_id, mode, label, settings, status)
-      #     VALUES (%s,%s,'%s','%s','%s','%s')
-      #   "
-      # }
-
-      # query <- sprintf(
-      #   query_string,
-      #   queryId, 1, "input_examples", label, settings_json, "success"
-      # )
-      # print("query")
-      # print(query)
-      # dbExecute(db_conn, query)
       click("BeaconApiHistorySidebar-btn_show_history")
+    })
+
+    observeEvent(input$addBeacon, {
+      print("observeEvent(input$addBeacon")
+      print(input$urlInput)
+
+      # check if the input is a valid URL
+      if (grepl("^https?://", input$urlInput)) {
+        # Throw error
+      }
+
+      # check if the beacon is already in the database
+      query <- paste0(
+        "SELECT * FROM beacons WHERE url = '",
+        input$urlInput,
+        "'"
+      )
+      res <- dbExecute(db_conn, query)
+
+      # if the beacon is not in the database, add it
+
+      error_out <- FALSE
+      if (nrow(res) == 0) {
+        # try the /api/service-info endpoint
+        url <- paste0(input$urlInput, "/api/service-info")
+        req <- request(url)
+
+        res <- req_perform(
+          req,
+          verbosity = 1
+        )
+
+        resp_body_json <- resp_body_json(res)
+        # check if the response is a valid JSON
+        if (is.null(resp_body_json)) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the response contains the required field version
+        if (!("version" %in% names(resp_body_json))) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the API has the individuals endpoint implemented
+        url <- paste(input$urlInput, "/api/individuals")
+        req <- request(url)
+
+        res <- req_perform(
+          req,
+          verbosity = 1
+        )
+
+        resp_body_json <- resp_body_json(res)
+        # check if the response is a valid JSON
+        if (is.null(resp_body_json)) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the response contains the required field meta
+        if (!("meta" %in% names(resp_body_json))) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if meta contains the required field returnedGranularity
+        if (!("returnedGranularity" %in% names(resp_body_json$meta))) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if returnedGranularity is equal to "record"
+        if (resp_body_json$meta$returnedGranularity != "record") {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the resp_body_json contains the required field response
+        if (!("response" %in% names(resp_body_json))) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the response is not empty
+        if (length(resp_body_json$response) == 0) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        if (!error_out) {
+          query <- sprintf(
+            "INSERT INTO beacons (url, added_by) VALUES ('%s', %d)",
+            input$urlInput,
+            rv_general$user_id
+          )
+          dbExecute(db_conn, query)
+        }
+      }
+
     })
   })
 }
