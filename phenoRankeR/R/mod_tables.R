@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS
-#' @importFrom DT datatable renderDT formatStyle DTOutput styleEqual
+#' @importFrom DT datatable renderDT formatStyle DTOutput styleEqual styleRow
 #' @importFrom grDevices hcl.colors
 #' @importFrom stats setNames
 #' @importFrom magrittr %>%
@@ -245,6 +245,8 @@ mod_table_phenoBlast_server <- function(
             #   regex = TRUE,   # Enable regular expression searching
             #   caseInsensitive = TRUE
             # ),
+            
+            # colors the header row
             initComplete = JS(
               "function(settings, json) {",
               paste0(unlist(lapply(names(col_colors), function(col_name) {
@@ -269,6 +271,7 @@ mod_table_phenoBlast_server <- function(
         # TODO
         # load the col_colors from rv_patient
 
+        # colors the rest of the columns
         for (col_name in names(col_colors)) {
           dt <- do.call(
             "formatStyle",
@@ -637,23 +640,64 @@ mod_table_phenoHeadsUp_server <- function(
           
           # Render the DataTable with custom row styles
           datatable(
-            filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
+            # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
+            filtered_df,
             options = list(
+              rownames = FALSE,
               pageLength = 15,
-              rowCallback = JS(
-                'function(row, data, index) {',
-                '  console.log(row);',
-                '  console.log(data);',
-                '  console.log(index);',
-                '  var color = data[data.length - 1];', # 'color' is the last column
-                '  if (color) {',
-                '    $(row).css("background-color", color);',
-                '  }',
-                '}'
-              )
+              paging = FALSE,
+              info = FALSE,
+              scrollY = "500px",
+              scrollX = TRUE
+            )
+              # initComplete = JS(
+              #   'function(settings, json) {',
+              #   "console.log('Applying row colors...');", # Debugging
+              #   paste0(
+              #     apply(filtered_df, 1, function(row, idx) {
+              #       sprintf(
+              #         "console.log('Coloring row %d with color %s'); $('tbody tr:eq(%d) td').attr('style', 'background-color: %s;');",
+              #         idx - 1,  # Subtract 1 to account for the header row
+              #         row[length(row)],  # Last column is the color
+              #         idx - 1,  # Subtract 1 to account for the header row
+              #         row[length(row)]  # Last column is the color
+              #       )
+              #     }, idx = seq_len(nrow(filtered_df))),
+              #     collapse = " "
+              #   ),
+              #   '}'
+              # )
+            ) %>% formatStyle(
+              columns = names(filtered_df),
+              backgroundColor = styleEqual(
+                filtered_df$color, filtered_df$color
             )
           )
         })
+              # rowCallback = JS(
+              #   'function(row, data, index) {',
+              #   '  console.log(row);',
+              #   '  console.log(data);',
+              #   '  console.log(index);',
+              #   '  var color = data[data.length - 1][0];', # 'color' is the last column
+              #   '  console.log(color);',
+              #   '  if (color) {',
+              #   '    $(row).css("background-color", color);',
+              #   '  }',
+              #   '}'
+              # )
+        #   ) %>% {
+        #   #   # Apply background color to all columns using formatStyle
+        #   #   table <- .
+        #   #   for (col in colnames(filtered_df)) {
+        #   #     table <- table %>% formatStyle(
+        #   #       columns = col,
+        #   #       backgroundColor = filtered_df$color
+        #   #     )
+        #   #   }
+        #   #   table
+        #   # }
+        # })
 
         # create the dt outside of the renderDT
         # to apply the color to each row
