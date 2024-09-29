@@ -36,6 +36,7 @@ parseQueryString <- function(s) {
 }
 
 app_server <- function(input, output, session) {
+
   # unsetting the LD_LIBRARY_PATH resolves
   # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
   Sys.unsetenv("LD_LIBRARY_PATH")
@@ -235,85 +236,89 @@ app_server <- function(input, output, session) {
   )
 
   # load modules
-  db_conn <- mod_db_server("db")
   db_driver <- get_golem_options("dbDriver")
-  print("dbDriver")
-  print(db_driver)
+  db_mod_return <- mod_db_server("db")
 
-  mod_input_examples_page_server(
-    "input_examples_mode",
-    session,
-    db_conn,
-    db_driver,
-    rv_input_examples,
-    rv_general
-  )
+  observeEvent(db_mod_return$initialized(), {
+    db_conn <- db_mod_return$conn()
+    print("db initialized")
 
-  mod_beacon_api_page_server(
-    "beacon_api_mode",
-    session,
-    db_conn,
-    db_driver,
-    rv_beacon_api,
-    rv_general
-  )
-
-  mod_sim_mode_server(
-    "sim_mode",
-    session,
-    db_conn,
-    db_driver,
-    rv_sim,
-    rv_general
-  )
-
-  mod_conv_mode_server(
-    "conv_mode",
-    session,
-    db_conn,
-    rv_conversion,
-    rv_general
-  )
-
-  mod_patient_mode_server(
-    "patient_mode",
-    session,
-    db_conn,
-    rv_patient,
-    rv_beacon_api,
-    rv_input_examples,
-    rv_sim,
-    rv_conversion,
-    rv_general
-  )
-
-  mod_cohort_mode_server(
-    "cohort_mode",
-    session,
-    db_conn,
-    rv_cohort,
-    rv_beacon_api,
-    rv_input_examples,
-    rv_sim,
-    rv_conversion,
-    rv_general
-  )
-
-  historySidebars <- c(
-    "SimulateHistorySidebar",
-    "ConvertHistorySidebar",
-    "PatientHistorySidebar",
-    "CohortHistorySidebar",
-    "InputExamplesRetrievalHistorySidebar",
-    "BeaconApiHistorySidebar"
-  )
-
-  lapply(historySidebars, function(sidebar) {
-    mod_history_sidebar_server(
-      sidebar,
+    # load modules
+    mod_input_examples_page_server(
+      "input_examples_mode",
+      session,
       db_conn,
-      rv_general$user_email
+      db_driver,
+      rv_input_examples,
+      rv_general
     )
+
+    mod_beacon_api_page_server(
+      "beacon_api_mode",
+      session,
+      db_conn,
+      db_driver,
+      rv_beacon_api,
+      rv_general
+    )
+
+    mod_sim_mode_server(
+      "sim_mode",
+      session,
+      db_conn,
+      db_driver,
+      rv_sim,
+      rv_general
+    )
+
+    mod_conv_mode_server(
+      "conv_mode",
+      session,
+      db_conn,
+      rv_conversion,
+      rv_general
+    )
+
+    mod_patient_mode_server(
+      "patient_mode",
+      session,
+      db_conn,
+      rv_patient,
+      rv_beacon_api,
+      rv_input_examples,
+      rv_sim,
+      rv_conversion,
+      rv_general
+    )
+
+    mod_cohort_mode_server(
+      "cohort_mode",
+      session,
+      db_conn,
+      rv_cohort,
+      rv_beacon_api,
+      rv_input_examples,
+      rv_sim,
+      rv_conversion,
+      rv_general
+    )
+
+    historySidebars <- c(
+      "SimulateHistorySidebar",
+      "ConvertHistorySidebar",
+      "PatientHistorySidebar",
+      "CohortHistorySidebar",
+      "InputExamplesRetrievalHistorySidebar",
+      "BeaconApiHistorySidebar"
+    )
+
+    lapply(historySidebars, function(sidebar) {
+      mod_history_sidebar_server(
+        sidebar,
+        db_conn,
+        rv_general$user_email
+      )
+    })
   })
 
   # TODO

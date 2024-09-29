@@ -58,9 +58,7 @@ mod_beacon_api_page_ui <- function(id) {
               ns("beaconSelector"),
               "Public beacon:",
               c(
-                "beacon.biodata.pt",
-                "beacon-spain.ega-archive.org",
-                "staging-beacon.gdi.nbis.se"
+                "First add a beacon"
               )
             )
           ),
@@ -70,7 +68,7 @@ mod_beacon_api_page_ui <- function(id) {
               textInput(
                 ns("urlInput"),
                 "Add new public beacon:",
-                value = "https://"
+                value = "https://beacon.biodata.pt"
               ),
               actionButton(
                 ns("addBeacon"),
@@ -426,26 +424,37 @@ mod_beacon_api_page_server <- function(
         # Throw error
       }
 
-      # check if the beacon is already in the database
-      query <- paste0(
-        "SELECT * FROM beacons WHERE url = '",
-        input$urlInput,
-        "'"
-      )
-      res <- dbExecute(db_conn, query)
+      # remove any whitespace from the input
+      beacon_url <- gsub("\\s", "", input$urlInput)
 
+      print("beacon_url")
+      print(beacon_url)
+
+      # check if the beacon is already in the database
+      query <- sprintf(
+        "SELECT * FROM beacons WHERE url = '%s'",
+        beacon_url
+      )
+      res <- dbGetQuery(db_conn, query)
       # if the beacon is not in the database, add it
 
       error_out <- FALSE
       if (nrow(res) == 0) {
         # try the /api/service-info endpoint
-        url <- paste0(input$urlInput, "/api/service-info")
+        url <- paste0(beacon_url, "/api/service-info")
+        print("url")
+        print(url)
         req <- request(url)
+        print("req")
+        print(req)
 
         res <- req_perform(
           req,
           verbosity = 1
         )
+
+        print("res")
+        print(res)
 
         resp_body_json <- resp_body_json(res)
         # check if the response is a valid JSON
@@ -461,7 +470,7 @@ mod_beacon_api_page_server <- function(
         }
 
         # check if the API has the individuals endpoint implemented
-        url <- paste(input$urlInput, "/api/individuals")
+        url <- paste0(beacon_url, "/api/individuals")
         req <- request(url)
 
         res <- req_perform(
@@ -476,11 +485,15 @@ mod_beacon_api_page_server <- function(
           error_out <- TRUE
         }
 
+        print("here")
+
         # check if the response contains the required field meta
         if (!("meta" %in% names(resp_body_json))) {
           # Throw error
           error_out <- TRUE
         }
+
+        print("here2")
 
         # check if meta contains the required field returnedGranularity
         if (!("returnedGranularity" %in% names(resp_body_json$meta))) {
@@ -488,11 +501,15 @@ mod_beacon_api_page_server <- function(
           error_out <- TRUE
         }
 
+        print("here3")
+
         # check if returnedGranularity is equal to "record"
         if (resp_body_json$meta$returnedGranularity != "record") {
           # Throw error
           error_out <- TRUE
         }
+
+        print("here4")
 
         # check if the resp_body_json contains the required field response
         if (!("response" %in% names(resp_body_json))) {
@@ -500,22 +517,75 @@ mod_beacon_api_page_server <- function(
           error_out <- TRUE
         }
 
+        print("here5")
+
         # check if the response is not empty
         if (length(resp_body_json$response) == 0) {
           # Throw error
           error_out <- TRUE
         }
 
+        print("here6")
+
+        print("error_out")
+        print(error_out)
+
+        print("beacon_url")
+        print(beacon_url)
+
+        print("rv_general$user_id")
+        print(rv_general$user_id)
+
+        user_id <- get_user_id(rv_general$user_email, db_conn)
+
         if (!error_out) {
           query <- sprintf(
             "INSERT INTO beacons (url, added_by) VALUES ('%s', %d)",
-            input$urlInput,
-            rv_general$user_id
+            beacon_url,
+            user_id
+          )
+          dbExecute(db_conn, query)
+
+          # insert the mapping between the user and the beacon
+          query <- sprintf(
+            "INSERT INTO user2beacons (user_id, beacon_id) VALUES (%d, (SELECT id FROM beacons WHERE url = '%s'))",
+            user_id,
+            beacon_url
           )
           dbExecute(db_conn, query)
         }
       }
 
+    })
+
+    observeEvent(input$beaconSelector, {
+      print("observeEvent(input$beaconSelector")
+      print(input$beaconSelector)
+
+      user_id <- get_user_id(rv_general$user_email, db_conn)
+
+      # get all beacons accessible by the user
+      query <- sprintf(
+        "SELECT url FROM beacons WHERE id IN (SELECT beacon_id FROM user2beacons WHERE user_id = %d)",
+        user_id
+      )
+      res <- dbGetQuery(db_conn, query)
+      print("res")
+      print(res)
+
+      # check if the response is empty
+      if (nrow(res) == 0) {
+        return()
+      }
+
+      # remove the "https://" from the urls
+      beacons <- gsub("^https://", "", res$url)
+
+      updateSelectInput(
+        session,
+        "beaconSelector",
+        choices = beacons
+      )
     })
   })
 }

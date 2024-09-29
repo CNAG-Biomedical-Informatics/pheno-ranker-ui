@@ -19,6 +19,9 @@ mod_db_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
+    initialized <- reactiveVal(FALSE)
+    conn <- reactiveVal(NULL)
+
     # cfg <- fromJSON(readLines("config/cfg.json"))
     # dbSettings <- cfg$dbSettings
     # dbSettings <- get_golem_options("dbSettings")
@@ -77,6 +80,13 @@ mod_db_server <- function(id){
       added_by user_id
     )"
 
+    # mapping table to see which user has access to which beacons
+    create_user2beacons_table <- "
+      CREATE TABLE IF NOT EXISTS user2beacons (
+      user_id numeric NOT NULL,
+      beacon_id numeric NOT NULL
+    )"
+
     if (dbDriver == "SQLite") {
       create_user_table <- "
         CREATE TABLE IF NOT EXISTS users (
@@ -87,7 +97,14 @@ mod_db_server <- function(id){
       create_beacons_table <- "
         CREATE TABLE IF NOT EXISTS beacons (
         id INTEGER PRIMARY KEY,
-        url varchar(255) NOT NULL UNIQUE
+        url varchar(255) NOT NULL UNIQUE,
+        added_by user_id
+      )"
+
+      create_user2beacons_table <- "
+        CREATE TABLE IF NOT EXISTS user2beacons (
+        user_id numeric NOT NULL,
+        beacon_id numeric NOT NULL
       )"
     }
 
@@ -129,7 +146,12 @@ mod_db_server <- function(id){
     observe({
       dbExecute(db_conn, create_user_table)
       dbExecute(db_conn, create_beacons_table)
+      dbExecute(db_conn, create_user2beacons_table)
       dbExecute(db_conn, create_jobs_table)
+
+      # update reactive values
+      conn(db_conn)
+      initialized(TRUE)
     })
 
     session$onSessionEnded(function() {
@@ -138,6 +160,9 @@ mod_db_server <- function(id){
       print("database connection closed")
     })
 
-    return(db_conn)
+    return(list(
+      initialized = initialized,
+      conn = conn
+    ))
   })
 }
