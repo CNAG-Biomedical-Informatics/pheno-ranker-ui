@@ -45,16 +45,6 @@ app_ui <- function(request) {
       navbarMenu(
         "Rank",
         tabPanel(
-          title = "Patient Mode",
-          value = "patient",
-          mod_history_sidebar_ui(
-            "PatientHistorySidebar"
-          ),
-          mod_patient_mode_ui(
-            "patient_mode"
-          )
-        ),
-        tabPanel(
           title = "Cohort Mode",
           value = "cohort",
           mod_history_sidebar_ui(
@@ -64,6 +54,16 @@ app_ui <- function(request) {
             "cohort_mode"
           )
         ),
+        tabPanel(
+          title = "Patient Mode",
+          value = "patient",
+          mod_history_sidebar_ui(
+            "PatientHistorySidebar"
+          ),
+          mod_patient_mode_ui(
+            "patient_mode"
+          )
+        )
       ),
       navbarMenu(
         "Utilities",

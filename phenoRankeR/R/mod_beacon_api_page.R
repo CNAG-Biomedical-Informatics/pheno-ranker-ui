@@ -46,7 +46,6 @@ mod_beacon_api_page_ui <- function(id) {
           layout = c(
             "       1fr           ",
             "85px   beaconSelector ",
-            "85px   sourceInfo     ",
             "200px  addBeacon      ",
             "85px   textInput     ",
             "85px   arraySizeInput"
@@ -70,23 +69,20 @@ mod_beacon_api_page_ui <- function(id) {
                 "Add new public beacon:",
                 value = "https://beacon.biodata.pt"
               ),
+              div(
+                span("Check"),
+                a(
+                  "here",
+                  href = "https://beacons.bsc.es/beaconInfo",
+                  target = "_blank"
+                ),
+                span("for potential other beacons of interest.")
+              ),
               actionButton(
                 ns("addBeacon"),
                 "Add",
                 class = "btn btn-primary"
               )
-            )
-          ),          
-          grid_place(
-            area = "sourceInfo",
-            div(
-              span("Go"),
-              a(
-                "here",
-                href = "https://beacons.bsc.es/beaconInfo",
-                target = "_blank"
-              ),
-              span("for potential other beacons of interest.")
             )
           ),
           grid_place(
@@ -465,6 +461,12 @@ mod_beacon_api_page_server <- function(
 
         # check if the response contains the required field version
         if (!("version" %in% names(resp_body_json))) {
+          # Throw error
+          error_out <- TRUE
+        }
+
+        # check if the version is equal to "2.0"
+        if (resp_body_json$version != "v2.0") {
           # Throw error
           error_out <- TRUE
         }

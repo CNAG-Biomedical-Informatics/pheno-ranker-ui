@@ -171,7 +171,8 @@ app_server <- function(input, output, session) {
   # initialize reactive values
   rv_general <- reactiveValues(
     user_dirs = all_dirs,
-    user_email = user_email
+    user_email = user_email,
+    db_conn = NULL
   )
 
   rv_beacon_api <- reactiveValues(
@@ -241,6 +242,7 @@ app_server <- function(input, output, session) {
 
   observeEvent(db_mod_return$initialized(), {
     db_conn <- db_mod_return$conn()
+    rv_general$db_conn <- db_conn
     print("db initialized")
 
     # load modules
@@ -378,7 +380,7 @@ app_server <- function(input, output, session) {
       )
 
       print("before query")
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
       print("after query")
       print("res")
       print(res)
@@ -437,7 +439,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
 
       print("res")
       print(res)
@@ -499,7 +501,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
       settings <- fromJSON(res$settings)
       print("settings")
       print(settings)
@@ -663,7 +665,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
       settings <- fromJSON(res$settings)
 
       uploaded_files_count <- 1
