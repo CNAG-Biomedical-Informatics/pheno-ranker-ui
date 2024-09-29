@@ -47,6 +47,7 @@ mod_beacon_api_page_ui <- function(id) {
             "       1fr           ",
             "85px   beaconSelector ",
             "85px   sourceInfo     ",
+            "200px   addBeacon      ",
             "85px   textInput     ",
             "85px   arraySizeInput"
           ),
@@ -56,18 +57,38 @@ mod_beacon_api_page_ui <- function(id) {
             selectInput(
               ns("beaconSelector"),
               "Public beacon:",
-              c("beacon.biodata.pt")
+              c(
+                "beacon.biodata.pt",
+                "beacon-spain.ega-archive.org",
+                "staging-beacon.gdi.nbis.se"
+              )
             )
           ),
           grid_place(
+            area = "addBeacon",
+            card_body(
+              textInput(
+                ns("urlInput"),
+                "Add new public beacon:",
+                value = "https://"
+              ),
+              actionButton(
+                ns("addBeacon"),
+                "Add",
+                class = "btn btn-primary"
+              )
+            )
+          ),          
+          grid_place(
             area = "sourceInfo",
             div(
-              p("Info about the selected beacon:"),
-              a("
-                beacon.biodata.pt",
-                href = "https://beacon.biodata.pt",
+              span("Go"),
+              a(
+                "here",
+                href = "https://beacons.bsc.es/beaconInfo",
                 target = "_blank"
-              )
+              ),
+              span("for potential other beacons of interest.")
             )
           ),
           grid_place(

@@ -70,18 +70,28 @@ mod_db_server <- function(id){
       email varchar(255) NOT NULL UNIQUE
     )"
 
+    create_beacons_table <- "
+      CREATE TABLE IF NOT EXISTS beacons (
+      id SERIAL PRIMARY KEY,
+      url varchar(255) NOT NULL UNIQUE
+      added_by user_id
+    )"
+
     if (dbDriver == "SQLite") {
       create_user_table <- "
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
         email varchar(255) NOT NULL UNIQUE
       )"
+
+      create_beacons_table <- "
+        CREATE TABLE IF NOT EXISTS beacons (
+        id INTEGER PRIMARY KEY,
+        url varchar(255) NOT NULL UNIQUE
+      )"
     }
 
     # initialize jobs table
-
-    # TODO
-    # also create a users table if not exists
 
     #* NOTE
     # JSONB is only available in sqlite > 3.45.0
@@ -118,6 +128,7 @@ mod_db_server <- function(id){
 
     observe({
       dbExecute(db_conn, create_user_table)
+      dbExecute(db_conn, create_beacons_table)
       dbExecute(db_conn, create_jobs_table)
     })
 
