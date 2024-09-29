@@ -851,6 +851,10 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "sim")
   })
 
+  observeEvent(input[["landing_page-navigateToSimulator2"]], {
+    updateNavbarPage(session, "nav", "sim")
+  })
+
   observeEvent(input[["landing_page-navigateToExamples"]], {
     print("navigate to input examples")
     updateNavbarPage(session, "nav", "input_examples")

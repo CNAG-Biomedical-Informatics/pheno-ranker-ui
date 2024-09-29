@@ -22,7 +22,7 @@ render_decision_tree <- function(ns) {
         display: flex;
         justify-content: center;
         padding-left: 0;
-        max-width: 600px;
+        max-width: 700px;
       }
       .tree li {
         display: inline-block;
@@ -75,10 +75,10 @@ render_decision_tree <- function(ns) {
       }
       .tree li a {
         border: 1px solid #ccc;
-        padding: 10px 15px;
+        padding: 10px 0px;
         text-decoration: none;
         color: #666;
-        font-size: 14px;
+        font-size: 14x;
         display: inline-block;
         border-radius: 5px;
         transition: all 0.3s ease;
@@ -99,13 +99,13 @@ render_decision_tree <- function(ns) {
       .decision {
         background-color: #fff9c4;
         color: #f57f17;
-        padding: 10px 15px;
+        padding: 10px 15px !important;
       }
       .process {
         background-color: #e3f2fd;
         color: #1565c0;
-        min-height: 115px;
-        min-width: 115px;
+        min-height: 124px;
+        min-width: 130px;
       }
       .label {
         position: absolute;
@@ -128,6 +128,8 @@ render_decision_tree <- function(ns) {
       }
       .bff {
         max-height: 50px;
+        padding-left: 30px;
+        margin-bottom: 5px;
       }
       .pxf {
         max-width: 50px;
@@ -216,16 +218,13 @@ render_decision_tree <- function(ns) {
                   actionButton(
                     ns("navigateToSimulator"),
                     class = "process",
-                    icon = icon(
-                      "flask",
-                      class = "icon"
-                    ),
-                    # )
-                    # div(
-                    #   class = "icon",
-                    #   tags$i(class = "fas fa-flask")
-                    # ),
-                    HTML("Simulate <br/>BFF/<br/>PXF"),
+                    div(
+                      icon(
+                        "flask",
+                        class = "icon"
+                      ),
+                      HTML("<br/> Simulate <br/>BFF/<br/>PXF")
+                    )
                   ),
                   div(
                     class = "hover-info",
@@ -238,7 +237,7 @@ render_decision_tree <- function(ns) {
                     tags$a(href = "#", "learn more"),
                     "or jump right in!",
                     actionButton(
-                      ns("navigateToSimulator"),
+                      ns("navigateToSimulator2"),
                       "Simulate",
                       style = "width: 100%;"
                     )
@@ -362,7 +361,7 @@ render_decision_tree <- function(ns) {
                       class = "icon",
                       tags$i(class = "fas fa-file-csv")
                     ),
-                    "generic tabular data (CSV)",
+                    HTML("generic</br>tabular data<br/>(CSV)"),
                     div(
                       class = "hover-info",
                       "Upload your own csv file and convert it
