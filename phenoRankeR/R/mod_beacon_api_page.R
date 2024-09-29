@@ -540,7 +540,7 @@ mod_beacon_api_page_server <- function(
 
         if (!error_out) {
           query <- sprintf(
-            "INSERT INTO beacons (url, added_by) VALUES ('%s', %d)",
+            "INSERT INTO beacons (url, added_by_user_with_id) VALUES ('%s', %d)",
             beacon_url,
             user_id
           )

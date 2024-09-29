@@ -76,8 +76,9 @@ mod_db_server <- function(id){
     create_beacons_table <- "
       CREATE TABLE IF NOT EXISTS beacons (
       id SERIAL PRIMARY KEY,
-      url varchar(255) NOT NULL UNIQUE
-      added_by user_id
+      url varchar(255) NOT NULL UNIQUE,
+      added_by_user_with_id user_id,
+      added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
     )"
 
     # mapping table to see which user has access to which beacons
@@ -98,7 +99,8 @@ mod_db_server <- function(id){
         CREATE TABLE IF NOT EXISTS beacons (
         id INTEGER PRIMARY KEY,
         url varchar(255) NOT NULL UNIQUE,
-        added_by user_id
+        added_by_user_with_id user_id,
+        added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
       )"
 
       create_user2beacons_table <- "
