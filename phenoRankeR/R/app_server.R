@@ -595,6 +595,7 @@ app_server <- function(input, output, session) {
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
         "patient_mode-binaryRepresentationTable",
+        rv_general,
         runId = runId,
         rv_patient = rv_patient
       )

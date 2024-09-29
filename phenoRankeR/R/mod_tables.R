@@ -7,9 +7,10 @@
 #' @noRd
 #'
 #' @importFrom shiny NS
-#' @importFrom DT datatable renderDT formatStyle DTOutput
+#' @importFrom DT datatable renderDT formatStyle DTOutput styleEqual
 #' @importFrom grDevices hcl.colors
 #' @importFrom stats setNames
+#' @importFrom magrittr %>%
 
 
 # TODO
@@ -624,17 +625,41 @@ mod_table_phenoHeadsUp_server <- function(
         print("temp_df")
         print(temp_df)
 
-        # apply color to each row based on the named list
-        for (i in 1:nrow(temp_df)) {
-          dt <- do.call(
-            "formatStyle",
-            list(
-              filtered_df[i, ],
-              target = "row",
-              backgroundColor = temp_df[i, "color"]
+        output$phenoHeadsUpTable<- renderDT({
+          # Adding a new column 'rowColor' to filtered_df for row-wise color
+          filtered_df$rowColor <- temp_df$color
+          
+          # Render the DataTable with custom row styles
+          datatable(filtered_df, options = list(
+            pageLength = 15,
+            rowCallback = JS(
+              'function(row, data, index) {',
+              '  var color = data[data.length - 1];', # Last column holds the color
+              '  if (color) {',
+              '    $(row).css("background-color", color);',
+              '  }',
+              '}'
+            )
+          )) %>% formatStyle(
+            columns = colnames(filtered_df),
+            target = 'row',
+            backgroundColor = styleEqual(
+              filtered_df$rowColor, filtered_df$rowColor
             )
           )
-        }
+        })
+
+        # # apply color to each row based on the named list
+        # for (i in 1:nrow(temp_df)) {
+        #   dt <- do.call(
+        #     "formatStyle",
+        #     list(
+        #       filtered_df[i, ],
+        #       target = "row",
+        #       backgroundColor = temp_df[i, "color"]
+        #     )
+        #   )
+        # }
         # # Apply color to each row based on the named list
         # for (i in 1:nrow(filtered_df)) {
         #   dt <- do.call(
@@ -647,18 +672,18 @@ mod_table_phenoHeadsUp_server <- function(
         #   )
         # }
 
-        output$phenoHeadsUpTable <- renderDT({
-          datatable(
-            dt,
-            rownames = FALSE,
-            options = list(
-              paging = FALSE,
-              info = FALSE,
-              scrollY = "500px",
-              scrollX = TRUE
-            )
-          )
-        })
+        # output$phenoHeadsUpTable <- renderDT({
+        #   datatable(
+        #     dt,
+        #     rownames = FALSE,
+        #     options = list(
+        #       paging = FALSE,
+        #       info = FALSE,
+        #       scrollY = "500px",
+        #       scrollX = TRUE
+        #     )
+        #   )
+        # })
 
         # output$phenoHeadsUpTable <- renderDT({
         #   datatable(
