@@ -589,6 +589,12 @@ mod_table_phenoHeadsUp_server <- function(
         print("col_colors")
         print(col_colors)
 
+        # check if col_colors is NULL
+        if (is.null(col_colors)) {
+          print("col_colors is NULL")
+          exit()
+        }
+
         print("filtered_df")
         print(filtered_df)
 
@@ -625,29 +631,74 @@ mod_table_phenoHeadsUp_server <- function(
         print("temp_df")
         print(temp_df)
 
-        output$phenoHeadsUpTable<- renderDT({
-          # Adding a new column 'rowColor' to filtered_df for row-wise color
-          filtered_df$rowColor <- temp_df$color
+        output$phenoHeadsUpTable <- renderDT({
+          # Combine the filtered_df with the color column from temp_df
+          filtered_df$color <- temp_df$color
           
           # Render the DataTable with custom row styles
-          datatable(filtered_df, options = list(
-            pageLength = 15,
-            rowCallback = JS(
-              'function(row, data, index) {',
-              '  var color = data[data.length - 1];', # Last column holds the color
-              '  if (color) {',
-              '    $(row).css("background-color", color);',
-              '  }',
-              '}'
-            )
-          )) %>% formatStyle(
-            columns = colnames(filtered_df),
-            target = 'row',
-            backgroundColor = styleEqual(
-              filtered_df$rowColor, filtered_df$rowColor
+          datatable(
+            filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
+            options = list(
+              pageLength = 15,
+              rowCallback = JS(
+                'function(row, data, index) {',
+                '  var color = data[data.length - 1];', # 'color' is the last column
+                '  if (color) {',
+                '    $(row).css("background-color", color);',
+                '  }',
+                '}'
+              )
             )
           )
         })
+
+        # create the dt outside of the renderDT
+        # to apply the color to each row
+        # dt <- datatable(filtered_df, options = list(
+        #   pageLength = 15,
+        #   rowCallback = JS(
+        #     'function(row, data, index) {',
+        #     '  var color = data[data.length - 1];', # Last column holds the color
+        #     '  if (color) {',
+        #     '    $(row).css("background-color", color);',
+        #     '  }',
+        #     '}'
+        #   )
+        # )) %>% formatStyle(
+        #   columns = colnames(filtered_df),
+        #   target = 'row',
+        #   backgroundColor = styleEqual(
+        #     filtered_df$rowColor, filtered_df$rowColor
+        #   )
+        # )
+
+        # print("dt")
+        # print(dt)
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   dt
+        # })
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   # Render the DataTable with custom row styles
+        #   datatable(filtered_df, options = list(
+        #     pageLength = 15,
+        #     rowCallback = JS(
+        #       'function(row, data, index) {',
+        #       '  var color = data[data.length - 1];', # Last column holds the color
+        #       '  if (color) {',
+        #       '    $(row).css("background-color", color);',
+        #       '  }',
+        #       '}'
+        #     )
+        #   )) %>% formatStyle(
+        #     columns = colnames(filtered_df),
+        #     target = 'row',
+        #     backgroundColor = styleEqual(
+        #       filtered_df$rowColor, filtered_df$rowColor
+        #     )
+        #   )
+        # })
 
         # # apply color to each row based on the named list
         # for (i in 1:nrow(temp_df)) {

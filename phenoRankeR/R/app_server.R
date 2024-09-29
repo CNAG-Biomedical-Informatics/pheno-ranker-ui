@@ -592,6 +592,11 @@ app_server <- function(input, output, session) {
       }
       dir <- dirs[1]
 
+      rv_general$col_colors <- get_table_color_schema(
+        rv_general$user_dirs$output$pats_ranked,
+        runId
+      )
+
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
         "patient_mode-binaryRepresentationTable",
