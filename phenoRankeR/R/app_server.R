@@ -311,7 +311,8 @@ app_server <- function(input, output, session) {
   lapply(historySidebars, function(sidebar) {
     mod_history_sidebar_server(
       sidebar,
-      db_conn
+      db_conn,
+      rv_general$user_email
     )
   })
 
