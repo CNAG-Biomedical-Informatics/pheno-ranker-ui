@@ -263,7 +263,7 @@ mod_table_phenoBlast_server <- function(
         #   dt <- dt %>% formatStyle(columns = col_name, backgroundColor = col_colors[[col_name]])
         # }
 
-        print("col_colors")
+        print("mod_table_phenoBlast_col_colors")
         print(col_colors)
 
         # TODO
@@ -586,7 +586,7 @@ mod_table_phenoHeadsUp_server <- function(
         #   )
         # )
 
-        print("col_colors")
+        print("mod_table_phenoHeadsUp col_colors")
         print(col_colors)
 
         # check if col_colors is NULL
@@ -642,6 +642,9 @@ mod_table_phenoHeadsUp_server <- function(
               pageLength = 15,
               rowCallback = JS(
                 'function(row, data, index) {',
+                '  console.log(row);',
+                '  console.log(data);',
+                '  console.log(index);',
                 '  var color = data[data.length - 1];', # 'color' is the last column
                 '  if (color) {',
                 '    $(row).css("background-color", color);',
