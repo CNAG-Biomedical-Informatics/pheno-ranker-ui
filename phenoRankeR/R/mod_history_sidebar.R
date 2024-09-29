@@ -34,8 +34,8 @@ mod_history_sidebar_ui <- function(id) {
     SimulateHistorySidebar = "sim_mode",
     PatientHistorySidebar = "patient_mode",
     CohortHistorySidebar = "cohort_mode",
-    InputExamplesRetrievalHistorySidebar = "input_examples",
-    BeaconApiHistorySidebar = "beacon_api"
+    InputExamplesRetrievalHistorySidebar = "input_examples_mode",
+    BeaconApiHistorySidebar = "beacon_api_mode"
   )
 
   mode <- id_mode_mapping[id]
@@ -327,6 +327,15 @@ mod_history_sidebar_server <- function(id, db_conn, user_email) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    namespace_to_mode_mapping <- list(
+      ConvertHistorySidebar = "conv",
+      SimulateHistorySidebar = "sim",
+      PatientHistorySidebar = "patient",
+      CohortHistorySidebar = "cohort",
+      InputExamplesRetrievalHistorySidebar = "input_examples",
+      BeaconApiHistorySidebar = "beacon_api"
+    )
+
     observeEvent(input$btnClose, {
       print("close history")
       hideElement(
@@ -341,20 +350,7 @@ mod_history_sidebar_server <- function(id, db_conn, user_email) {
       textbox_value <- input$check_icon_clicked$value
 
       namespace <- strsplit(ns("check_icon_clicked"), "-")[[1]][1]
-
-      namespace_to_mode_mapping <- list(
-        ConvertHistorySidebar = "conv",
-        SimulateHistorySidebar = "sim",
-        PatientHistorySidebar = "patient",
-        CohortHistorySidebar = "cohort",
-        InputExamplesRetrievalHistorySidebar = "input_examples",
-        BeaconApiHistorySidebar = "beacon_api"
-      )
-
       mode <- namespace_to_mode_mapping[namespace]
-
-      # should not be hardcoded
-      # user_id <- 1
 
       user_id <- get_user_id(user_email, db_conn)
 
@@ -408,22 +404,9 @@ mod_history_sidebar_server <- function(id, db_conn, user_email) {
     })
 
     observeEvent(input$btn_delete_run, {
+
       namespace <- strsplit(ns("btn_delete_run"), "-")[[1]][1]
-
-      namespace_to_mode_mapping <- list(
-        ConvertHistorySidebar = "conv",
-        SimulateHistorySidebar = "sim",
-        PatientHistorySidebar = "patient",
-        CohortHistorySidebar = "cohort",
-        InputExamplesRetrievalHistorySidebar = "input_examples",
-        BeaconApiHistorySidebar = "beacon_api"
-      )
-
       mode <- namespace_to_mode_mapping[namespace]
-
-
-      # should not be hardcoded
-      # user_id <- 1
 
       user_id <- get_user_id(user_email, db_conn)
 

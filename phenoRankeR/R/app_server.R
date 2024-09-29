@@ -241,7 +241,7 @@ app_server <- function(input, output, session) {
   print(db_driver)
 
   mod_input_examples_page_server(
-    "input_examples",
+    "input_examples_mode",
     session,
     db_conn,
     db_driver,
@@ -250,7 +250,7 @@ app_server <- function(input, output, session) {
   )
 
   mod_beacon_api_page_server(
-    "beacon_api",
+    "beacon_api_mode",
     session,
     db_conn,
     db_driver,

@@ -74,7 +74,7 @@ app_ui <- function(request) {
             "InputExamplesRetrievalHistorySidebar"
           ),
           mod_input_examples_page_ui(
-            "input_examples"
+            "input_examples_mode"
           )
         ),
         tabPanel(
@@ -84,7 +84,7 @@ app_ui <- function(request) {
             "BeaconApiHistorySidebar"
           ),
           mod_beacon_api_page_ui(
-            "beacon_api"
+            "beacon_api_mode"
           )
         ),
         tabPanel(

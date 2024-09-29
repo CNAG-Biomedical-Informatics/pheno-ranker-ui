@@ -301,7 +301,7 @@ mod_beacon_api_page_server <- function(
 
     mod_show_history_button_server(
       "BeaconApiHistorySidebar",
-      "input_examples",
+      "beacon_api_mode",
       "BeaconApiHistorySidebar",
       db_conn,
       rv_general$user_email
