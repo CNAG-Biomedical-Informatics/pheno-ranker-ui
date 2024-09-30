@@ -711,6 +711,15 @@ mod_table_phenoHeadsUp_server <- function(
               #   ),
               #   '}'
               # )
+
+              # BUG
+              # TODO
+
+              # Note that the coloring of the rows get messed up
+              # when the table is sorted / filtered
+              # potential solution do the sorting/filtering on the server side
+              # and then rerender the table
+              # then the formatStyle function should be applied again
             ) %>% formatStyle(
               columns = 1:(ncol(filtered_df)),
               backgroundColor = styleRow(

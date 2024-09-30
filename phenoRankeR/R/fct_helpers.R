@@ -450,8 +450,6 @@ observeTabChangeToExampleData <- function(
     panel_id,
     dropdown_id,
     user_email) {
-  # should not be hardcoded
-  # user_id <- 1
 
   user_id <- get_user_id(user_email, db_conn)
 
