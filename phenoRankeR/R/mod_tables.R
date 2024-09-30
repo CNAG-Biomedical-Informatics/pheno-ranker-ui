@@ -685,11 +685,12 @@ mod_table_phenoHeadsUp_server <- function(
           datatable(
             # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
             filtered_df,
+            # extensions = c("Responsive"),
             options = list(
               rownames = FALSE,
               pageLength = 15,
               paging = FALSE,
-              searching = FALSE,
+              searching = TRUE,
               info = FALSE,
               scrollY = "500px",
               scrollX = TRUE,
