@@ -11,7 +11,7 @@
 #' @importFrom grDevices hcl.colors
 #' @importFrom stats setNames
 #' @importFrom magrittr %>%
-#' @importFrom dplyr mutate pull summarize group_by row_number
+#' @importFrom dplyr mutate pull summarize group_by row_number distinct arrange
 
 
 # TODO
@@ -651,21 +651,29 @@ mod_table_phenoHeadsUp_server <- function(
           # Group by the 'Color' column and calculate the row ranges using the original row index
           ranges <- temp_df %>%
             group_by(color) %>%
-            summarize(row_range = list(original_row_index)) %>%
+            summarize(row_range = list(original_row_index), .groups = 'drop') %>%
+            arrange(sapply(row_range, min)) %>% # Arrange based on the first occurrence of each range
             pull(row_range)
-
-          # Convert the list of ranges into a single vector
-          ranges_vector <- unlist(ranges)
 
           print("ranges")
           print(ranges)
+
+          # sort the ranges
+          # ranges <- lapply(ranges, sort)
+          print("ranges sorted")
+          print(ranges)
+
+          # Convert the list of ranges into a single vector
+          ranges_vector <- unlist(ranges)
 
           ranges_vector <- unlist(ranges)
           print("ranges_vector")
           print(ranges_vector)
 
-          # extract the unique color values
-          colors <- unique(temp_df$color)
+          # extract the distinct color values
+          colors <- temp_df %>%
+            distinct(color) %>%
+            pull(color)
 
           # create a vector of colors use rep to repeat the colors
           # depending on the size of the ranges
