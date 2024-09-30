@@ -535,8 +535,8 @@ mod_table_phenoHeadsUp_server <- function(
         # remove the first column
         filtered_df <- filtered_df[, -1]
         colnames(filtered_df) <- c(
-          "Reference", "Indicator",
-          "Target", "Weight",
+          "Ref", "Indicator",
+          "Tar", "Weight",
           "Hamming Distance", "JSON Path", "Label"
         )
 
@@ -686,9 +686,22 @@ mod_table_phenoHeadsUp_server <- function(
             # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
             filtered_df,
             # extensions = c("Responsive"),
+            # extensions = c("Select", "SearchPanes"),
+            escape = FALSE, # Allow HTML in the table
             options = list(
-              rownames = FALSE,
-              pageLength = 15,
+              autoWidth = TRUE,
+              columnDefs = list(
+                list(
+                  width = "5px", targets = 1:ncol(filtered_df)
+                )
+              ),
+              # dom = "Pfrtip",
+              columnDefs = list(list(
+                searchPanes = list(show = FALSE),
+                targets = 1:ncol(filtered_df)
+              )),
+              # rownames = FALSE
+              # pageLength = 15,
               paging = FALSE,
               searching = TRUE,
               info = FALSE,
@@ -728,7 +741,17 @@ mod_table_phenoHeadsUp_server <- function(
             # potential solution do the sorting/filtering on the server side
             # and then rerender the table
             # then the formatStyle function should be applied again
+          ) %>% formatStyle(
+            columns = 6, # Apply style to the 'Occupation' column
+            `white-space` = "nowrap",
+            `overflow` = "hidden",
+            `text-overflow` = "ellipsis",
+            `max-width` = "300px", # Restrict the cell's width
+            `cursor` = "pointer"
           )
+
+
+
           #   %>% formatStyle(
           #   columns = colnames(filtered_df),
           #   target = 'row',
@@ -888,7 +911,7 @@ mod_table_phenoHeadsUp_server <- function(
         "phenoHeadsUp",
         "After ranking click on any row in the table above",
         c(
-          "Reference", "Indicator", "Target",
+          "Ref", "Indicator", "Tar",
           "Weight", "Hamming Distance",
           "JSON Path", "Label"
         )
