@@ -246,7 +246,7 @@ mod_table_phenoBlast_server <- function(
             #   regex = TRUE,   # Enable regular expression searching
             #   caseInsensitive = TRUE
             # ),
-            
+
             # colors the header row
             initComplete = JS(
               "function(settings, json) {",
@@ -623,7 +623,7 @@ mod_table_phenoHeadsUp_server <- function(
         # Ensure col_colors names are also cleaned in the same way
         names(col_colors) <- tolower(names(col_colors))
         names(col_colors) <- gsub("^x", "", names(col_colors))
-        names(col_colors) <- gsub("\\.", "-", names(col_colors))  # Replace dots with hyphens
+        names(col_colors) <- gsub("\\.", "-", names(col_colors)) # Replace dots with hyphens
         names(col_colors) <- gsub("\\s+", "-", names(col_colors)) # Replace one or more spaces with a hyphen
         names(col_colors) <- trimws(names(col_colors))
 
@@ -644,14 +644,14 @@ mod_table_phenoHeadsUp_server <- function(
 
 
           temp_df$color <- as.character(temp_df$color)
-          
+
           # Add an original row index
           temp_df <- temp_df %>% mutate(original_row_index = row_number())
-    
+
           # Group by the 'Color' column and calculate the row ranges using the original row index
           ranges <- temp_df %>%
             group_by(color) %>%
-            summarize(row_range = list(original_row_index), .groups = 'drop') %>%
+            summarize(row_range = list(original_row_index), .groups = "drop") %>%
             arrange(sapply(row_range, min)) %>% # Arrange based on the first occurrence of each range
             pull(row_range)
 
@@ -692,62 +692,79 @@ mod_table_phenoHeadsUp_server <- function(
               searching = FALSE,
               info = FALSE,
               scrollY = "500px",
-              scrollX = TRUE
-            )
-              # initComplete = JS(
-              #   'function(settings, json) {',
-              #   "console.log('Applying row colors...');", # Debugging
-              #   paste0(
-              #     apply(filtered_df, 1, function(row, idx) {
-              #       sprintf(
-              #         "console.log('Coloring row %d with color %s'); $('tbody tr:eq(%d) td').attr('style', 'background-color: %s;');",
-              #         idx - 1,  # Subtract 1 to account for the header row
-              #         row[length(row)],  # Last column is the color
-              #         idx - 1,  # Subtract 1 to account for the header row
-              #         row[length(row)]  # Last column is the color
-              #       )
-              #     }, idx = seq_len(nrow(filtered_df))),
-              #     collapse = " "
-              #   ),
-              #   '}'
-              # )
-
-              # BUG
-              # TODO
-
-              # Note that the coloring of the rows get messed up
-              # when the table is sorted / filtered
-              # potential solution do the sorting/filtering on the server side
-              # and then rerender the table
-              # then the formatStyle function should be applied again
-            ) %>% formatStyle(
-              columns = 1:(ncol(filtered_df)),
-              backgroundColor = styleRow(
-                ranges_vector,
-                colors_vector
+              scrollX = TRUE,
+              rowCallback = JS(
+                "function(row, data, index) {
+                  // Retrieve the color value from the last column (Color column)
+                  var color = data[data.length - 1];
+                  $('td', row).css('background-color', color); // Apply color to each cell in the row
+                }"
               )
-
-                # rows = c(1:5, 6:9, 10:13),
-                # values = c(
-                #   rep("lightblue", 5),
-                #   rep("lightgreen", 4),
-                #   rep("lightcoral", 4)
-                # )
-              # )
             )
-          })
-              # rowCallback = JS(
-              #   'function(row, data, index) {',
-              #   '  console.log(row);',
-              #   '  console.log(data);',
-              #   '  console.log(index);',
-              #   '  var color = data[data.length - 1][0];', # 'color' is the last column
-              #   '  console.log(color);',
-              #   '  if (color) {',
-              #   '    $(row).css("background-color", color);',
-              #   '  }',
-              #   '}'
-              # )
+            # initComplete = JS(
+            #   'function(settings, json) {',
+            #   "console.log('Applying row colors...');", # Debugging
+            #   paste0(
+            #     apply(filtered_df, 1, function(row, idx) {
+            #       sprintf(
+            #         "console.log('Coloring row %d with color %s'); $('tbody tr:eq(%d) td').attr('style', 'background-color: %s;');",
+            #         idx - 1,  # Subtract 1 to account for the header row
+            #         row[length(row)],  # Last column is the color
+            #         idx - 1,  # Subtract 1 to account for the header row
+            #         row[length(row)]  # Last column is the color
+            #       )
+            #     }, idx = seq_len(nrow(filtered_df))),
+            #     collapse = " "
+            #   ),
+            #   '}'
+            # )
+
+            # BUG
+            # TODO
+
+            # Note that the coloring of the rows get messed up
+            # when the table is sorted / filtered
+            # potential solution do the sorting/filtering on the server side
+            # and then rerender the table
+            # then the formatStyle function should be applied again
+          )
+          #   %>% formatStyle(
+          #   columns = colnames(filtered_df),
+          #   target = 'row',
+          #   backgroundColor = styleEqual(
+          #     filtered_df$color, filtered_df$color
+          #   )
+          # )
+
+
+          # %>% formatStyle(
+          # columns = 1:(ncol(filtered_df)),
+          # backgroundColor = styleRow(
+          #   ranges_vector,
+          #   colors_vector
+          # )
+
+          # rows = c(1:5, 6:9, 10:13),
+          # values = c(
+          #   rep("lightblue", 5),
+          #   rep("lightgreen", 4),
+          #   rep("lightcoral", 4)
+          # )
+          # )
+          # )
+        })
+        # rowCallback = JS(
+        #   'function(row, data, index) {',
+        #   '  console.log(row);',
+        #   '  console.log(data);',
+        #   '  console.log(index);',
+        #   '  var color = data[data.length - 1][0];', # 'color' is the last column
+        #   '  console.log(color);',
+        #   '  if (color) {',
+        #   '    $(row).css("background-color", color);',
+        #   '  }',
+        #   '}'
+        # )
         #   ) %>% {
         #   #   # Apply background color to all columns using formatStyle
         #   #   table <- .
