@@ -11,6 +11,7 @@
 #' @importFrom grDevices hcl.colors
 #' @importFrom stats setNames
 #' @importFrom magrittr %>%
+#' @importFrom dplyr mutate pull summarize group_by row_number
 
 
 # TODO
@@ -637,7 +638,39 @@ mod_table_phenoHeadsUp_server <- function(
         output$phenoHeadsUpTable <- renderDT({
           # Combine the filtered_df with the color column from temp_df
           filtered_df$color <- temp_df$color
-          
+
+          # calculate ranges for the formatStyle function
+          # the ranges are based on the rows with the same color
+
+
+          temp_df$color <- as.character(temp_df$color)
+
+          # Group by the 'Color' column and calculate the row ranges
+          ranges <- temp_df %>%
+            group_by(color) %>%
+            summarize(
+              row_range = list(
+                seq(
+                  min(row_number()),
+                  max(row_number())
+            ))) %>% pull(row_range)
+
+          print("ranges")
+          print(ranges)
+
+          ranges_vector <- unlist(ranges)
+          print("ranges_vector")
+          print(ranges_vector)
+
+          # extract the unique color values
+          colors <- unique(temp_df$color)
+
+          # create a vector of colors use rep to repeat the colors
+          # depending on the size of the ranges
+          color_vector <- rep(colors, lengths(ranges))
+          print("color_vector")
+          print(color_vector)
+
           # Render the DataTable with custom row styles
           datatable(
             # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
@@ -646,6 +679,7 @@ mod_table_phenoHeadsUp_server <- function(
               rownames = FALSE,
               pageLength = 15,
               paging = FALSE,
+              searching = FALSE,
               info = FALSE,
               scrollY = "500px",
               scrollX = TRUE
@@ -668,12 +702,21 @@ mod_table_phenoHeadsUp_server <- function(
               #   '}'
               # )
             ) %>% formatStyle(
-              columns = names(filtered_df),
-              backgroundColor = styleEqual(
-                filtered_df$color, filtered_df$color
+              columns = 1:(ncol(filtered_df)),
+              backgroundColor = styleRow(
+                rows_vector,
+                colors_vector
+              )
+
+                # rows = c(1:5, 6:9, 10:13),
+                # values = c(
+                #   rep("lightblue", 5),
+                #   rep("lightgreen", 4),
+                #   rep("lightcoral", 4)
+                # )
+              )
             )
-          )
-        })
+          })
               # rowCallback = JS(
               #   'function(row, data, index) {',
               #   '  console.log(row);',
