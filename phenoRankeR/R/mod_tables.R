@@ -644,16 +644,18 @@ mod_table_phenoHeadsUp_server <- function(
 
 
           temp_df$color <- as.character(temp_df$color)
-
-          # Group by the 'Color' column and calculate the row ranges
+          
+          # Add an original row index
+          temp_df <- temp_df %>% mutate(original_row_index = row_number())
+    
+          # Group by the 'Color' column and calculate the row ranges using the original row index
           ranges <- temp_df %>%
             group_by(color) %>%
-            summarize(
-              row_range = list(
-                seq(
-                  min(row_number()),
-                  max(row_number())
-            ))) %>% pull(row_range)
+            summarize(row_range = list(original_row_index)) %>%
+            pull(row_range)
+
+          # Convert the list of ranges into a single vector
+          ranges_vector <- unlist(ranges)
 
           print("ranges")
           print(ranges)
@@ -667,9 +669,9 @@ mod_table_phenoHeadsUp_server <- function(
 
           # create a vector of colors use rep to repeat the colors
           # depending on the size of the ranges
-          color_vector <- rep(colors, lengths(ranges))
-          print("color_vector")
-          print(color_vector)
+          colors_vector <- rep(colors, lengths(ranges))
+          print("colors_vector")
+          print(colors_vector)
 
           # Render the DataTable with custom row styles
           datatable(
@@ -704,7 +706,7 @@ mod_table_phenoHeadsUp_server <- function(
             ) %>% formatStyle(
               columns = 1:(ncol(filtered_df)),
               backgroundColor = styleRow(
-                rows_vector,
+                ranges_vector,
                 colors_vector
               )
 
@@ -714,7 +716,7 @@ mod_table_phenoHeadsUp_server <- function(
                 #   rep("lightgreen", 4),
                 #   rep("lightcoral", 4)
                 # )
-              )
+              # )
             )
           })
               # rowCallback = JS(
