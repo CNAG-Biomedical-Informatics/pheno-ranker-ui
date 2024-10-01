@@ -535,8 +535,8 @@ mod_table_phenoHeadsUp_server <- function(
         # remove the first column
         filtered_df <- filtered_df[, -1]
         colnames(filtered_df) <- c(
-          "Ref", "Indicator",
-          "Tar", "Weight",
+          "Reference", "Indicator",
+          "Target", "Weight",
           "Hamming Distance", "JSON Path", "Label"
         )
 
@@ -911,7 +911,7 @@ mod_table_phenoHeadsUp_server <- function(
         "phenoHeadsUp",
         "After ranking click on any row in the table above",
         c(
-          "Ref", "Indicator", "Tar",
+          "Reference", "Indicator", "Target",
           "Weight", "Hamming Distance",
           "JSON Path", "Label"
         )
