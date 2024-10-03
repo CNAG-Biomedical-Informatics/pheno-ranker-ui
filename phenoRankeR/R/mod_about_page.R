@@ -28,7 +28,7 @@ mod_about_page_ui <- function(id) {
         p(
           "Leist, I.C. et al.,",
           "Pheno-Ranker: A Toolkit for Comparison of Phenotypic Data Stored in GA4GH Standards and Beyond",
-          "Submitted."
+          ",Submitted."
         ),
         h4("Developed by:"),
         grid_container(
