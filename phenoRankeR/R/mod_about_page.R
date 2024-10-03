@@ -26,9 +26,9 @@ mod_about_page_ui <- function(id) {
         p("Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond"),
         h4("Please cite:"),
         p(
-          'Ivo C. Leist et al., 
-          "Pheno-Ranker: Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond". 
-          Manuscript in preparation.'
+          "Leist, I.C. et al.,",
+          "Pheno-Ranker: A Toolkit for Comparison of Phenotypic Data Stored in GA4GH Standards and Beyond",
+          "Submitted."
         ),
         h4("Developed by:"),
         grid_container(
@@ -85,7 +85,7 @@ mod_about_page_ui <- function(id) {
             area = "logo2",
             card_body(
               img(
-                src = "https://www.ihi.europa.eu/sites/default/files/styles/teaser_image_horizontal/public/projects/logos/3TR_logo_final.jpg?itok=fDmi4lFR", 
+                src = "https://www.ihi.europa.eu/sites/default/files/styles/teaser_image_horizontal/public/projects/logos/3TR_logo_final.jpg?itok=fDmi4lFR",
                 height = "200px"
               )
             )
@@ -112,8 +112,8 @@ mod_about_page_ui <- function(id) {
   )
 }
 
-mod_landing_page_server <- function(id){
-  moduleServer(id, function(input, output, session){
+mod_landing_page_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
   })
 }
