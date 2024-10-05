@@ -1,27 +1,27 @@
 {
   "bff": {
-    "diseases":"#9e0142",
-    "ethnicity":"#d53e4f",
-    "exposures":"#f46d43",
-    "geographicOrigin":"#fdae61",
-    "id":"#BDC3C7",
-    "interventionsOrProcedures":"#fee08b",
-    "karyotypicSex":"ffffbf",
-    "measures":"#e6f598",
-    "pedigrees":"#abdda4",
-    "phenotypicFeatures":"#66c2a5",
-    "sex": "#3288bd",
-    "treatments": "#5e4fa2"
+    "diseases":"rgb(158, 1, 66)",
+    "ethnicity":"rgb(213, 62, 79)",
+    "exposures":"rgb(244, 109, 67)",
+    "geographicOrigin":"rgb(253, 174, 97)",
+    "id":"rgb(189, 195, 199)",
+    "interventionsOrProcedures":"rgb(255, 255, 191)",
+    "karyotypicSex":"rgb(230, 245, 152)",
+    "measures":"rgb(171, 221, 164)",
+    "pedigrees":"rgb(102, 194, 165)",
+    "phenotypicFeatures":"rgb(50, 136, 189)",
+    "sex": "rgb(94, 79, 162)",
+    "treatments": "rgb(254, 224, 139)"
   },
-  "pxf":{
-    "id":"#BDC3C7",
-    "subject":"#D53E4F",
-    "phenotypicFeatures":"#F46D43",
-    "measurements":"#FDAE61",
-    "biosamples":"#FEE08B",
-    "interpretations":"#FFFFBF",
-    "diseases":"#E6F598",
-    "medicalActions":"#ABDDA4",
-    "files":"#66C2A5"
-  }
+  "pxf": {
+    "id":"rgb(189, 195, 199)",
+    "subject":"rgb(213, 62, 79)",
+    "phenotypicFeatures":"rgb(244, 109, 67)",
+    "measurements":"rgb(253, 174, 97)",
+    "biosamples":"rgb(254, 224, 139)",
+    "interpretations":"rgb(255, 255, 191)",
+    "diseases":"rgb(230, 245, 152)",
+    "medicalActions":"rgb(171, 221, 164)",
+    "files":"rgb(102, 194, 165)"
+  }   
 }

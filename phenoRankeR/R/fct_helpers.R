@@ -1424,7 +1424,11 @@ get_table_color_schema <- function(pats_ranked_dir, runId) {
   print("json_data")
   print(json_data)
 
+  # TODO
+  # should not be hardcoded
   colors_mapping <- json_data[["bff"]]
+
+  
   print("colors_mapping")
   print(colors_mapping)
 
