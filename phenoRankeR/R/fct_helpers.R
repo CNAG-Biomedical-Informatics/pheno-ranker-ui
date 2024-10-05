@@ -1364,7 +1364,7 @@ observeConvertedDataChange <- function(
 }
 
 
-get_table_color_schema <- function(pats_ranked_dir, runId) {
+get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   blast_data <- readTxt(
     pats_ranked_dir,
     fileName_suffix = "_alignment.csv",
@@ -1424,11 +1424,24 @@ get_table_color_schema <- function(pats_ranked_dir, runId) {
   print("json_data")
   print(json_data)
 
-  # TODO
-  # should not be hardcoded
-  colors_mapping <- json_data[["bff"]]
+  user_email <- rv_general$user_email
+  db_conn <- rv_general$db_conn
+  userId <- get_user_id(user_email, db_conn)
+  print("userId")
+  print(userId)
 
-  
+  query <- sprintf(
+    "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
+    runId, userId
+  )
+  res <- dbGetQuery(db_conn, query)
+  settings <- fromJSON(res$settings[1])
+  inputFormat <- settings$input_format
+
+  # remove the .json
+  inputFormat <- substr(inputFormat, 1, nchar(inputFormat) - 5)
+  colors_mapping <- json_data[[inputFormat]]
+ 
   print("colors_mapping")
   print(colors_mapping)
 

@@ -114,9 +114,6 @@ mod_table_phenoBlast_server <- function(
         return()
       }
 
-      # the coloring should in a helper function
-      # which gets called directly after the ranking
-
       blast_data <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
         fileName_suffix = "_alignment.csv",
@@ -130,86 +127,11 @@ mod_table_phenoBlast_server <- function(
       print("nrow(blast_data)")
       print(nrow(blast_data))
 
-      # header/first row to a character vector w/o the first column
-      # headers <- as.character(colnames(blast_data))[-1]
-      # jsonPaths <- as.character(blast_data[1, ])[-1]
-
-      # # if there is no jsonPath
-      # if (length(jsonPaths) == 0) {
-      #   print("jsonPaths is empty")
-      #   # TODO
-      #   # throw error
-      #   return()
-      # }
-
-      # print("jsonPaths")
-      # print(jsonPaths)
-
-      # # map each jsonPath to a header
-      # jsonPath_to_header <- setNames(headers, jsonPaths)
-
-      # # get the unique top level keys from the jsonPaths
-      # # replace the top level keys with colors
-      # # the values of the dictionary are the headers
-      # # e.g. {"orange": ["Female","male"]}
-      # key_value_pairs <- strsplit(jsonPaths, "\\.")
-      # dictionary <- setNames(jsonPaths, sapply(key_value_pairs, function(x) x[1]))
-      # topLevels <- unique(
-      #   sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
-      # )
-
-      # print("topLevels")
-      # print(topLevels)
-
-      # # suggestion by Sofia
-      # # colors for the phenoblast table
-      # # should be in that range
-      # # hsla(170, 30%, 80%, 1)
-      # # s & l should be the fixed
-      # # h should be the variable (1-360)
-      # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
-      # print("hex_colors")
-      # print(hex_colors)
-
-      # # TODO
-      # # !BUG
-      # # when using as reference: individuals.json
-      # # and as target: patient.json
-      # # as include-terms: geographicOrigin
-
-      # # [1] "hex_colors"
-      # # character(0)
-      # # Warning: Error in grep: invalid 'pattern' argument
-
-      # # maybe it would be a good idea to hardcode each color to
-      # # to a specific toplevel (for BFF it would be 11)
-      # # So the user gets not confused when the colors change with each re-ranking
-
-      # # replace all keys with a color and the value with the value
-      # # of the dictionary jsonPath_to_header
-      # color_scheme <- list()
-      # for (i in 1:length(topLevels)) {
-      #   dict_values <- dictionary[grep(topLevels[i], names(dictionary))]
-
-      #   # replace each value with the header
-      #   for (j in 1:length(dict_values)) {
-      #     dict_values[j] <- jsonPath_to_header[dict_values[j]]
-      #   }
-      #   color_scheme[[hex_colors[i]]] <- dict_values
-      # }
-
       # remove the 1st row
       blast_data <- blast_data[-1, ]
 
       # set the first column to ID
       colnames(blast_data)[1] <- "Id"
-
-      # col_colors <- list()
-      # for (color in names(color_scheme)) {
-      #   for (col_name in color_scheme[[color]]) {
-      #     col_colors[[col_name]] <- color
-      #   }
-      # }
 
       # TODO
       # figure out how to search but keep the first row fixed
@@ -650,7 +572,7 @@ mod_table_phenoHeadsUp_server <- function(
               autoWidth = TRUE,
               columnDefs = list(
                 list(
-                  width = "5px", 
+                  width = "5px",
                   targets = 1:ncol(filtered_df)
                 )
               ),

@@ -592,9 +592,10 @@ app_server <- function(input, output, session) {
       }
       dir <- dirs[1]
 
-      rv_patient$col_colors <- get_table_color_schema(
+      rv_patient$col_colors <- get_table_row_colors(
         rv_general$user_dirs$output$pats_ranked,
-        runId
+        runId,
+        rv_general
       )
 
       # TabHeader: Binary representation
@@ -625,7 +626,6 @@ app_server <- function(input, output, session) {
         paste0(
           rv_general$user_dirs$output$pats_ranked,
           "/",
-          # get_golem_options("patientModeOutputFolder"),
           runId,
           "/",
           runId,
@@ -684,7 +684,6 @@ app_server <- function(input, output, session) {
         paste0(
           rv_general$user_dirs$output$cohorts_ranked,
           "/",
-          # get_golem_options("cohortModeOutputFolder"),
           runId,
           "/",
           runId,

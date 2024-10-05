@@ -145,6 +145,13 @@ mod_db_server <- function(id){
       )"
     }
 
+    # TODO
+    # create a meta data table per mode to store all the possible settings
+    # this way we could retrieve the settings for an old run job and preconfigure the settings
+    # based on this job
+
+    # create_patient_mode_settings_table <- 
+
     observe({
       dbExecute(db_conn, create_user_table)
       dbExecute(db_conn, create_beacons_table)
