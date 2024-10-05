@@ -639,48 +639,6 @@ mod_table_phenoHeadsUp_server <- function(
           # Combine the filtered_df with the color column from temp_df
           filtered_df$color <- temp_df$color
 
-          # calculate ranges for the formatStyle function
-          # the ranges are based on the rows with the same color
-
-
-          temp_df$color <- as.character(temp_df$color)
-
-          # Add an original row index
-          temp_df <- temp_df %>% mutate(original_row_index = row_number())
-
-          # Group by the 'Color' column and calculate the row ranges using the original row index
-          ranges <- temp_df %>%
-            group_by(color) %>%
-            summarize(row_range = list(original_row_index), .groups = "drop") %>%
-            arrange(sapply(row_range, min)) %>% # Arrange based on the first occurrence of each range
-            pull(row_range)
-
-          print("ranges")
-          print(ranges)
-
-          # sort the ranges
-          # ranges <- lapply(ranges, sort)
-          print("ranges sorted")
-          print(ranges)
-
-          # Convert the list of ranges into a single vector
-          ranges_vector <- unlist(ranges)
-
-          ranges_vector <- unlist(ranges)
-          print("ranges_vector")
-          print(ranges_vector)
-
-          # extract the distinct color values
-          colors <- temp_df %>%
-            distinct(color) %>%
-            pull(color)
-
-          # create a vector of colors use rep to repeat the colors
-          # depending on the size of the ranges
-          colors_vector <- rep(colors, lengths(ranges))
-          print("colors_vector")
-          print(colors_vector)
-
           # Render the DataTable with custom row styles
           datatable(
             # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
@@ -692,16 +650,14 @@ mod_table_phenoHeadsUp_server <- function(
               autoWidth = TRUE,
               columnDefs = list(
                 list(
-                  width = "5px", targets = 1:ncol(filtered_df)
+                  width = "5px", 
+                  targets = 1:ncol(filtered_df)
                 )
               ),
-              # dom = "Pfrtip",
               columnDefs = list(list(
                 searchPanes = list(show = FALSE),
                 targets = 1:ncol(filtered_df)
               )),
-              # rownames = FALSE
-              # pageLength = 15,
               paging = FALSE,
               searching = TRUE,
               info = FALSE,
@@ -715,7 +671,7 @@ mod_table_phenoHeadsUp_server <- function(
               )
             )
           ) %>% formatStyle(
-            columns = 6, # Apply style to the 'Occupation' column
+            columns = 6, # Apply style to the JSON Path column
             `white-space` = "nowrap",
             `overflow` = "hidden",
             `text-overflow` = "ellipsis",
