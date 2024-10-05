@@ -1,5 +1,27 @@
 {
-  "lightgrey": ["Idx"],
-  "lightpink": ["V1", "V2"],
-  "lightblue": ["V3", "V4"]
+  "bff": [
+    {"diseases":"rgba(158, 1, 66, 1)"},
+    {"ethnicty":"rgba(213, 62, 79, 1)"},
+    {"exposures":"rgba(244, 109, 67, 1)"},
+    {"geographicOrigin":"rgba(253, 174, 97, 1)"},
+    {"id":"rgba(189, 195, 1991, 1)"}, 
+    {"interventionsOrProcedures":"rgba(255, 255, 191, 1)"},
+    {"karyotypicSex":"rgba(230, 245, 152, 1)"},
+    {"measures":"rgba(171, 221, 164, 1)"},
+    {"pedigrees":"rgba(102, 194, 165, 1)"},
+    {"phenotypicFeatures":"rgba(50, 136, 189, 1)"},
+    {"sex": "rgba(94, 79, 162, 1)"},
+    {"treatments": "rgba(254, 224, 139, 1)"}
+  ],
+  "pxf": [
+    {"id":"189, 195, 199,1"},
+    {"subject":"rgba(213, 62, 79, 1)"},
+    {"phenotypicFeatures":"rgba(244, 109, 67, 1)"},
+    {"measurements":"rgba(253, 174, 97, 1)"},
+    {"biosamples":"rgba(254, 224, 139, 1)"},
+    {"interpretations":"rgba(255, 255, 191, 1)"},
+    {"diseases":"rgba(230, 245, 152, 1)"},
+    {"medicalActions":"rgba(171, 221, 164, 1)"},
+    {"files":"rgba(102, 194, 165, 1)"}
+  ]
 }
