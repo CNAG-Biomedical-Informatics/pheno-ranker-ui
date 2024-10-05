@@ -710,7 +710,6 @@ mod_table_phenoHeadsUp_server <- function(
               rowCallback = JS(
                 "function(row, data, index) {
                   var color = data[data.length - 1][0] || 'rgb(255,255,255)'; 
-                  console.log('Coloring row ' + index + ' with color ' + color);
                   $('td', row).css('background-color', color) ;
                 }"
               )

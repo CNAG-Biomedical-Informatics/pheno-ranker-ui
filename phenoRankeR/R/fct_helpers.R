@@ -1415,7 +1415,7 @@ get_table_color_schema <- function(pats_ranked_dir, runId) {
   # hsla(170, 30%, 80%, 1)
   # s & l should be the fixed
   # h should be the variable (1-360)
-  hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
+  # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
 
   json_data <- fromJSON(readLines(
     "inst/extdata/config/pheno_blast_col_colors.json"
