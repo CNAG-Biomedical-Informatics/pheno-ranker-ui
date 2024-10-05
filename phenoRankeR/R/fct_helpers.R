@@ -450,7 +450,6 @@ observeTabChangeToExampleData <- function(
     panel_id,
     dropdown_id,
     user_email) {
-
   user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
@@ -1365,7 +1364,7 @@ observeConvertedDataChange <- function(
 }
 
 
-get_table_color_schema <- function (pats_ranked_dir, runId) {
+get_table_color_schema <- function(pats_ranked_dir, runId) {
   blast_data <- readTxt(
     pats_ranked_dir,
     fileName_suffix = "_alignment.csv",
@@ -1417,36 +1416,45 @@ get_table_color_schema <- function (pats_ranked_dir, runId) {
   # s & l should be the fixed
   # h should be the variable (1-360)
   hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
-  print("hex_colors")
-  print(hex_colors)
 
-  # TODO
-  # !BUG
-  # when using as reference: individuals.json
-  # and as target: patient.json
-  # as include-terms: geographicOrigin
+  json_data <- fromJSON(readLines(
+    "inst/extdata/config/pheno_blast_col_colors.json"
+  ))
 
-  # [1] "hex_colors"
-  # character(0)
-  # Warning: Error in grep: invalid 'pattern' argument
+  print("json_data")
+  print(json_data)
 
-  # maybe it would be a good idea to hardcode each color to
-  # to a specific toplevel (for BFF it would be 11)
-  # So the user gets not confused when the colors change with each re-ranking
+  colors_mapping <- json_data[["bff"]]
+  print("colors_mapping")
+  print(colors_mapping)
 
-  # replace all keys with a color and the value with the value
-  # of the dictionary jsonPath_to_header
+  # Initialize color_scheme list
   color_scheme <- list()
   print("color_scheme")
   print(color_scheme)
+
+  print("topLevels")
+  print(topLevels)
+
   for (i in 1:length(topLevels)) {
-    dict_values <- dictionary[grep(topLevels[i], names(dictionary))]
+
+    topLevel <- topLevels[i]
+    print(paste0("topLevel: ", topLevel))
+
+    dict_values <- dictionary[grep(
+      topLevel,
+      names(dictionary)
+    )]
 
     # replace each value with the header
     for (j in 1:length(dict_values)) {
       dict_values[j] <- jsonPath_to_header[dict_values[j]]
     }
-    color_scheme[[hex_colors[i]]] <- dict_values
+    # color_scheme[[hex_colors[i]]] <- dict_values
+    color <- colors_mapping[[topLevel]]
+    # print("color")
+    # print(color)
+    color_scheme[[color]] <- dict_values
   }
 
   print("color_scheme populated")
@@ -1458,6 +1466,9 @@ get_table_color_schema <- function (pats_ranked_dir, runId) {
       col_colors[[col_name]] <- color
     }
   }
+
+  print("col_colors")
+  print(col_colors)
 
   return(col_colors)
 }
