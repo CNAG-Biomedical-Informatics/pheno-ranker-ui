@@ -209,7 +209,7 @@ mod_table_phenoBlast_server <- function(
               "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable thead th.sorting_disabled').eq(i).css('background-color', color);",
 
               # hide the row with the colors
-              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
+              # "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
             "}",
           "});",
         "}"
