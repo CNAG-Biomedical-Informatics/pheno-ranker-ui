@@ -97,7 +97,7 @@ mod_table_phenoBlast_server <- function(
 
     print("in mod_table_phenoBlast_server")
 
-    renderbinaryRepresentationTable <- function(runId, rv_general) {
+    renderbinaryRepresentationTable <- function(runId, rv_general, rv_patient) {
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
@@ -162,11 +162,13 @@ mod_table_phenoBlast_server <- function(
       print("top_levels")
       print(top_levels)
 
-      color_map <- get_color_mapping(
-        rv_general,
-        runId,
-        top_levels
-      )
+      # color_map <- get_color_mapping(
+      #   rv_general,
+      #   runId,
+      #   top_levels
+      # )
+
+      color_map <- rv_patient$colors_mapping
 
       print("color_map")
       print(color_map)
@@ -393,7 +395,11 @@ mod_table_phenoBlast_server <- function(
       return()
     }
 
-    blast_data <- renderbinaryRepresentationTable(runId, rv_general)
+    blast_data <- renderbinaryRepresentationTable(
+      runId,
+      rv_general,
+      rv_patient
+    )
 
     observeEvent(input$binaryRepresentationTable_row_last_clicked, {
       # TODO
@@ -646,7 +652,7 @@ mod_table_phenoHeadsUp_server <- function(
         ))
       }
 
-      renderTable <- function(output, values, col_colors) {
+      renderTable <- function(output, values, rv_patient) {
         # print("in renderTable")
         # print("values")
         # print(values)
@@ -670,11 +676,13 @@ mod_table_phenoHeadsUp_server <- function(
         # remove everything after the first dot
         top_levels <- gsub("\\..*", "", json_path_col)
 
-        color_map <- get_color_mapping(
-          rv_general,
-          rv_patient$runId,
-          top_levels
-        )
+        # color_map <- get_color_mapping(
+        #   rv_general,
+        #   rv_patient$runId,
+        #   top_levels
+        # )
+
+        color_map <- rv_patient$colors_mapping
 
         print("color_map")
         print(color_map)
@@ -841,7 +849,7 @@ mod_table_phenoHeadsUp_server <- function(
       }
 
       tableVals <- prepareTable(rv_patient, rv_general)
-      renderTable(output, tableVals, rv_patient$col_colors)
+      renderTable(output, tableVals, rv_patient)
     }
 
     if (is.null(rv_patient)) {

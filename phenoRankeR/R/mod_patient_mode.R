@@ -1517,11 +1517,33 @@ mod_patient_mode_server <- function(
         timestamp
       )
 
-      rv_patient$col_colors <- get_table_row_colors(
+      # accessm blast data to get the top levels
+      bin_df <- readTxt(
+        rv_general$user_dirs$output$pats_ranked,
+        fileName_suffix = "_alignment.csv",
+        runId = runId,
+        sep = ";"
+      )
+
+      top_level_row <- bin_df[1, ]
+
+      # in the top level row remove everything after the first dot
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      top_level_row[1] < "top level"
+
+      top_levels <- unique(top_level_row)
+
+      rv_patient$colors_mapping <- get_table_row_colors(
         rv_general$user_dirs$output$pats_ranked,
         timestamp,
-        rv_general
+        top_levels
       )
+
+      # rv_patient$col_colors <- get_table_row_colors(
+      #   rv_general$user_dirs$output$pats_ranked,
+      #   timestamp,
+      #   rv_general
+      # )
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
