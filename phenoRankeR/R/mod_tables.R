@@ -134,14 +134,33 @@ mod_table_phenoBlast_server <- function(
 
       # in the top level row remove everything after the first dot
       top_level_row <- gsub("\\..*", "", top_level_row)
-      top_level_row[1] < "top level"
-
-      top_levels <- unique(top_level_row)
-      print("top_levels")
-      print(top_levels)
+      top_level_row[1] <- "top level"
 
       # add the top level row to the data frame
       bin_df2 <- rbind(top_level_row, bin_df)
+
+      # When the columns are not sorted, the color mapping will not work
+      # Separate the first column and the rest of the data frame
+      first_column <- bin_df2[, 1]
+      rest_of_df <- bin_df2[, -1]
+
+      # Simplify the first row of the remaining columns to ensure no lists
+      simplified_first_row <- sapply(rest_of_df[1, ], as.character)
+
+      # Sort the remaining columns based on the simplified first row
+      sorted_rest_of_df <- rest_of_df[, order(simplified_first_row)]
+
+      # Recombine the first column with the sorted remaining columns
+      bin_df2 <- cbind(first_column, sorted_rest_of_df)
+
+      # Rename the first column back to "Id"
+      names(bin_df2)[1] <- "Id"
+
+      top_level_row <- unlist(bin_df2[1,])
+
+      top_levels <- unique(top_level_row[-1])
+      print("top_levels")
+      print(top_levels)
 
       color_map <- get_color_mapping(
         rv_general,
@@ -209,7 +228,7 @@ mod_table_phenoBlast_server <- function(
               "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable thead th.sorting_disabled').eq(i).css('background-color', color);",
 
               # hide the row with the colors
-              # "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
             "}",
           "});",
         "}"

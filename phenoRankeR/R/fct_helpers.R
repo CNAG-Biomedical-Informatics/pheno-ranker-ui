@@ -1363,6 +1363,57 @@ observeConvertedDataChange <- function(
   })
 }
 
+# Function to generate HSLA colors with variable hue
+generate_hsla_colors <- function(h_start, h_end, fixed_s = 30, fixed_l = 80, fixed_a = 1) {
+  # fixed s_l_a values as suggested by Sofia
+
+  # Create a vector of hues in the range [h_start, h_end]
+  hues <- seq(h_start, h_end, by = 1)
+  
+  # Generate HSLA color strings
+  hsla_colors <- paste0("hsla(", hues, ", ", fixed_s, "%, ", fixed_l, "%, ", fixed_a, ")")
+  
+  return(hsla_colors)
+}
+
+# Function to filter hues with a minimum distance between them
+filter_distinct_hues <- function(hues, min_distance) {
+  selected_hues <- numeric(0)  # Empty vector to store selected hues
+  
+  # Iterate over the hues and select those that are sufficiently far apart
+  for (hue in hues) {
+    if (length(selected_hues) == 0 || all(abs(hue - selected_hues) >= min_distance)) {
+      selected_hues <- c(selected_hues, hue)
+    }
+  }
+  
+  return(selected_hues)
+}
+
+# Function to sample distinct colors with a fallback when spacing isn't possible
+sample_distinct_colors <- function(colors, num_samples, min_distance = 20) {
+  # Get the hues from the colors by extracting the numeric values between "hsla(" and ","
+  hues <- as.numeric(sub("hsla\\((\\d+),.*", "\\1", colors))
+  
+  # Filter the hues to ensure they are spaced by at least min_distance
+  distinct_hues <- filter_distinct_hues(hues, min_distance)
+  
+  # If we cannot get enough nicely spaced hues, we randomly sample the remaining ones
+  if (length(distinct_hues) < num_samples) {
+    remaining_hues <- setdiff(hues, distinct_hues)  # Find the remaining hues
+    additional_hues <- sample(remaining_hues, num_samples - length(distinct_hues))  # Sample the rest
+    selected_hues <- c(distinct_hues, additional_hues)  # Combine distinct and additional hues
+  } else {
+    selected_hues <- sample(distinct_hues, num_samples)  # Sample from the nicely spaced hues
+  }
+  
+  # Return the corresponding colors
+  selected_colors <- colors[match(selected_hues, hues)]
+  
+  return(selected_colors)
+}
+
+
 get_color_mapping <- function(rv_general,runId, topLevels) {
 
   db_conn <- rv_general$db_conn
@@ -1387,13 +1438,15 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
     )
     color_mapping <- json_data[[format_to_key[[inputFormat]]]]
   } else {
-    print("Input format not found")
-    colors <- sample(hcl.colors(
+    hsla_colors <- generate_hsla_colors(1, 360)
+    # colors <- sample(hsla_colors, length(topLevels))
+
+    # Sample more distinct colors
+    colors <- sample_distinct_colors(
+      hsla_colors,
       length(topLevels),
-      palette = "pastel1"
-    ))
-    print("colors")
-    print(colors)
+      min_distance = 30
+    )
 
     color_mapping <- list()
     for (i in 1:length(topLevels)) {
@@ -1402,6 +1455,8 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
   }
   return(color_mapping)
 }
+
+
 
 get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   blast_data <- readTxt(
