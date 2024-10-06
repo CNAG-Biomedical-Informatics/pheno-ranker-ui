@@ -53,7 +53,6 @@ renderPlots <- function(
     merged_data <- as.matrix(
       readTxt(
         rv_general$user_dirs$output$pats_ranked,
-        # get_golem_options("patientModeOutputFolder"),
         runId = runId,
         row_names = 1
       )
@@ -120,7 +119,7 @@ renderPlots <- function(
       aes(
         x, y,
         color = .data[["original_fn"]],
-        label = label,
+        label = label, #no visible binding for global variable 'label'
         customdata = label
       )
       # aes(

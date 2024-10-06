@@ -697,8 +697,6 @@ mod_table_phenoHeadsUp_server <- function(
 
         # add the color col to the data frame
         filtered_df$color <- color_col
-        print("filtered_df")
-        print(head(filtered_df))
 
         rowCallback <- JS(
           "function(row, data, index) {

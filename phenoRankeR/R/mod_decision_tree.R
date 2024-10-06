@@ -442,13 +442,13 @@ mod_decision_tree_ui <- function(id, ns) {
         card_body(
           span(
             "Our interactive decision tree will help you
-            to get started with Pheno-Ranker 🚀",
+            to get started with Pheno-Ranker \U1F680", # rocket emoji
           ),
           span(
-            "Hover over the bottom nodes to learn more💡"
+            "Hover over the bottom nodes to learn more \U1F4A1" # light bulb emoji
           ),
           span(
-            "Hint: certain nodes are clickable!👇"
+            "Hint: certain nodes are clickable! \U1F447" # pointing finger emoji
           ),
           style = "min-height: 425px;"
         )
