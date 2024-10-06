@@ -371,6 +371,8 @@ store_job_in_db <- function(
   # store the job in the database
   print("HERE before toJSON")
   settings_json <- toJSON(settings)
+  print("settings_json")
+  print(settings_json)
   print("HERE after toJSON")
 
   query <- sprintf(
@@ -450,9 +452,6 @@ observeTabChangeToExampleData <- function(
     panel_id,
     dropdown_id,
     user_email) {
-  # should not be hardcoded
-  # user_id <- 1
-
   user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
@@ -474,11 +473,48 @@ observeTabChangeToExampleData <- function(
     input,
     session,
     panel_id,
-    "Example data",
+    "Retrieved Examples",
     function() {
       nrow(res) == 0
     },
-    "Please run example data first",
+    "Please run get example input first",
+    "Upload"
+  )
+}
+
+observeTabChangeToBeaconApiData <- function(
+    input,
+    session,
+    db_conn,
+    panel_id,
+    dropdown_id,
+    user_email) {
+  user_id <- get_user_id(user_email, db_conn)
+
+  query <- sprintf(
+    "SELECT run_id, label FROM jobs WHERE user_id = %d AND mode = 'beacon_api' AND status = 'success' ORDER BY submitted_at DESC",
+    user_id
+  )
+
+  res <- dbGetQuery(db_conn, query)
+  choices <- setNames(res$run_id, res$label)
+
+  updateSelectInput(
+    session,
+    dropdown_id,
+    choices = choices,
+    selected = NULL
+  )
+
+  observeTabChangeEvent(
+    input,
+    session,
+    panel_id,
+    "Beacon API",
+    function() {
+      nrow(res) == 0
+    },
+    "Please run query Beacon API first",
     "Upload"
   )
 }
@@ -491,9 +527,6 @@ observeTabChangeToSimulateData <- function(
     panel_id,
     dropdown_id,
     user_email) {
-  # should not be hardcoded
-  # user_id <- 1
-
   user_id <- get_user_id(user_email, db_conn)
 
   query <- sprintf(
@@ -515,7 +548,7 @@ observeTabChangeToSimulateData <- function(
     input,
     session,
     panel_id,
-    "Simulated data",
+    "Simulation",
     function() {
       nrow(res) == 0
     },
@@ -555,7 +588,7 @@ observeTabChangeToConvertedData <- function(
     input,
     session,
     panel_id,
-    "Converted data",
+    "Conversion",
     function() {
       nrow(res) == 0
     },
@@ -589,6 +622,7 @@ observeSimulatedDataChange <- function(
     db_conn,
     rv,
     rv_sim,
+    rv_general,
     input_id,
     yaml_editor_id,
     expected_row_count) {
@@ -615,6 +649,7 @@ observeSimulatedDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useSimulatedReference <- TRUE
+      rv$useBeaconReference <- FALSE
       rv$useExampleReference <- FALSE
       rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
@@ -622,6 +657,7 @@ observeSimulatedDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useSimulatedTarget <- TRUE
+      rv$useBeaconTarget <- FALSE
       rv$useExampleTarget <- FALSE
       rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
@@ -729,7 +765,7 @@ observeSimulatedDataChange <- function(
     # 20230804143923.bff.json:T
 
     # simulatedData_input_dir <- "./data/output/simulatedData/"
-    simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
+    # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
 
     rows <- lapply(1:expected_row_count, function(i) {
       id_prefix_new <- paste0(id_prefix, i)
@@ -753,7 +789,9 @@ observeSimulatedDataChange <- function(
         ),
         new_fn = normalizePath(
           paste0(
-            simulatedData_input_dir,
+            rv_general$user_dirs$output$sim,
+            "/",
+            # simulatedData_input_dir,
             simulationId,
             ".",
             rv$inputFormat,
@@ -909,6 +947,127 @@ observeSimulatedDataChange <- function(
   })
 }
 
+observeBeaconApiDataChange <- function(
+    session,
+    input,
+    output,
+    rv,
+    rv_beacon_api,
+    rv_general,
+    input_id,
+    yaml_editor_id,
+    expected_row_count) {
+  # possible values:
+  # input_id <-
+  # "patient_beacon_api"
+
+  print("in observeBeaconApiDataChange in fct_helpers.R")
+  print("expected_row_count")
+  print(expected_row_count)
+
+  observeEvent(input[[input_id]], {
+    rv_beacon_api$queryId <- input[[input_id]]
+
+
+    if (is.null(rv$mappingDf)) {
+      mapping_df <- create_new_mapping_df()
+    } else {
+      mapping_df <- rv$mappingDf
+    }
+
+    file_info <- "Cohort"
+    if (grepl("reference", input_id)) {
+      id_prefix <- "R"
+      file_info <- "Reference"
+      rv$useBeaconReference <- TRUE
+      rv$useExampleReference <- FALSE
+      rv$useSimulatedReference <- FALSE
+      rv$useConvertedReference <- FALSE
+      mapping_df <- create_new_mapping_df()
+    } else if (grepl("target", input_id)) {
+      id_prefix <- "T"
+      file_info <- "Target"
+      rv$useBeaconTarget <- TRUE
+      rv$useExampleTarget <- FALSE
+      rv$useSimulatedTarget <- FALSE
+      rv$useConvertedTarget <- FALSE
+      print("mapping_df before subset")
+      print(mapping_df)
+      mapping_df <- subset(mapping_df, file_info != "Target")
+      print("mapping_df after subset")
+      print(mapping_df)
+    } else {
+      id_prefix <- "C"
+      mapping_df <- create_new_mapping_df()
+    }
+
+    rows <- lapply(1:expected_row_count, function(i) {
+      id_prefix_new <- paste0(id_prefix, i)
+
+      # Use ifelse to handle the different cases for simulationId
+      queryId <- ifelse(expected_row_count == 1, rv_beacon_api$queryId, rv_beacon_api$queryId[i])
+
+      print("expected_row_count")
+      print(expected_row_count)
+
+      print("rv_beacon_api$queryId")
+      print(queryId)
+
+      print("rv$inputFormat")
+      print(rv$inputFormat)
+
+      # hard coded for now
+      rv$inputFormat <- "bff"
+
+      row <- data.frame(
+        file_info = file_info,
+        original_fn = paste0(
+          queryId,
+          ".",
+          rv$inputFormat,
+          ".json"
+        ),
+        new_fn = normalizePath(
+          paste0(
+            rv_general$user_dirs$output$beacon,
+            "/",
+            queryId,
+            ".",
+            rv$inputFormat,
+            ".json"
+          )
+        ),
+        id_prefixes = id_prefix_new,
+        simulatedData = FALSE,
+        stringsAsFactors = FALSE
+      )
+      return(row)
+    })
+
+    rows_df <- do.call(rbind, rows)
+    print("rows_df")
+    print(rows_df)
+
+    rv$mappingDf <- rbind(mapping_df, rows_df)
+
+    editor_val <- ""
+    for (i in 1:nrow(rv$mappingDf)) {
+      editor_val <- paste0(
+        editor_val,
+        rv$mappingDf$original_fn[i],
+        ":",
+        rv$mappingDf$id_prefixes[i],
+        "\n"
+      )
+    }
+    updateAceEditor(
+      session,
+      yaml_editor_id,
+      value = editor_val
+    )
+  })
+}
+
 observeExampleDataChange <- function(
     session,
     input,
@@ -942,6 +1101,7 @@ observeExampleDataChange <- function(
       id_prefix <- "R"
       file_info <- "Reference"
       rv$useExampleReference <- TRUE
+      rv$useBeaconReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- FALSE
       mapping_df <- create_new_mapping_df()
@@ -949,6 +1109,7 @@ observeExampleDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useExampleTarget <- TRUE
+      rv$useBeaconTarget <- FALSE
       rv$useSimulatedTarget <- FALSE
       rv$useConvertedTarget <- FALSE
       print("mapping_df before subset")
@@ -960,9 +1121,6 @@ observeExampleDataChange <- function(
       id_prefix <- "C"
       mapping_df <- create_new_mapping_df()
     }
-
-    # exampleDataInputDir <- get_golem_options("inputExamplesOutputFolder")
-    # exampleDataInputDir <- rv_general$user_dirs$output$examples
 
     rows <- lapply(1:expected_row_count, function(i) {
       id_prefix_new <- paste0(id_prefix, i)
@@ -988,7 +1146,6 @@ observeExampleDataChange <- function(
           paste0(
             rv_general$user_dirs$output$examples,
             "/",
-            # exampleDataInputDir,
             retrievalId,
             ".",
             rv$inputFormat,
@@ -1063,6 +1220,7 @@ observeConvertedDataChange <- function(
     if (grepl("reference", input_id)) {
       id_prefix <- "R"
       file_info <- "Reference"
+      rv$useBeaconReference <- FALSE
       rv$useExampleReference <- FALSE
       rv$useSimulatedReference <- FALSE
       rv$useConvertedReference <- TRUE
@@ -1072,6 +1230,7 @@ observeConvertedDataChange <- function(
       id_prefix <- "T"
       file_info <- "Target"
       rv$useExampleTarget <- FALSE
+      rv$useBeaconTarget <- FALSE
       rv$useSimulatedTarget <- FALSE
       rv$useConvertedTarget <- TRUE
       print("mapping_df before subset")
@@ -1204,4 +1363,294 @@ observeConvertedDataChange <- function(
       value = paste(yamlCfg, collapse = "\n")
     )
   })
+}
+
+# Function to generate HSLA colors with variable hue
+generate_hsla_colors <- function(h_start, h_end, fixed_s = 30, fixed_l = 80, fixed_a = 1) {
+  # fixed s_l_a values as suggested by Sofia
+
+  # Create a vector of hues in the range [h_start, h_end]
+  hues <- seq(h_start, h_end, by = 1)
+  
+  # Generate HSLA color strings
+  hsla_colors <- paste0("hsla(", hues, ", ", fixed_s, "%, ", fixed_l, "%, ", fixed_a, ")")
+  
+  return(hsla_colors)
+}
+
+# Function to filter hues with a minimum distance between them
+filter_distinct_hues <- function(hues, min_distance) {
+  selected_hues <- numeric(0)  # Empty vector to store selected hues
+  
+  # Iterate over the hues and select those that are sufficiently far apart
+  for (hue in hues) {
+    if (length(selected_hues) == 0 || all(abs(hue - selected_hues) >= min_distance)) {
+      selected_hues <- c(selected_hues, hue)
+    }
+  }
+  
+  return(selected_hues)
+}
+
+# Function to sample distinct colors with a fallback when spacing isn't possible
+sample_distinct_colors <- function(colors, num_samples, min_distance = 20) {
+  # Get the hues from the colors by extracting the numeric values between "hsla(" and ","
+  hues <- as.numeric(sub("hsla\\((\\d+),.*", "\\1", colors))
+  
+  # Filter the hues to ensure they are spaced by at least min_distance
+  distinct_hues <- filter_distinct_hues(hues, min_distance)
+  
+  # If we cannot get enough nicely spaced hues, we randomly sample the remaining ones
+  if (length(distinct_hues) < num_samples) {
+    remaining_hues <- setdiff(hues, distinct_hues)  # Find the remaining hues
+    additional_hues <- sample(remaining_hues, num_samples - length(distinct_hues))  # Sample the rest
+    selected_hues <- c(distinct_hues, additional_hues)  # Combine distinct and additional hues
+  } else {
+    selected_hues <- sample(distinct_hues, num_samples)  # Sample from the nicely spaced hues
+  }
+  
+  # Return the corresponding colors
+  selected_colors <- colors[match(selected_hues, hues)]
+  
+  return(selected_colors)
+}
+
+
+get_color_mapping <- function(rv_general,runId, topLevels) {
+
+  print("in get_color_mapping in fct_helpers.R")
+  print("rv_general")
+  print(rv_general)
+
+  print("runId")
+  print(runId)
+
+  db_conn <- rv_general$db_conn
+  user_email <- rv_general$user_email
+
+  query <- sprintf(
+    "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
+    runId, get_user_id(user_email, db_conn)
+  )
+
+  print("before dbGetQuery")
+  res <- dbGetQuery(db_conn, query)
+  print("after dbGetQuery")
+  print("res")
+  print(res)
+
+  print("settings")
+  print(res$settings)
+
+  print("res$settings[1]")
+  print(res$settings[1])
+  settings <- fromJSON(res$settings[1])
+  print("settings")
+  print(settings)
+  inputFormat <- settings$input_format
+
+  format_to_key <- list(
+    "bff.json" = "bff",
+    "pxf.json" = "pxf"
+  )
+  color_mapping <- NULL
+  if (inputFormat %in% names(format_to_key)) {
+    json_data <- fromJSON(
+      "inst/extdata/config/pheno_blast_col_colors.json"
+    )
+    color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+  } else {
+    hsla_colors <- generate_hsla_colors(1, 360)
+    # colors <- sample(hsla_colors, length(topLevels))
+
+    # Sample more distinct colors
+    colors <- sample_distinct_colors(
+      hsla_colors,
+      length(topLevels),
+      min_distance = 30
+    )
+
+    color_mapping <- list()
+    for (i in 1:length(topLevels)) {
+      color_mapping[[topLevels[i]]] <- colors[i]
+    }
+  }
+  return(color_mapping)
+}
+
+
+
+get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
+  blast_data <- readTxt(
+    pats_ranked_dir,
+    fileName_suffix = "_alignment.csv",
+    runId = runId,
+    sep = ";"
+  )
+  blast_data <- as.data.frame(blast_data)
+  print("blast_data")
+  # print(str(blast_data))
+
+  print("nrow(blast_data)")
+  print(nrow(blast_data))
+
+  # header/first row to a character vector w/o the first column
+  headers <- as.character(colnames(blast_data))[-1]
+  jsonPaths <- as.character(blast_data[1, ])[-1]
+
+  # if there is no jsonPath
+  if (length(jsonPaths) == 0) {
+    print("jsonPaths is empty")
+    # TODO
+    # throw error
+    return()
+  }
+
+  # replace spaces with "-"
+  jsonPaths <- gsub(" ", "-", jsonPaths)
+
+  print("jsonPaths")
+  print(jsonPaths)
+
+  # map each jsonPath to a header
+  jsonPath_to_header <- setNames(headers, jsonPaths)
+  print("jsonPath_to_header")
+  print(jsonPath_to_header)
+
+  # get the unique top level keys from the jsonPaths
+  # replace the top level keys with colors
+  # the values of the dictionary are the headers
+  # e.g. {"orange": ["Female","male"]}
+  key_value_pairs <- strsplit(jsonPaths, "\\.")
+
+  # topLevel_to_JSON_path <- lapply(jsonPaths, function(x) {
+  #   # Extract the part before the first period as the category
+  #   category <- sub("\\..*$", "", x)
+    
+  #   # Create a pair with the category and the full string
+  #   c(category, x)
+  # })
+
+  # print("topLevel_to_JSON_path")
+  # print(topLevel_to_JSON_path)
+
+  # print("key_value_pairs")
+  # print(key_value_pairs)
+  dictionary <- setNames(
+    jsonPaths, 
+    sapply(key_value_pairs, function(x) x[1]
+  ))
+  topLevels <- unique(
+    sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
+  )
+
+  # print("dictionary")
+  # print(dictionary)
+
+  # print("topLevels")
+  # print(topLevels)
+
+  # suggestion by Sofia
+  # colors for the phenoblast table
+  # should be in that range
+  # hsla(170, 30%, 80%, 1)
+  # s & l should be the fixed
+  # h should be the variable (1-360)
+  # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
+
+  # json_data <- fromJSON(readLines(
+  #   "inst/extdata/config/pheno_blast_col_colors.json"
+  # ))
+
+  # print("json_data")
+  # print(json_data)
+
+  user_email <- rv_general$user_email
+  db_conn <- rv_general$db_conn
+  userId <- get_user_id(user_email, db_conn)
+  print("userId")
+  print(userId)
+
+  query <- sprintf(
+    "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
+    runId, userId
+  )
+  res <- dbGetQuery(db_conn, query)
+  settings <- fromJSON(res$settings[1])
+  inputFormat <- settings$input_format
+
+  
+  format_to_key <- list(
+    "bff.json" = "bff",
+    "pxf.json" = "pxf"
+  )
+  color_mapping <- NULL
+  if (inputFormat %in% names(format_to_key)) {
+    json_data <- fromJSON(readLines(
+    "inst/extdata/config/pheno_blast_col_colors.json"
+    ))
+    color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+  }
+
+  # Initialize color_scheme list
+  color_scheme <- list()
+  print("color_scheme")
+  print(color_scheme)
+
+  print("topLevels")
+  print(topLevels)
+
+  for (i in 1:length(topLevels)) {
+
+    topLevel <- topLevels[i]
+    print(paste0("topLevel: ", topLevel))
+
+    dict_values <- dictionary[grep(
+      topLevel,
+      names(dictionary)
+    )]
+
+    print("dict_values")
+    print(dict_values)
+
+    # # replace each value with the header
+    for (j in 1:length(dict_values)) {
+      dict_values[j] <- jsonPath_to_header[dict_values[j]]
+    }
+    if (is.null(color_mapping)) {
+      hex_colors <- sample(hcl.colors(
+        length(topLevels),
+        palette = "pastel1"
+      ))
+      color_scheme[[hex_colors[i]]] <- dict_values
+    } else {
+      color <- color_mapping[[topLevel]]
+      color_scheme[[color]] <- list(
+        dict_values = dict_values,
+        topLevel = topLevel
+      )
+    }
+  }
+
+  print("color_scheme populated")
+  print(color_scheme)
+
+  col_colors <- list()
+  for (color in names(color_scheme)) {
+    for (col_name in color_scheme[[color]]$dict_values) {
+      col_colors[[col_name]] <- color
+    }
+  }
+
+
+  # print("dictionary")
+  # print(dictionary)
+
+  # count the number names in the dictionary
+  print(table(names(dictionary)))
+
+  print("col_colors")
+  print(col_colors)
+
+  return(col_colors)
 }

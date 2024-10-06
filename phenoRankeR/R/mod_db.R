@@ -19,6 +19,9 @@ mod_db_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
+    initialized <- reactiveVal(FALSE)
+    conn <- reactiveVal(NULL)
+
     # cfg <- fromJSON(readLines("config/cfg.json"))
     # dbSettings <- cfg$dbSettings
     # dbSettings <- get_golem_options("dbSettings")
@@ -70,18 +73,44 @@ mod_db_server <- function(id){
       email varchar(255) NOT NULL UNIQUE
     )"
 
+    create_beacons_table <- "
+      CREATE TABLE IF NOT EXISTS beacons (
+      id SERIAL PRIMARY KEY,
+      url varchar(255) NOT NULL UNIQUE,
+      added_by_user_with_id user_id,
+      added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )"
+
+    # mapping table to see which user has access to which beacons
+    create_user2beacons_table <- "
+      CREATE TABLE IF NOT EXISTS user2beacons (
+      user_id numeric NOT NULL,
+      beacon_id numeric NOT NULL
+    )"
+
     if (dbDriver == "SQLite") {
       create_user_table <- "
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
         email varchar(255) NOT NULL UNIQUE
       )"
+
+      create_beacons_table <- "
+        CREATE TABLE IF NOT EXISTS beacons (
+        id INTEGER PRIMARY KEY,
+        url varchar(255) NOT NULL UNIQUE,
+        added_by_user_with_id user_id,
+        added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )"
+
+      create_user2beacons_table <- "
+        CREATE TABLE IF NOT EXISTS user2beacons (
+        user_id numeric NOT NULL,
+        beacon_id numeric NOT NULL
+      )"
     }
 
     # initialize jobs table
-
-    # TODO
-    # also create a users table if not exists
 
     #* NOTE
     # JSONB is only available in sqlite > 3.45.0
@@ -116,9 +145,22 @@ mod_db_server <- function(id){
       )"
     }
 
+    # TODO
+    # create a meta data table per mode to store all the possible settings
+    # this way we could retrieve the settings for an old run job and preconfigure the settings
+    # based on this job
+
+    # create_patient_mode_settings_table <- 
+
     observe({
       dbExecute(db_conn, create_user_table)
+      dbExecute(db_conn, create_beacons_table)
+      dbExecute(db_conn, create_user2beacons_table)
       dbExecute(db_conn, create_jobs_table)
+
+      # update reactive values
+      conn(db_conn)
+      initialized(TRUE)
     })
 
     session$onSessionEnded(function() {
@@ -127,6 +169,9 @@ mod_db_server <- function(id){
       print("database connection closed")
     })
 
-    return(db_conn)
+    return(list(
+      initialized = initialized,
+      conn = conn
+    ))
   })
 }

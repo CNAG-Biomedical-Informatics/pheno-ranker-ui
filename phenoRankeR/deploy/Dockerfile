@@ -1,4 +1,4 @@
-FROM manuelrueda/pheno-ranker:0.10 as base
+FROM manuelrueda/pheno-ranker:0.11 as base
 
 WORKDIR /usr/share/pheno-ranker
 

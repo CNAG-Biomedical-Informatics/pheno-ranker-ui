@@ -4,7 +4,7 @@
 }
 
 /* make the history sidebar overlay the main content */
-#PatientHistorySidebar, #CohortHistorySidebar, #SimulateHistorySidebar, #ConvertHistorySidebar, #InputExamplesRetrievalHistorySidebar {
+#PatientHistorySidebar, #CohortHistorySidebar, #SimulateHistorySidebar, #ConvertHistorySidebar, #InputExamplesRetrievalHistorySidebar, #BeaconApiHistorySidebar {
   display: none;
   background-color: lightgray;
   height: 100%;

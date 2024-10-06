@@ -1,0 +1,5 @@
+/.quarto/
+_output/
+
+saved_widgets/*
+!saved_widgets/README.md

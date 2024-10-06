@@ -151,26 +151,9 @@ mod_conv_output_viewer_ui <- function(id) {
 
 mod_conv_output_viewer_server <- function(id, conv_out, cfg_out, rv_conversion) {
   moduleServer(id, function(input, output, session) {
-    # print ("conv_out")
-    # print (conv_out)
 
     print("cfg_out")
     print(cfg_out)
-
-    # TODO
-    # the arraySizeInput
-    # should no longer be hardcoded to allow
-    # for disabling the preview when > 1001 indviduals
-
-    # mod_json_viewer_server(
-    #   "json_viewer_conv_mode",
-    #   checkboxes = NULL,
-    #   bff_out = NULL,
-    #   pxf_out = NULL,
-    #   arraySizeInput = 1,
-    #   conv_out = conv_out
-    # )
-
     output$yaml_viewer <- renderUI({
       div(
         card_header("Config file"),

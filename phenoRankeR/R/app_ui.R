@@ -45,16 +45,6 @@ app_ui <- function(request) {
       navbarMenu(
         "Rank",
         tabPanel(
-          title = "Patient Mode",
-          value = "patient",
-          mod_history_sidebar_ui(
-            "PatientHistorySidebar"
-          ),
-          mod_patient_mode_ui(
-            "patient_mode"
-          )
-        ),
-        tabPanel(
           title = "Cohort Mode",
           value = "cohort",
           mod_history_sidebar_ui(
@@ -64,6 +54,16 @@ app_ui <- function(request) {
             "cohort_mode"
           )
         ),
+        tabPanel(
+          title = "Patient Mode",
+          value = "patient",
+          mod_history_sidebar_ui(
+            "PatientHistorySidebar"
+          ),
+          mod_patient_mode_ui(
+            "patient_mode"
+          )
+        )
       ),
       navbarMenu(
         "Utilities",
@@ -74,7 +74,17 @@ app_ui <- function(request) {
             "InputExamplesRetrievalHistorySidebar"
           ),
           mod_input_examples_page_ui(
-            "input_examples"
+            "input_examples_mode"
+          )
+        ),
+        tabPanel(
+          title = "Query Beacon API",
+          value = "beacon_api",
+          mod_history_sidebar_ui(
+            "BeaconApiHistorySidebar"
+          ),
+          mod_beacon_api_page_ui(
+            "beacon_api_mode"
           )
         ),
         tabPanel(
@@ -98,7 +108,6 @@ app_ui <- function(request) {
         title = "About",
         mod_about_page_ui("about_page")
       ),
-      mod_headerbar_ui("headerbar")
     )
   )
 }
@@ -113,7 +122,8 @@ app_ui <- function(request) {
 golem_add_external_resources <- function() {
   add_resource_path(
     "www",
-    app_sys("app/www")
+    app_sys("app/www"),
+    warn_empty = TRUE
   )
 
   tags$head(

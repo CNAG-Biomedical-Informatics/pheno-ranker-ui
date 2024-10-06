@@ -7,9 +7,11 @@
 #' @noRd
 #'
 #' @importFrom shiny NS
-#' @importFrom DT datatable renderDT formatStyle DTOutput
+#' @importFrom DT datatable renderDT formatStyle DTOutput styleEqual styleRow
 #' @importFrom grDevices hcl.colors
 #' @importFrom stats setNames
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate pull summarize group_by row_number distinct arrange
 
 
 # TODO
@@ -95,12 +97,10 @@ mod_table_phenoBlast_server <- function(
 
     print("in mod_table_phenoBlast_server")
 
-    renderbinaryRepresentationTable <- function(runId, rv_general) {
+    renderbinaryRepresentationTable <- function(runId, rv_general, rv_patient) {
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
-        # get_golem_options("patientModeOutputFolder"),
-        # "data/output/rankedPatients/",
         runId,
         "/",
         runId,
@@ -114,100 +114,167 @@ mod_table_phenoBlast_server <- function(
         return()
       }
 
-      blast_data <- readTxt(
+      # binary representation of each patient
+      # blast_data <- readTxt(
+      bin_df <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
-        # get_golem_options("patientModeOutputFolder"),
         fileName_suffix = "_alignment.csv",
         runId = runId,
         sep = ";"
       )
-      blast_data <- as.data.frame(blast_data)
-      print("blast_data")
+
+      # blast_data <- as.data.frame(blast_data)
+      # print("blast_data")
       # print(str(blast_data))
 
-      print("nrow(blast_data)")
-      print(nrow(blast_data))
+      # print("nrow(blast_data)")
+      # print(nrow(blast_data))
 
-      # header/first row to a character vector w/o the first column
-      headers <- as.character(colnames(blast_data))[-1]
-      jsonPaths <- as.character(blast_data[1, ])[-1]
+      top_level_row <- bin_df[1, ]
 
-      # if there is no jsonPath
-      if (length(jsonPaths) == 0) {
-        print("jsonPaths is empty")
-        # TODO
-        # throw error
-        return()
-      }
+      # in the top level row remove everything after the first dot
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      top_level_row[1] <- "top level"
 
-      print("jsonPaths")
-      print(jsonPaths)
+      # add the top level row to the data frame
+      bin_df2 <- rbind(top_level_row, bin_df)
 
-      # map each jsonPath to a header
-      jsonPath_to_header <- setNames(headers, jsonPaths)
+      # When the columns are not sorted, the color mapping will not work
+      # Separate the first column and the rest of the data frame
+      first_column <- bin_df2[, 1]
+      rest_of_df <- bin_df2[, -1]
 
-      # get the unique top level keys from the jsonPaths
-      # replace the top level keys with colors
-      # the values of the dictionary are the headers
-      # e.g. {"orange": ["Female","male"]}
-      key_value_pairs <- strsplit(jsonPaths, "\\.")
-      dictionary <- setNames(jsonPaths, sapply(key_value_pairs, function(x) x[1]))
-      topLevels <- unique(
-        sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
+      # Simplify the first row of the remaining columns to ensure no lists
+      simplified_first_row <- sapply(rest_of_df[1, ], as.character)
+
+      # Sort the remaining columns based on the simplified first row
+      sorted_rest_of_df <- rest_of_df[, order(simplified_first_row)]
+
+      # Recombine the first column with the sorted remaining columns
+      bin_df2 <- cbind(first_column, sorted_rest_of_df)
+
+      # Rename the first column back to "Id"
+      names(bin_df2)[1] <- "Id"
+
+      top_level_row <- unlist(bin_df2[1,])
+
+      top_levels <- unique(top_level_row[-1])
+      print("top_levels")
+      print(top_levels)
+
+      # color_map <- get_color_mapping(
+      #   rv_general,
+      #   runId,
+      #   top_levels
+      # )
+
+      color_map <- rv_patient$colors_mapping
+
+      print("color_map")
+      print(color_map)
+
+      # add a new row containing the colors
+      color_row <- unlist(sapply(
+        bin_df2[1, ],
+        function(x) color_map[[x]]
+      ))
+      color_row <- c("background-color", color_row)
+
+      # add the color row to the data frame
+      bin_df2 <- rbind(color_row, bin_df2)
+
+      # extra header row containing the top level value
+      # while its cells are merged by top level
+
+      top_level_to_count <- table(top_level_row[-1])
+      print("top_level_to_count")
+      print(top_level_to_count)
+
+      top_level_to_color <- setNames(
+        unique(color_row[-1]),
+        unique(top_level_row[-1])
       )
 
-      print("topLevels")
-      print(topLevels)
+      header_row <- paste(
+        sapply(names(top_level_to_count), function(name) {
+          colspan_value <- top_level_to_count[[name]]
+          color <- top_level_to_color[[name]]
+          sprintf(
+            '<th colspan="%d" style="background-color:%s;">%s</th>',
+            colspan_value, color, name
+          )
+        }),
+        collapse = ""  # Collapse into a single string
+      )
 
-      # suggestion by Sofia
-      # colors for the phenoblast table
-      # should be in that range
-      # hsla(170, 30%, 80%, 1)
-      # s & l should be the fixed
-      # h should be the variable (1-360)
-      hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
-      print("hex_colors")
-      print(hex_colors)
+      # JavaScript to prepend the header row
+      headerCallback <- JS(
+        "function(thead, data, start, end, display) {",
+        sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
+        "}"
+      )
 
-      # TODO
-      # !BUG
-      # when using as reference: individuals.json
-      # and as target: patient.json
-      # as include-terms: geographicOrigin
+      # JavaScript to color the columns based on the values in the 2nd row of the data
+      initComplete <- JS(
+        "function(settings, json) {",
+          "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').each(function() {",
+            # Loop over each column to set background color based on the value in the first row (background-color)
+            "for (var i = 0; i < $('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr:eq(0) td').length; i++) {",
+              "var color = $('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr:eq(0)').find('td:eq(' + i + ')').text();",
+              "console.log(color);",
 
-      # [1] "hex_colors"
-      # character(0)
-      # Warning: Error in grep: invalid 'pattern' argument
+              # Apply background color to the cell
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').find('td:eq(' + i + ')').css('background-color', color);",
 
-      # maybe it would be a good idea to hardcode each color to
-      # to a specific toplevel (for BFF it would be 11)
-      # So the user gets not confused when the colors change with each re-ranking
+              # Apply background color to the header
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable thead th.sorting_disabled').eq(i).css('background-color', color);",
 
-      # replace all keys with a color and the value with the value
-      # of the dictionary jsonPath_to_header
-      color_scheme <- list()
-      for (i in 1:length(topLevels)) {
-        dict_values <- dictionary[grep(topLevels[i], names(dictionary))]
+              # hide the row with the colors
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
+            "}",
+          "});",
+        "}"
+      )
 
-        # replace each value with the header
-        for (j in 1:length(dict_values)) {
-          dict_values[j] <- jsonPath_to_header[dict_values[j]]
-        }
-        color_scheme[[hex_colors[i]]] <- dict_values
-      }
+      # remove row 2 and 3
+      bin_df3 <- bin_df2[-c(2, 3), ]
 
-      # remove the 1st row
-      blast_data <- blast_data[-1, ]
+      output$binaryRepresentationTable <- renderDT({
+        dt <- datatable(
+          bin_df3,
+          selection = "single",
+          rownames = FALSE,
+          escape = FALSE,
+          extensions = c("FixedColumns"),
+          options = list(
+            scrollY = "500px",
+            scrollX = TRUE,
+            fixedHeader = TRUE,
+            fixedColumns = list(leftColumns = 1),
+            paging = FALSE,
+            searching = FALSE,
+            ordering = FALSE,
+            headerCallback = headerCallback,
+            initComplete = initComplete
+          )
+        )
+        dt
+      }, )
 
-      # set the first column to ID
-      colnames(blast_data)[1] <- "Id"
+      # # count the number of unique values in the top level row and put them into a list
+      # top_level_to_count <- table(top_level_row)
 
-      col_colors <- list()
-      for (color in names(color_scheme)) {
-        for (col_name in color_scheme[[color]]) {
-          col_colors[[col_name]] <- color
-        }
-      }
+
+      # print("top_level_row")
+      # print(top_level_row)
+
+      # # remove the 1st row
+      # blast_data <- blast_data[-1, ]
+
+      # # set the first column to ID
+      # colnames(blast_data)[1] <- "Id"
+
+
 
       # TODO
       # figure out how to search but keep the first row fixed
@@ -223,58 +290,94 @@ mod_table_phenoBlast_server <- function(
       # with some custom filter logic which would be quite some work
       # postponed for now
 
-      output$binaryRepresentationTable <- renderDT({
-        dt <- datatable(
-          blast_data,
-          selection = "single",
-          rownames = FALSE,
-          escape = FALSE,
-          extensions = c("FixedColumns"),
-          options = list(
-            scrollY = "500px",
-            scrollX = TRUE,
-            fixedHeader = TRUE,
-            fixedColumns = list(leftColumns = 1),
-            paging = FALSE,
-            searching = FALSE,
-            ordering = FALSE,
-            # search = list(
-            #   regex = TRUE,   # Enable regular expression searching
-            #   caseInsensitive = TRUE
-            # ),
-            initComplete = JS(
-              "function(settings, json) {",
-              paste0(unlist(lapply(names(col_colors), function(col_name) {
-                sprintf(
-                  "$('th').filter(function() { return $(this).text() === \"%s\"; }).css('background-color', '%s');",
-                  # "$('th:contains(\"%s\")').css('background-color', '%s');",
-                  col_name, col_colors[[col_name]]
-                )
-              })), collapse = " "),
-              "}"
-            )
-          )
-        )
-        # Apply color to each column based on the named list
-        # for (col_name in names(col_colors)) {
-        #   dt <- dt %>% formatStyle(columns = col_name, backgroundColor = col_colors[[col_name]])
-        # }
-        for (col_name in names(col_colors)) {
-          dt <- do.call(
-            "formatStyle",
-            list(
-              dt,
-              columns = col_name,
-              backgroundColor = col_colors[[col_name]]
-            )
-          )
-        }
-        dt
-      }, )
+      # col_colors <- rv_patient$col_colors
+    
+      # print("col_colors")
+      # print(col_colors)
+
+      # print("names(col_colors)")
+      # print(names(col_colors))
+
+      # Dynamically calculate colspan for each category
+      # header_row <- paste0(
+      #   unlist(lapply(names(col_colors), function(col_name) {
+      #     colspan_value <- length(col_colors[[col_name]])
+      #     paste0("<th colspan=", colspan_value, ">", col_name, "</th>")
+      #   })),
+      #   collapse = ""
+      # )
+
+      # print("header_row")
+      # print(header_row)
+
+      # output$binaryRepresentationTable <- renderDT({
+      #   dt <- datatable(
+      #     blast_data,
+      #     selection = "single",
+      #     rownames = FALSE,
+      #     escape = FALSE,
+      #     extensions = c("FixedColumns"),
+      #     options = list(
+      #       scrollY = "500px",
+      #       scrollX = TRUE,
+      #       fixedHeader = TRUE,
+      #       fixedColumns = list(leftColumns = 1),
+      #       paging = FALSE,
+      #       searching = FALSE,
+      #       ordering = FALSE,
+      #       # search = list(
+      #       #   regex = TRUE,   # Enable regular expression searching
+      #       #   caseInsensitive = TRUE
+      #       # ),
+
+      #       headerCallback = JS(
+      #         "function(thead, data, start, end, display){",
+      #         sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
+      #       "}"),
+
+      #       # colors the header row
+      #       initComplete = JS(
+      #         "function(settings, json) {",
+      #         paste0(unlist(lapply(names(col_colors), function(col_name) {
+      #           sprintf(
+      #             "$('th').filter(function() { return $(this).text() === \"%s\"; }).css('background-color', '%s');",
+      #             # "$('th:contains(\"%s\")').css('background-color', '%s');",
+      #             col_name, col_colors[[col_name]]
+      #           )
+      #         })), collapse = " "),
+      #         "}"
+      #       )
+      #     )
+      #   )
+      #   # Apply color to each column based on the named list
+      #   # for (col_name in names(col_colors)) {
+      #   #   dt <- dt %>% formatStyle(columns = col_name, backgroundColor = col_colors[[col_name]])
+      #   # }
+
+      #   print("mod_table_phenoBlast_col_colors")
+      #   print(col_colors)
+
+      #   # TODO
+      #   # load the col_colors from rv_patient
+
+      #   # colors the rest of the columns
+      #   for (col_name in names(col_colors)) {
+      #     dt <- do.call(
+      #       "formatStyle",
+      #       list(
+      #         dt,
+      #         columns = col_name,
+      #         backgroundColor = col_colors[[col_name]]
+      #       )
+      #     )
+      #   }
+      #   dt
+      # }, )
       output$binaryRepresentationTableHeader <- renderUI({
         div()
       })
-      return(blast_data)
+      return (bin_df)
+      # return(blast_data)
     }
 
     if (is.null(runId)) {
@@ -292,7 +395,11 @@ mod_table_phenoBlast_server <- function(
       return()
     }
 
-    blast_data <- renderbinaryRepresentationTable(runId, rv_general)
+    blast_data <- renderbinaryRepresentationTable(
+      runId,
+      rv_general,
+      rv_patient
+    )
 
     observeEvent(input$binaryRepresentationTable_row_last_clicked, {
       # TODO
@@ -339,7 +446,6 @@ mod_table_phenoRanking_server <- function(
       file_path <- paste0(
         rv_general$user_dirs$output$pats_ranked,
         "/",
-        # get_golem_options("patientModeOutputFolder"),
         runId,
         "/",
         runId,
@@ -485,8 +591,6 @@ mod_table_phenoHeadsUp_server <- function(
         alignment_file_path <- paste0(
           rv_general$user_dirs$output$pats_ranked,
           "/",
-          # get_golem_options("patientModeOutputFolder"),
-          # "data/output/rankedPatients/",
           runId,
           "/",
           runId,
@@ -530,8 +634,8 @@ mod_table_phenoHeadsUp_server <- function(
         )
 
         ranking_df <- rv_patient$rankingDf
-        print("ranking_df")
-        print(ranking_df)
+        # print("ranking_df")
+        # print(ranking_df)
 
         ranking_table_row <- ranking_df[ranking_df[, 1] == rv_patient$id, ]
 
@@ -548,7 +652,7 @@ mod_table_phenoHeadsUp_server <- function(
         ))
       }
 
-      renderTable <- function(output, values) {
+      renderTable <- function(output, values, rv_patient) {
         # print("in renderTable")
         # print("values")
         # print(values)
@@ -567,23 +671,185 @@ mod_table_phenoHeadsUp_server <- function(
             )
           )
         })
+
+        json_path_col <- filtered_df$`JSON Path`
+        # remove everything after the first dot
+        top_levels <- gsub("\\..*", "", json_path_col)
+
+        # color_map <- get_color_mapping(
+        #   rv_general,
+        #   rv_patient$runId,
+        #   top_levels
+        # )
+
+        color_map <- rv_patient$colors_mapping
+
+        print("color_map")
+        print(color_map)
+
+        color_col <- unlist(lapply(
+          top_levels,
+          function(x) color_map[[x]]
+        ))
+
+        print("color_col")
+        print(color_col)
+
+        # add the color col to the data frame
+        filtered_df$color <- color_col
+        print("filtered_df")
+        print(head(filtered_df))
+
+        rowCallback <- JS(
+          "function(row, data, index) {
+            console.log(data);
+            var color = data[data.length - 1] || 'rgb(255,255,255)'; 
+            $('td', row).css('background-color', color) ;
+          }"
+        )
+
+        # hide the last column using a initComplete callback
+        initComplete <- JS(
+          "function(settings, json) {
+            var table = settings.oInstance.api();
+            console.log(table);
+            table.column(8).visible(false);
+          }"
+        )
+
         output$phenoHeadsUpTable <- renderDT({
           datatable(
             filtered_df,
-            rownames = FALSE,
+            escape = FALSE,
             options = list(
+              autoWidth = TRUE,
+              columnDefs = list(
+                list(
+                  targets = "_all",
+                  width = "5px"
+                )
+              ),
               paging = FALSE,
+              searching = TRUE,
               info = FALSE,
               scrollY = "500px",
-              scrollX = TRUE
+              rowCallback = rowCallback,
+              initComplete = initComplete
+            )) %>% formatStyle(
+              columns = 6, # Apply style to the JSON Path column
+              `white-space` = "nowrap",
+              `overflow` = "hidden",
+              `text-overflow` = "ellipsis",
+              `max-width` = "300px", # Restrict the cell's width
+              `cursor` = "pointer"
             )
-          )
         })
+
+        # dt <- datatable(
+        #   filtered_df,
+        #   rownames = FALSE,
+        #   options = list(
+        #     paging = FALSE,
+        #     info = FALSE,
+        #     scrollY = "500px",
+        #     scrollX = TRUE
+        #   )
+        # )
+
+        # print("mod_table_phenoHeadsUp col_colors")
+        # print(col_colors)
+
+        # check if col_colors is NULL
+        # if (is.null(col_colors)) {
+        #   print("col_colors is NULL")
+        #   exit()
+        # }
+
+        # print("filtered_df")
+        # print(filtered_df)
+
+        # # convert col_colors to row_colors
+        # row_colors <- vector("character", nrow(filtered_df))
+        # for (i in 1:nrow(filtered_df)) {
+        #   row_colors[i] <- col_colors[filtered_df[i, "Indicator"]]
+        # }
+
+        # add a new column to the data frame with the colors
+        # temp_df <- filtered_df
+
+        # Clean the labels to avoid mismatches
+        # temp_df$label_cleaned <- trimws(filtered_df$Label) # Remove leading/trailing whitespace
+        # temp_df$label_cleaned <- tolower(filtered_df$Label)
+        # temp_df$label_cleaned <- gsub("\\.", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub(":", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub("\\s+", "-", temp_df$label_cleaned) # Replace one or more spaces with a hyphen
+        # temp_df$label_cleaned <- gsub("\\(", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub("\\)", "-", temp_df$label_cleaned)
+
+        # # Ensure col_colors names are also cleaned in the same way
+        # names(col_colors) <- tolower(names(col_colors))
+        # names(col_colors) <- gsub("^x", "", names(col_colors))
+        # names(col_colors) <- gsub("\\.", "-", names(col_colors)) # Replace dots with hyphens
+        # names(col_colors) <- gsub("\\s+", "-", names(col_colors)) # Replace one or more spaces with a hyphen
+        # names(col_colors) <- trimws(names(col_colors))
+
+        # print("names(col_colors)")
+        # print(names(col_colors))
+
+        # temp_df$color <- col_colors[temp_df$label_cleaned]
+
+        # # print("temp_df")
+        # # print(temp_df)
+
+        # output$phenoHeadsUpTable <- renderDT({
+        #   # Combine the filtered_df with the color column from temp_df
+        #   filtered_df$color <- temp_df$color
+
+        #   # Render the DataTable with custom row styles
+        #   datatable(
+        #     # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
+        #     filtered_df,
+        #     # extensions = c("Responsive"),
+        #     # extensions = c("Select", "SearchPanes"),
+        #     escape = FALSE, # Allow HTML in the table
+        #     options = list(
+        #       autoWidth = TRUE,
+        #       columnDefs = list(
+        #         list(
+        #           width = "5px",
+        #           targets = 1:ncol(filtered_df)
+        #         )
+        #       ),
+        #       columnDefs = list(list(
+        #         searchPanes = list(show = FALSE),
+        #         targets = 1:ncol(filtered_df)
+        #       )),
+        #       paging = FALSE,
+        #       searching = TRUE,
+        #       info = FALSE,
+        #       scrollY = "500px",
+        #       scrollX = TRUE,
+        #       rowCallback = JS(
+        #         "function(row, data, index) {
+        #           var color = data[data.length - 1][0] || 'rgb(255,255,255)'; 
+        #           $('td', row).css('background-color', color) ;
+        #         }"
+        #       )
+        #     )
+        #   ) %>% formatStyle(
+        #     columns = 6, # Apply style to the JSON Path column
+        #     `white-space` = "nowrap",
+        #     `overflow` = "hidden",
+        #     `text-overflow` = "ellipsis",
+        #     `max-width` = "300px", # Restrict the cell's width
+        #     `cursor` = "pointer"
+        #   )
+        # })
         print("rendered table")
       }
 
       tableVals <- prepareTable(rv_patient, rv_general)
-      renderTable(output, tableVals)
+      renderTable(output, tableVals, rv_patient)
     }
 
     if (is.null(rv_patient)) {

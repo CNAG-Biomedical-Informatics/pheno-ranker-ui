@@ -1,0 +1,6 @@
+project:
+  type: default
+  output-dir: _output
+  preview:
+    port: 4200
+    browser: false

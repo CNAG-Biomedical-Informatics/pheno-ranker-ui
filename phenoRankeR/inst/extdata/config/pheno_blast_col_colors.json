@@ -1,5 +1,27 @@
 {
-  "lightgrey": ["Idx"],
-  "lightpink": ["V1", "V2"],
-  "lightblue": ["V3", "V4"]
+  "bff": {
+    "diseases":"rgb(158, 1, 66)",
+    "ethnicity":"rgb(213, 62, 79)",
+    "exposures":"rgb(244, 109, 67)",
+    "geographicOrigin":"rgb(253, 174, 97)",
+    "id":"rgb(189, 195, 199)",
+    "interventionsOrProcedures":"rgb(255, 255, 191)",
+    "karyotypicSex":"rgb(230, 245, 152)",
+    "measures":"rgb(171, 221, 164)",
+    "pedigrees":"rgb(102, 194, 165)",
+    "phenotypicFeatures":"rgb(50, 136, 189)",
+    "sex": "rgb(94, 79, 162)",
+    "treatments": "rgb(254, 224, 139)"
+  },
+  "pxf": {
+    "id":"rgb(189, 195, 199)",
+    "subject":"rgb(213, 62, 79)",
+    "phenotypicFeatures":"rgb(244, 109, 67)",
+    "measurements":"rgb(253, 174, 97)",
+    "biosamples":"rgb(254, 224, 139)",
+    "interpretations":"rgb(255, 255, 191)",
+    "diseases":"rgb(230, 245, 152)",
+    "medicalActions":"rgb(171, 221, 164)",
+    "files":"rgb(102, 194, 165)"
+  }   
 }

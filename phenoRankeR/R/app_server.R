@@ -36,6 +36,7 @@ parseQueryString <- function(s) {
 }
 
 app_server <- function(input, output, session) {
+
   # unsetting the LD_LIBRARY_PATH resolves
   # perl: symbol lookup error: perl: undefined symbol: PL_perl_destruct_level
   Sys.unsetenv("LD_LIBRARY_PATH")
@@ -170,7 +171,13 @@ app_server <- function(input, output, session) {
   # initialize reactive values
   rv_general <- reactiveValues(
     user_dirs = all_dirs,
-    user_email = user_email
+    user_email = user_email,
+    db_conn = NULL
+  )
+
+  rv_beacon_api <- reactiveValues(
+    queryId = NULL,
+    beaconApiResults = NULL
   )
 
   rv_input_examples <- reactiveValues(
@@ -200,6 +207,8 @@ app_server <- function(input, output, session) {
     alignmentDf = NULL,
     id = NULL,
     mdsPlot = NULL,
+    useBeaconReference = FALSE,
+    useBeaconTarget = FALSE,
     useExampleReference = FALSE,
     useExampleTarget = FALSE,
     useSimulatedReference = FALSE,
@@ -212,7 +221,9 @@ app_server <- function(input, output, session) {
     ht = NULL,
     blastData = NULL,
     rankingDf = NULL,
-    allowedTerms = NULL
+    allowedTerms = NULL,
+    col_colors = NULL, #should no longer be needed
+    colors_mapping = NULL
   )
 
   rv_cohort <- reactiveValues(
@@ -227,72 +238,90 @@ app_server <- function(input, output, session) {
   )
 
   # load modules
-  db_conn <- mod_db_server("db")
   db_driver <- get_golem_options("dbDriver")
-  print("dbDriver")
-  print(db_driver)
+  db_mod_return <- mod_db_server("db")
 
-  mod_input_examples_page_server(
-    "input_examples",
-    session,
-    db_conn,
-    db_driver,
-    rv_input_examples,
-    rv_general
-  )
+  observeEvent(db_mod_return$initialized(), {
+    db_conn <- db_mod_return$conn()
+    rv_general$db_conn <- db_conn
+    print("db initialized")
 
-  mod_sim_mode_server(
-    "sim_mode",
-    session,
-    db_conn,
-    db_driver,
-    rv_sim,
-    rv_general
-  )
-
-  mod_conv_mode_server(
-    "conv_mode",
-    session,
-    db_conn,
-    rv_conversion,
-    rv_general
-  )
-
-  mod_patient_mode_server(
-    "patient_mode",
-    session,
-    db_conn,
-    rv_patient,
-    rv_input_examples,
-    rv_sim,
-    rv_conversion,
-    rv_general
-  )
-
-  mod_cohort_mode_server(
-    "cohort_mode",
-    session,
-    db_conn,
-    rv_cohort,
-    rv_input_examples,
-    rv_sim,
-    rv_conversion,
-    rv_general
-  )
-
-  historySidebars <- c(
-    "SimulateHistorySidebar",
-    "ConvertHistorySidebar",
-    "PatientHistorySidebar",
-    "CohortHistorySidebar",
-    "InputExamplesRetrievalHistorySidebar"
-  )
-
-  lapply(historySidebars, function(sidebar) {
-    mod_history_sidebar_server(
-      sidebar,
-      db_conn
+    # load modules
+    mod_input_examples_page_server(
+      "input_examples_mode",
+      session,
+      db_conn,
+      db_driver,
+      rv_input_examples,
+      rv_general
     )
+
+    mod_beacon_api_page_server(
+      "beacon_api_mode",
+      session,
+      db_conn,
+      db_driver,
+      rv_beacon_api,
+      rv_general
+    )
+
+    mod_sim_mode_server(
+      "sim_mode",
+      session,
+      db_conn,
+      db_driver,
+      rv_sim,
+      rv_general
+    )
+
+    mod_conv_mode_server(
+      "conv_mode",
+      session,
+      db_conn,
+      rv_conversion,
+      rv_general
+    )
+
+    mod_patient_mode_server(
+      "patient_mode",
+      session,
+      db_conn,
+      rv_patient,
+      rv_beacon_api,
+      rv_input_examples,
+      rv_sim,
+      rv_conversion,
+      rv_general
+    )
+
+    mod_cohort_mode_server(
+      "cohort_mode",
+      session,
+      db_conn,
+      rv_cohort,
+      rv_beacon_api,
+      rv_input_examples,
+      rv_sim,
+      rv_conversion,
+      rv_general
+    )
+
+    historySidebars <- c(
+      "SimulateHistorySidebar",
+      "ConvertHistorySidebar",
+      "PatientHistorySidebar",
+      "CohortHistorySidebar",
+      "InputExamplesRetrievalHistorySidebar",
+      "BeaconApiHistorySidebar"
+    )
+
+    lapply(historySidebars, function(sidebar) {
+      mod_history_sidebar_server(
+        sidebar,
+        db_conn,
+        rv_general$user_email
+      )
+    })
   })
 
   # TODO
@@ -323,16 +352,79 @@ app_server <- function(input, output, session) {
   # maybe better to put this in a separate module(?)
   getPastRunResults <- function(query, rv_general) {
     print("inside getPastRunResults")
+
+    mode <- query[["mode"]]
     print("mode")
     print(mode)
 
-    mode <- query[["mode"]]
     runId <- query[["id"]]
+    print("runId")
+    print(runId)
 
     # TODO
     # maybe better to put this in the simulation module
     # with a flag
     # if history=True then run below
+
+    if (mode == "beacon_api") {
+      print("inside getPastRunResults beacon_api")
+
+      print(rv_beacon_api)
+      rv_beacon_api$queryId <- runId
+
+      output$queryId <- renderText(paste0("QUERY ID: ", runId))
+
+      # query the database
+      query <- sprintf(
+        "SELECT settings FROM jobs WHERE run_id = '%s' and mode = 'beacon_api'",
+        runId
+      )
+
+      print("before query")
+      res <- dbGetQuery(rv_general$db_conn, query)
+      print("after query")
+      print("res")
+      print(res)
+
+      settings <- fromJSON(res$settings)
+      print("settings")
+      print(settings)
+
+      number_of_individuals <- as.numeric(settings$numberOfIndividuals)
+
+      beaconApiOutputFolder <- rv_general$user_dirs$output$beacon
+      print("beaconApiOutputFolder")
+      print(beaconApiOutputFolder)
+
+      files <- list.files(
+        beaconApiOutputFolder,
+        pattern = paste0(runId, "*.bff.json")
+      )
+
+      if (length(files) == 0) {
+        print("no files found")
+        return()
+      }
+
+      file_type <- "bff"
+
+      rv_beacon_api$beaconApiResult <- read_json(
+        paste0(
+          beaconApiOutputFolder,
+          "/",
+          files[1]
+        )
+      )
+
+      mod_json_viewer_server(
+        "beacon_api_mode-json_viewer_beacon_api",
+        toupper(file_type),
+        rv_beacon_api$beaconApiResult,
+        rv_beacon_api$beaconApiResult,
+        number_of_individuals
+      )
+    }
+
 
     if (mode == "input_examples") {
       print("inside getPastRunResults input_examples")
@@ -348,7 +440,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
 
       print("res")
       print(res)
@@ -390,7 +482,7 @@ app_server <- function(input, output, session) {
       )
 
       mod_json_viewer_server(
-        "input_examples-json_viewer_input_examples",
+        "input_examples_mode-json_viewer_input_examples",
         toupper(file_type),
         rv_input_examples$inputExamples,
         rv_input_examples$inputExamples,
@@ -410,7 +502,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
       settings <- fromJSON(res$settings)
       print("settings")
       print(settings)
@@ -501,9 +593,44 @@ app_server <- function(input, output, session) {
       }
       dir <- dirs[1]
 
+      # accessm blast data to get the top levels
+      bin_df <- readTxt(
+        rv_general$user_dirs$output$pats_ranked,
+        fileName_suffix = "_alignment.csv",
+        runId = runId,
+        sep = ";"
+      )
+
+      top_level_row <- bin_df[1, ]
+
+      # in the top level row remove everything after the first dot
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      top_level_row[1] < "top level"
+
+      top_levels <- unique(top_level_row)
+
+      print("top_levels")
+      print(top_levels)
+
+      rv_patient$colors_mapping <- get_color_mapping(
+        rv_general,
+        runId,
+        top_levels
+      )
+
+      print("colors_mapping")
+      print(rv_patient$colors_mapping)
+
+      # rv_patient$col_colors <- get_table_row_colors(
+      #   rv_general$user_dirs$output$pats_ranked,
+      #   runId,
+      #   rv_general
+      # )
+
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
         "patient_mode-binaryRepresentationTable",
+        rv_general,
         runId = runId,
         rv_patient = rv_patient
       )
@@ -528,7 +655,6 @@ app_server <- function(input, output, session) {
         paste0(
           rv_general$user_dirs$output$pats_ranked,
           "/",
-          # get_golem_options("patientModeOutputFolder"),
           runId,
           "/",
           runId,
@@ -574,7 +700,7 @@ app_server <- function(input, output, session) {
         runId
       )
 
-      res <- dbGetQuery(db_conn, query)
+      res <- dbGetQuery(rv_general$db_conn, query)
       settings <- fromJSON(res$settings)
 
       uploaded_files_count <- 1
@@ -587,7 +713,6 @@ app_server <- function(input, output, session) {
         paste0(
           rv_general$user_dirs$output$cohorts_ranked,
           "/",
-          # get_golem_options("cohortModeOutputFolder"),
           runId,
           "/",
           runId,
@@ -768,10 +893,20 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "sim")
   })
 
+  observeEvent(input[["landing_page-navigateToSimulator2"]], {
+    updateNavbarPage(session, "nav", "sim")
+  })
+
   observeEvent(input[["landing_page-navigateToExamples"]], {
     print("navigate to input examples")
     updateNavbarPage(session, "nav", "input_examples")
   })
+
+  observeEvent(input[["landing_page-navigateToBeaconAPIs"]], {
+    print("navigate to beacon api")
+    updateNavbarPage(session, "nav", "beacon_api")
+  })
+
 
   observeEvent(input[["landing_page-navigateToConverter"]], {
     updateNavbarPage(session, "nav", "conv")
@@ -781,13 +916,16 @@ app_server <- function(input, output, session) {
     updateNavbarPage(session, "nav", "patient")
   })
 
+  observeEvent(input[["landing_page-navigateToPatientMode2"]], {
+    updateNavbarPage(session, "nav", "patient")
+  })
+
   observeEvent(input[["landing_page-navigateToCohortMode"]], {
     updateNavbarPage(session, "nav", "cohort")
   })
 
-  renderInteractiveComplexHeatmap <- function(
-      ht_list,
-      output_id) {
+  renderInteractiveComplexHeatmap <- function(ht_list,
+                                              output_id) {
     default_opts <- list(
       close_button = FALSE,
       layout = "1|23",

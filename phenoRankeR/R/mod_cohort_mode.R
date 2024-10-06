@@ -13,21 +13,21 @@
 #' @importFrom jqr jq
 #' @importFrom utils write.csv
 
-cohort_layout = c(
-  "           500px     1fr           40px                    ",
+cohort_layout <- c(
+  "           480px     1fr           40px                    ",
   "35px       btn       tabbedView    btn_show_cohort_history ",
   "1100px     opts      tabbedView    btn_show_cohort_history ",
   "1px        version   version       version                 "
 )
 
-cohort_opts_layout = c(
-  "         500px        ",
+cohort_opts_layout <- c(
+  "         1fr        ",
   "380px    rankerInput  ",
   "340px    configYamls  ",
   "350px    variables    "
 )
 
-mod_cohort_mode_ui <- function(id){
+mod_cohort_mode_ui <- function(id) {
   ns <- NS(id)
   version <- get_golem_options("packageVersion")
 
@@ -51,6 +51,7 @@ mod_cohort_mode_ui <- function(id){
         grid_card(
           area = "rankerInput",
           card_body(
+            span("Select your data source:"),
             tabsetPanel(
               id = ns("cohortRankerTabsetPanel"),
               selected = "Upload",
@@ -69,18 +70,29 @@ mod_cohort_mode_ui <- function(id){
                 )
               ),
               tabPanel(
-                title = "Example data",
+                title = "Beacon API",
                 card_body(
                   selectInput(
-                    ns("cohort_input_examples"),
-                    "Select example cohort(s)",
+                    ns("cohort_beacon_api"),
+                    "Select cohort(s)",
                     multiple = TRUE,
                     choices = NULL
                   )
                 )
               ),
               tabPanel(
-                title = "Simulated data",
+                title = "Retrieved Examples",
+                card_body(
+                  selectInput(
+                    ns("cohort_input_examples"),
+                    "Select cohort(s)",
+                    multiple = TRUE,
+                    choices = NULL
+                  )
+                )
+              ),
+              tabPanel(
+                title = "Simulation",
                 card_body(
                   grid_container(
                     layout = c(
@@ -104,7 +116,7 @@ mod_cohort_mode_ui <- function(id){
                 )
               ),
               tabPanel(
-                title = "Converted data",
+                title = "Conversion",
                 card_body(
                   selectInput(
                     ns("cohort_conv"),
@@ -115,7 +127,7 @@ mod_cohort_mode_ui <- function(id){
                 )
               )
             ),
-            p("set individuals id prefix for each cohort"),
+            span("Set individuals id prefix for each cohort"),
             aceEditor(
               ns("yamlCohortEditorIdPrefixes"),
               value = "",
@@ -123,7 +135,9 @@ mod_cohort_mode_ui <- function(id){
               theme = "github",
               height = "60px"
             ),
-            verbatimTextOutput(ns("cohortIdPrefixesErrorOutput")),
+            verbatimTextOutput(
+              ns("cohortIdPrefixesErrorOutput")
+            ),
             mod_loader_ui(
               ns("loader_cohort_mode")
             )
@@ -137,7 +151,7 @@ mod_cohort_mode_ui <- function(id){
               title = "Weights",
               card_body(
                 fileInput(
-                  ns("weightsCohortFile"), 
+                  ns("weightsCohortFile"),
                   "Upload a weights yaml file",
                   multiple = FALSE,
                   accept = c(
@@ -159,7 +173,7 @@ mod_cohort_mode_ui <- function(id){
               title = "Extra Config",
               card_body(
                 fileInput(
-                  ns("extraConfigCohortFile"), 
+                  ns("extraConfigCohortFile"),
                   "Upload a config yaml file",
                   multiple = FALSE,
                   accept = c(
@@ -190,7 +204,6 @@ mod_cohort_mode_ui <- function(id){
       card_header("Cohort Comparisons"),
       full_screen = TRUE,
       verbatimTextOutput(ns("phenoBlastCohortRunId")),
-
       tabsetPanel(
         id = ns("cohortRankingResults"),
         selected = "Hamming Distances Heatmap",
@@ -227,14 +240,13 @@ weights_defaults <- paste(
 )
 
 create_settings_mapping_cohort_mode <- function(
-ns,
-weights_file_path,
-extra_config_file_path,
-input,
-outDir,
-timestamp,
-rv_cohort) {
-
+    ns,
+    weights_file_path,
+    extra_config_file_path,
+    input,
+    outDir,
+    timestamp,
+    rv_cohort) {
   settings <- list()
 
   # TODO
@@ -246,7 +258,7 @@ rv_cohort) {
     settings$weights_file_path <- normalizePath(weights_file_path)
   }
 
-  if(!is.null(extra_config_file_path)) {
+  if (!is.null(extra_config_file_path)) {
     settings$extra_config_file_path <- normalizePath(extra_config_file_path)
   }
 
@@ -270,7 +282,6 @@ rv_cohort) {
   }
 
   if (length(input$dn_excl) > 0) {
-
     # TODO
     # Throw an error and stop the execution
     # when the user tries to include and exclude terms
@@ -359,20 +370,19 @@ rv_cohort) {
 # }
 
 mod_cohort_mode_server <- function(
-  id,
-  session,
-  db_conn,
-  rv_cohort,
-  rv_input_examples,
-  rv_sim,
-  rv_conversion,
-  rv_general
-  ){
+    id,
+    session,
+    db_conn,
+    rv_cohort,
+    rv_beacon_api,
+    rv_input_examples,
+    rv_sim,
+    rv_conversion,
+    rv_general) {
   # NOTE somehow this function is only working with the
   # namespace defined here
-  ns <-session$ns
+  ns <- session$ns
   moduleServer(id, function(input, output, session) {
-
     submit_clicked <- reactive({
       input$rankCohort
     })
@@ -718,7 +728,7 @@ mod_cohort_mode_server <- function(
         )
       }
 
-      if(!is.null(extra_config_file_path)) {
+      if (!is.null(extra_config_file_path)) {
         settings <- paste0(
           settings,
           " -config ",
@@ -807,11 +817,11 @@ mod_cohort_mode_server <- function(
 
       label <- "all toplevel terms"
       if (length(dnd_incl) > 0) {
-        label <- paste("included toplevels:",paste(dnd_incl, collapse = ", "))
+        label <- paste("included toplevels:", paste(dnd_incl, collapse = ", "))
       }
 
       if (length(dnd_excl) > 0) {
-        label <- paste("excluded toplevels:",paste(dnd_excl, collapse = ", "))
+        label <- paste("excluded toplevels:", paste(dnd_excl, collapse = ", "))
       }
 
       print("label")
@@ -1006,7 +1016,18 @@ mod_cohort_mode_server <- function(
       print("input$cohortRankerTabsetPanel")
       print(input$cohortRankerTabsetPanel)
 
-      if(input$cohortRankerTabsetPanel == "Example data") {
+      if (input$cohortRankerTabsetPanel == "Beacon API") {
+        observeTabChangeToBeaconApiData(
+          input,
+          session,
+          db_conn,
+          "cohortRankerTabsetPanel",
+          "cohort_beacon_api",
+          rv_general$user_email
+        )
+      }
+
+      if (input$cohortRankerTabsetPanel == "Retrieved Examples") {
         observeTabChangeToExampleData(
           input,
           session,
@@ -1017,7 +1038,7 @@ mod_cohort_mode_server <- function(
         )
       }
 
-      if (input$cohortRankerTabsetPanel == "Simulated data") {
+      if (input$cohortRankerTabsetPanel == "Simulation") {
         observeTabChangeToSimulateData(
           input,
           session,
@@ -1028,7 +1049,7 @@ mod_cohort_mode_server <- function(
         )
       }
 
-      if (input$cohortRankerTabsetPanel == "Converted data") {
+      if (input$cohortRankerTabsetPanel == "Conversion") {
         observeTabChangeToConvertedData(
           input,
           session,
@@ -1038,6 +1059,26 @@ mod_cohort_mode_server <- function(
           rv_general$user_email
         )
       }
+    })
+
+    observeEvent(input$cohort_beacon_api, {
+      req(input$cohort_beacon_api)
+      rv_cohort$inputFormat <- "bff"
+
+      expectedRowCount <- length(input$cohort_beacon_api)
+      print("expectedRowCount")
+
+      observeBeaconApiDataChange(
+        session,
+        input,
+        output,
+        rv_cohort,
+        rv_beacon_api,
+        rv_general,
+        "cohort_beacon_api",
+        "yamlCohortEditorIdPrefixes",
+        expectedRowCount
+      )
     })
 
     observeEvent(input$cohort_input_examples, {
@@ -1077,6 +1118,7 @@ mod_cohort_mode_server <- function(
         db_conn,
         rv_cohort,
         rv_sim,
+        rv_general,
         "cohort_sim",
         "yamlCohortEditorIdPrefixes",
         expectedRowCount

@@ -23,7 +23,7 @@ mod_patient_mode_layout <- c(
 )
 
 patient_opts_layout <- c(
-  "         520px      ",
+  "         1fr       ",
   "380px    rankerInput",
   "350px    configYamls",
   "350px    variables  "
@@ -47,12 +47,15 @@ mod_patient_mode_ui <- function(id) {
     grid_card(
       area = "opts",
       card_header("Options"),
+      # TODO
+      # missed CSS class to remove the top padding
       grid_container(
         layout = patient_opts_layout,
         gap_size = "0px",
         grid_card(
           area = "rankerInput",
           card_body(
+            style = "padding-top: 5px; padding-left: 16px;",
             tabsetPanel(
               id = ns("patientRankerTabsetPanel"),
               selected = "Reference(s)",
@@ -60,6 +63,8 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Reference(s)",
                 card_body(
+                  style = "padding-top: 0px; padding-left: 16px;",
+                  span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerReferenceTabsetPanel"),
                     selected = "Upload",
@@ -73,33 +78,35 @@ mod_patient_mode_ui <- function(id) {
                           ".json"
                         )
                       )
+                      # TODO
+                      # add css to remove the bottom margin
                     ),
                     # TODO as soon there is file uploaded
                     # select simulated data should be disabled
                     tabPanel(
-                      title = "Example data",
-                      grid_container(
-                        layout = c(
-                          "      1fr",
-                          "150px dropdown"
-                        ),
-                        grid_place(
-                          area = "dropdown",
-                          selectInput(
-                            ns("patient_example_reference"),
-                            "Select example cohort(s)",
-                            choices = NULL,
-                            multiple = TRUE
-                          )
-                        )
+                      title = "Beacon API",
+                      selectInput(
+                        ns("patient_beacon_api_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
                       )
                     ),
                     tabPanel(
-                      title = "Simulated data",
+                      title = "Retrieved Examples",
+                      selectInput(
+                        ns("patient_example_reference"),
+                        "Select cohort(s)",
+                        choices = NULL,
+                        multiple = TRUE
+                      )
+                    ),
+                    tabPanel(
+                      title = "Simulation",
                       grid_container(
                         layout = c(
                           "     1fr      1fr   ",
-                          "150px dropdown radio "
+                          "1fr  dropdown radio "
                         ),
                         grid_place(
                           area = "dropdown",
@@ -117,7 +124,7 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Converted data",
+                      title = "Conversion",
                       card_body(
                         selectInput(
                           ns("patient_conv_reference"),
@@ -133,6 +140,8 @@ mod_patient_mode_ui <- function(id) {
               tabPanel(
                 title = "Target",
                 card_body(
+                  style = "padding-top: 0px; padding-left: 16px;",
+                  span("Select your data source:"),
                   tabsetPanel(
                     id = ns("patientRankerTargetTabsetPanel"),
                     selected = "Upload",
@@ -162,47 +171,62 @@ mod_patient_mode_ui <- function(id) {
                       )
                     ),
                     tabPanel(
-                      title = "Example data",
-                      card_body(
-                        selectInput(
-                          ns("patient_example_target"),
-                          "Select an example individual",
-                          choices = NULL
-                        )
+                      title = "Beacon API",
+                      selectInput(
+                        ns("patient_beacon_api_target"),
+                        HTML(
+                          "
+                            Select individual<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     ),
                     tabPanel(
-                      title = "Simulated data",
-                      card_body(
-                        selectInput(
-                          ns("patient_sim_target"),
-                          "Select a simulated BFF/PXF",
-                          choices = NULL
-                        )
+                      title = "Retrieved Examples",
+                      selectInput(
+                        ns("patient_example_target"),
+                        HTML(
+                          "
+                            Select individual<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     ),
                     tabPanel(
-                      title = "Converted data",
-                      card_body(
-                        selectInput(
-                          ns("patient_conv_target"),
-                          HTML(
-                            "
-                              Select a converted target<br>
-                              <small>(the first individual will be used)</small>
-                            "
-                          ),
-                          choices = NULL
-                        )
+                      title = "Simulation",
+                      selectInput(
+                        ns("patient_sim_target"),
+                        HTML(
+                          "
+                            Select a simulated BFF/PXF<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
+                      )
+                    ),
+                    tabPanel(
+                      title = "Conversion",
+                      selectInput(
+                        ns("patient_conv_target"),
+                        HTML(
+                          "
+                            Select a converted target<br>
+                            <small>(the first individual will be used)</small>
+                          "
+                        ),
+                        choices = NULL
                       )
                     )
                   )
                 )
               )
             ),
-            br(),
-            br(),
-            p("set individuals id prefix for each cohort"),
+            span("Set individuals id prefix for each cohort"),
             aceEditor(
               ns("yamlEditorIdPrefixes"),
               value = "",
@@ -342,6 +366,7 @@ mod_patient_mode_server <- function(
     session,
     db_conn,
     rv_patient,
+    rv_beacon_api,
     rv_input_examples,
     rv_sim,
     rv_conversion,
@@ -393,7 +418,7 @@ mod_patient_mode_server <- function(
 
       rank_input_dir <- paste0(
         rv_general$user_dirs$uploads,
-        "/rankInput/",
+        "/rankInput/"
       )
 
       file <- input[[input_id]]
@@ -467,7 +492,18 @@ mod_patient_mode_server <- function(
     observeEvent(input$patientRankerReferenceTabsetPanel, {
       print(input$patientRankerReferenceTabsetPanel)
 
-      if (input$patientRankerReferenceTabsetPanel == "Example data") {
+      if (input$patientRankerReferenceTabsetPanel == "Beacon API") {
+        observeTabChangeToBeaconApiData(
+          input,
+          session,
+          db_conn,
+          "patientRankerReferenceTabsetPanel",
+          "patient_beacon_api_reference",
+          rv_general$user_email
+        )
+      }
+
+      if (input$patientRankerReferenceTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
         rv_patient$inputFormat <- "pxf"
 
@@ -481,7 +517,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerReferenceTabsetPanel == "Simulated data") {
+      if (input$patientRankerReferenceTabsetPanel == "Simulation") {
         observeTabChangeToSimulateData(
           input,
           session,
@@ -492,7 +528,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerReferenceTabsetPanel == "Converted data") {
+      if (input$patientRankerReferenceTabsetPanel == "Conversion") {
         observeTabChangeToConvertedData(
           input,
           session,
@@ -508,7 +544,33 @@ mod_patient_mode_server <- function(
       print("input$patientRankerTargetTabsetPanel")
       print(input$patientRankerTargetTabsetPanel)
 
-      if (input$patientRankerTargetTabsetPanel == "Example data") {
+      if (input$patientRankerTargetTabsetPanel == "Beacon API") {
+        req(rv_patient$inputFormat)
+
+        if (rv_patient$inputFormat == "pxf") {
+          showNotification(
+            "Beacon API data is only available for BFF format",
+            type = "error"
+          )
+          updateTabsetPanel(
+            session,
+            "patientRankerTargetTabsetPanel",
+            "Simulation"
+          )
+          return()
+        }
+
+        observeTabChangeToBeaconApiData(
+          input,
+          session,
+          db_conn,
+          "patientRankerTargetTabsetPanel",
+          "patient_beacon_api_target",
+          rv_general$user_email
+        )
+      }
+
+      if (input$patientRankerTargetTabsetPanel == "Retrieved Examples") {
         req(rv_patient$inputFormat)
         if (rv_patient$inputFormat == "bff") {
           showNotification(
@@ -518,7 +580,7 @@ mod_patient_mode_server <- function(
           updateTabsetPanel(
             session,
             "patientRankerTargetTabsetPanel",
-            "Simulated data"
+            "Simulation"
           )
           return()
         }
@@ -533,7 +595,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerTargetTabsetPanel == "Simulated data") {
+      if (input$patientRankerTargetTabsetPanel == "Simulation") {
         observeTabChangeToSimulateData(
           input,
           session,
@@ -544,7 +606,7 @@ mod_patient_mode_server <- function(
         )
       }
 
-      if (input$patientRankerTargetTabsetPanel == "Converted data") {
+      if (input$patientRankerTargetTabsetPanel == "Conversion") {
         observeTabChangeToConvertedData(
           input,
           session,
@@ -563,6 +625,7 @@ mod_patient_mode_server <- function(
       "Target",
       function() {
         is.null(rv_patient$uploadedReferenceFile) &&
+          rv_patient$useBeaconReference == FALSE &&
           rv_patient$useExampleReference == FALSE &&
           rv_patient$useSimulatedReference == FALSE &&
           rv_patient$useConvertedReference == FALSE
@@ -842,124 +905,162 @@ mod_patient_mode_server <- function(
       rv_patient$allowedTerms <- data$allowed_terms
     })
 
-    set_input_paths <- function(rv,
-                                rv_input_examples,
-                                rv_sim,
-                                rv_conversion,
-                                rv_general,
-                                mode) {
-      print("set_input_paths")
-      print("rv_input_examples$retrievalId")
-      print(rv_input_examples$retrievalId)
+    # set_input_paths <- function(rv, rv_beacon_api, rv_input_examples,
+    #   rv_sim, rv_conversion, rv_general, mode) {
+    #   print("set_input_paths")
+    #   print("rv_input_examples$retrievalId")
+    #   print(rv_input_examples$retrievalId)
 
-      exampleDataPath <- paste0(
-        # get_golem_options("inputExamplesOutputFolder"),
-        rv_general$user_dirs$output$example,
-        "/",
-        rv_input_examples$retrievalId,
-        ".pxf.json"
-      )
+    #   beaconApiDataPath <- paste0(
+    #     rv_general$user_dirs$output$beacon,
+    #     "/",
+    #     rv_beacon_api$queryId,
+    #     ".bff.json"
+    #   )
 
-      print("exampleDataPath")
-      print(exampleDataPath)
+    #   exampleDataPath <- paste0(
+    #     rv_general$user_dirs$output$example,
+    #     "/",
+    #     rv_input_examples$retrievalId,
+    #     ".pxf.json"
+    #   )
 
-      simDataPath <- paste0(
-        rv_general$user_dirs$output$sim,
-        "/",
-        # get_golem_options("simulationOutputFolder"),
-        rv_sim$simulationId,
-        ".",
-        rv$inputFormat,
-        ".json"
-      )
+    #   print("exampleDataPath")
+    #   print(exampleDataPath)
 
-      convDataPath <- paste0(
-        # get_golem_options("conversionOutputFolder"),
-        rv_general$user_dirs$output$conv,
-        "/",
-        rv_conversion$id,
-        "/",
-        # paste0(rv_conversion$id, "/"),
-        rv_conversion$id,
-        ".json"
-      )
+    #   simDataPath <- paste0(
+    #     rv_general$user_dirs$output$sim,
+    #     "/",
+    #     rv_sim$simulationId,
+    #     ".",
+    #     rv$inputFormat,
+    #     ".json"
+    #   )
 
-      upload_dir <- paste0(
-        rv_general$user_dirs$uploads$rankInput,
-        "/",
-        # get_golem_options("rankInputFolder"),
-        mode,
-        "/"
-      )
+    #   convDataPath <- paste0(
+    #     rv_general$user_dirs$output$conv,
+    #     "/",
+    #     rv_conversion$id,
+    #     "/",
+    #     rv_conversion$id,
+    #     ".json"
+    #   )
 
-      file_paths <- c(
-        "reference_file_path" = paste0(
-          upload_dir,
-          "references/",
-          rv$uploadedReferenceFile
-        ),
-        "target_file_path" = paste0(
-          upload_dir,
-          "targets/",
-          rv$uploadedTargetFile
-        )
-      )
-      print(file_paths)
+    #   upload_dir <- paste0(
+    #     rv_general$user_dirs$uploads$rankInput,
+    #     "/",
+    #     mode,
+    #     "/"
+    #   )
 
-      if (mode == "patientMode" && rv$useExampleReference) {
-        file_paths["reference_file_path"] <- exampleDataPath
-      }
+    #   file_paths <- c(
+    #     "reference_file_path" = paste0(
+    #       upload_dir,
+    #       "references/",
+    #       rv$uploadedReferenceFile
+    #     ),
+    #     "target_file_path" = paste0(
+    #       upload_dir,
+    #       "targets/",
+    #       rv$uploadedTargetFile
+    #     )
+    #   )
+    #   print(file_paths)
 
-      if (mode == "patientMode" && rv$useSimulatedReference) {
-        file_paths["reference_file_path"] <- simDataPath
-      }
+    #   # TODO
+    #   # store the orgin of the referece/target file
 
-      if (mode == "patientMode" && rv$useConvertedReference) {
-        file_paths["reference_file_path"] <- convDataPath
-      }
+    #   # origin_job_ids_references
+    #   # origin_job_id_target
 
-      if (mode == "patientMode" && rv$useExampleTarget) {
-        file_paths["target_file_path"] <- generate_target_based_on_example_data(
-          rv,
-          rv_input_examples,
-          rv_general,
-          exampleDataPath
-        )
-      }
+    #   origin_job_ids_references <- NULL
+    #   origin_job_id_target <- NULL
+    #   if (mode == "patientMode" && rv$useBeaconReference) {
+    #     file_paths["reference_file_path"] <- beaconApiDataPath
+    #     origin_job_ids_references <- rv_beacon_api$queryId
+    #   }
 
-      if (mode == "patientMode" && rv$useSimulatedTarget) {
-        file_paths["target_file_path"] <- generate_target_based_on_simulated_data(
-          rv,
-          rv_sim,
-          rv_general,
-          simDataPath
-        )
-      }
+    #   if (mode == "patientMode" && rv$useExampleReference) {
+    #     file_paths["reference_file_path"] <- exampleDataPath
+    #     origin_job_ids_references <- rv_input_examples$retrievalId
+    #   }
 
-      if (mode == "patientMode" && rv$useConvertedTarget) {
-        file_paths["target_file_path"] <- generate_target_based_on_converted_data(
-          rv,
-          rv_conversion,
-          rv_general,
-          convDataPath
-        )
-      }
+    #   if (mode == "patientMode" && rv$useSimulatedReference) {
+    #     file_paths["reference_file_path"] <- simDataPath
+    #     origin_job_ids_references <- rv_sim$simulationId
+    #   }
 
-      file_paths <- lapply(file_paths, function(path) {
-        info <- file.info(path)
-        if (!info$isdir & !is.na(info$isdir)) {
-          normalizePath(path)
-        } else {
-          print("NULL")
-          print(path)
-          NULL
-        }
-      })
+    #   if (mode == "patientMode" && rv$useConvertedReference) {
+    #     file_paths["reference_file_path"] <- convDataPath
+    #     origin_job_ids_references <- rv_conversion$id
+    #   }
 
-      print("file_paths")
-      print(file_paths)
-      return(file_paths)
-    }
+    #   if (mode == "patientMode" && rv$useBeaconTarget) {
+    #     file_paths["target_file_path"] <- generate_target_based_on_beacon_data(
+    #       rv,
+    #       rv_beacon_api,
+    #       rv_general,
+    #       beaconApiDataPath
+    #     )
+    #     origin_job_id_target <- rv_beacon_api$queryId
+    #   }
+
+    #   if (mode == "patientMode" && rv$useExampleTarget) {
+    #     file_paths["target_file_path"] <- generate_target_based_on_example_data(
+    #       rv,
+    #       rv_input_examples,
+    #       rv_general,
+    #       exampleDataPath
+    #     )
+    #     origin_job_id_target <- rv_input_examples$retrievalId
+    #   }
+
+    #   if (mode == "patientMode" && rv$useSimulatedTarget) {
+    #     file_paths["target_file_path"] <- generate_target_based_on_simulated_data(
+    #       rv,
+    #       rv_sim,
+    #       rv_general,
+    #       simDataPath
+    #     )
+    #     origin_job_id_target <- rv_sim$simulationId
+    #   }
+
+    #   if (mode == "patientMode" && rv$useConvertedTarget) {
+    #     file_paths["target_file_path"] <- generate_target_based_on_converted_data(
+    #       rv,
+    #       rv_conversion,
+    #       rv_general,
+    #       convDataPath
+    #     )
+    #     origin_job_id_target <- rv_conversion$id
+    #   }
+
+    #   file_paths <- lapply(file_paths, function(path) {
+    #     info <- file.info(path)
+    #     if (!info$isdir & !is.na(info$isdir)) {
+    #       normalizePath(path)
+    #     } else {
+    #       print("NULL")
+    #       print(path)
+    #       NULL
+    #     }
+    #   })
+
+    #   # TODO
+    #   # Figure out
+    #   # this function seem to be only called
+    #   # if one reference is used
+
+    #   print("origin_job_ids_references")
+    #   print(origin_job_ids_references)
+
+    #   print("origin_job_id_target")
+    #   print(origin_job_id_target)
+
+    #   print("file_paths")
+    #   print(file_paths)
+    #   return(file_paths)
+    # }
 
     observeEvent(input$patientRankingBtnClicked, {
       print("rankPatient")
@@ -990,31 +1091,175 @@ mod_patient_mode_server <- function(
       # Explain to the user that include/exclude
       # are mutually exclusive
 
-      paths <- set_input_paths(
-        rv_patient,
-        rv_input_examples,
-        rv_sim,
-        rv_conversion,
-        rv_general,
-        "patientMode"
-      )
+      # print("before set_input_paths")
+      # paths <- set_input_paths(
+      #   rv_patient,
+      #   rv_beacon_api,
+      #   rv_input_examples,
+      #   rv_sim,
+      #   rv_conversion,
+      #   rv_general,
+      #   "patientMode"
+      # )
+      # print("after set_input_paths")
+      # print("paths")
+      # print(paths)
 
-      if ("reference_file_path1" %in% names(paths)) {
-        inputReferenceFilePath <- paths["reference_file_path1"]
-      } else {
-        inputReferenceFilePath <- paths["reference_file_path"]
-      }
-      inputTargetFilePath <- paths["target_file_path"]
+      # For what "reference_file_path1" is used?
+      # if ("reference_file_path1" %in% names(paths)) {
+      #   inputReferenceFilePath <- paths["reference_file_path1"]
+      # } else {
+      #   inputReferenceFilePath <- paths["reference_file_path"]
+      # }
+      # inputTargetFilePath <- paths["target_file_path"]
 
       # TODO
       # put it in a extra files called errorHandlers.R
-      if (is.null(inputReferenceFilePath[[1]]) || is.null(inputTargetFilePath[[1]])) {
+      # if (is.null(inputReferenceFilePath[[1]]) || is.null(inputTargetFilePath[[1]])) {
+      #   print("inputReferenceFilePath[[1]]")
+      #   print(inputReferenceFilePath[[1]])
+
+      #   print("inputTargetFilePath[[1]]")
+      #   print(inputTargetFilePath[[1]])
+
+      #   showNotification(
+      #     "Please upload or select a example/simulated reference and target file!",
+      #     type = "error"
+      #   )
+      #   return()
+      # }
+
+      print("rv_patient$mappingDf")
+      print(rv_patient$mappingDf)
+
+      if (is.null(rv_patient$mappingDf)) {
+        showNotification(
+          "Please upload or select a example/simulated reference and target file!",
+          type = "error"
+        )
+        return()
+
+        # TODO
+        # loading spinner should not be triggered
+      }
+
+      ref_files <- rv_patient$mappingDf$new_fn[1:nrow((rv_patient$mappingDf)) - 1]
+      print("ref_files")
+      print(ref_files)
+
+      # get the target file of mappingDf filtered by file_info == "Target"
+      inputTargetFilePath <- rv_patient$mappingDf$new_fn[rv_patient$mappingDf$file_info == "Target"]
+
+      if (is.null(inputTargetFilePath) || is.null(ref_files)) {
         showNotification(
           "Please upload or select a example/simulated reference and target file!",
           type = "error"
         )
         return()
       }
+
+      # remove the filename from the path
+      inputTargetFileDir <- dirname(inputTargetFilePath)
+      print("inputTargetFileDir")
+      print(inputTargetFileDir)
+
+      input_format <- "json"
+      # check if the basename does not equal to targets
+      if (basename(inputTargetFileDir) != "targets") {
+        print("inputTargetFilePath")
+        print(inputTargetFilePath)
+
+        # generate the target file
+        jsonArray <- fromJSON(
+          inputTargetFilePath,
+          simplifyDataFrame = FALSE,
+        )
+
+        jsonObj <- jsonArray[[1]]
+        print("jsonObj")
+        print(jsonObj)
+
+        base_fn <- basename(inputTargetFilePath)
+
+        # insert .target after the first dot
+        # so the filename will be like this "runID.target.bff.json"
+        new_base_fn <- sub(
+          "(\\.[^\\.]+)$", ".target\\1",
+          base_fn
+        )
+
+        # Extract bff or pxf from the filename
+        match <- regmatches(base_fn, regexpr("(bff|pxf)", base_fn))
+
+        # Store it in a variable so it later can be saved in the database
+        if (length(match) > 0) {
+          input_format <- paste0(match, ".json")
+        }
+
+        print("input_format")
+        print(input_format)
+
+        targetFilePath <- paste0(
+          inputTargetFileDir,
+          "/",
+          new_base_fn
+        )
+
+        print("targetFilePath")
+        print(targetFilePath)
+
+        file.create(targetFilePath)
+
+        fileConn <- file(
+          targetFilePath,
+          open = "w"
+        )
+
+        writeLines(
+          toJSON(
+            jsonObj,
+            pretty = TRUE,
+            auto_unbox = TRUE
+          ),
+          con = fileConn
+        )
+        close(fileConn)
+      }
+
+      # generate the target file
+      # jsonArray <- fromJSON(
+      #   normalizePath(
+      #     file.path(
+      #       inputTargetFilePath
+      #     )
+      #   ),
+      #   simplifyDataFrame = FALSE,
+      # )
+      # jsonObj <- jsonArray[[1]]
+
+      # targetFilePath <- paste0(
+      #   inputTargetFileDir,
+      #   "/",
+      #   rv_sim$simulationId,
+      #   ".target.",
+      #   rv$inputFormat,
+      #   ".json"
+      # )
+      # file.create(targetFilePath)
+
+      # fileConn <- file(
+      #   targetFilePath,
+      #   open = "w"
+      # )
+      # writeLines(
+      #   toJSON(
+      #     jsonObj,
+      #     pretty = TRUE,
+      #     auto_unbox = TRUE
+      #   ),
+      #   con = fileConn
+      # )
+      # close(fileConn)
 
       timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
       rv_patient$runId <- timestamp
@@ -1035,7 +1280,6 @@ mod_patient_mode_server <- function(
         paste0(
           rv_general$user_dirs$output$pats_ranked,
           "/",
-          # get_golem_options("patientModeOutputFolder"),
           timestamp,
           "/"
         )
@@ -1049,7 +1293,6 @@ mod_patient_mode_server <- function(
       write.csv(
         rv_patient$mappingDf,
         file = paste0(
-          # get_golem_options("patientModeOutputFolder"),
           rv_general$user_dirs$output$pats_ranked,
           "/",
           rv_patient$runId,
@@ -1068,7 +1311,6 @@ mod_patient_mode_server <- function(
         )
         weights_file_path <- file.path(
           rv_general$user_dirs$uploads$weights,
-          # get_golem_options("weightsUploadFolder"),
           fn
         )
 
@@ -1081,7 +1323,6 @@ mod_patient_mode_server <- function(
       extra_config_file_path <- NULL
       if (input$yamlEditor_config != "") {
         extra_config_file_path <- file.path(
-          # get_golem_options("extraConfigsUploadFolder"),
           rv_general$user_dirs$uploads$config,
           paste0(timestamp, "_config.yaml")
         )
@@ -1103,7 +1344,10 @@ mod_patient_mode_server <- function(
       print("rv_patient$mappingDf")
       print(rv_patient$mappingDf)
 
-      ref_files <- rv_patient$mappingDf$new_fn[1:nrow((rv_patient$mappingDf)) - 1]
+      # ref_files <- rv_patient$mappingDf$new_fn[1:nrow((rv_patient$mappingDf)) - 1]
+
+      # # get the target file of mappingDf filtered by file_info == "Target"
+      # inputTargetFilePath <- rv_patient$mappingDf$new_fn[rv_patient$mappingDf$file_info == "Target"]
 
       print("ref_files")
       print(ref_files)
@@ -1114,7 +1358,7 @@ mod_patient_mode_server <- function(
           collapse = " "
         ),
         " -t ",
-        inputTargetFilePath,
+        targetFilePath,
         " -o ",
         paste0(
           outDir,
@@ -1251,7 +1495,12 @@ mod_patient_mode_server <- function(
       print("label")
       print(label)
 
-      settings <- list()
+      settings <- list(
+        "include_terms" = dnd_incl,
+        "exclude_terms" = dnd_excl,
+        "input_format" = input_format
+      )
+
       store_job_in_db(
         timestamp,
         rv_general$user_email,
@@ -1263,8 +1512,41 @@ mod_patient_mode_server <- function(
 
       click("PatientHistorySidebar-btn_show_history")
 
-      rv_patient$pastRunIds <- c(rv_patient$pastRunIds, timestamp)
+      rv_patient$pastRunIds <- c(
+        rv_patient$pastRunIds,
+        timestamp
+      )
 
+      # accessm blast data to get the top levels
+      bin_df <- readTxt(
+        rv_general$user_dirs$output$pats_ranked,
+        fileName_suffix = "_alignment.csv",
+        runId = timestamp,
+        sep = ";"
+      )
+
+      top_level_row <- bin_df[1, ]
+
+      # in the top level row remove everything after the first dot
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      top_level_row[1] < "top level"
+
+      top_levels <- unique(top_level_row)
+
+      print("top_levels")
+      print(top_levels)
+      print("before get_color_mapping")
+      rv_patient$colors_mapping <- get_color_mapping(
+        rv_general,
+        timestamp,
+        top_levels
+      )
+
+      # rv_patient$col_colors <- get_table_row_colors(
+      #   rv_general$user_dirs$output$pats_ranked,
+      #   timestamp,
+      #   rv_general
+      # )
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(
@@ -1391,6 +1673,43 @@ mod_patient_mode_server <- function(
       )
     })
 
+    observeEvent(input$patient_beacon_api_reference, {
+      req(input$patient_beacon_api_referece)
+      expectedRowCount <- length(input$patient_beacon_api_reference)
+
+      print("observeEvent input$patient_beacon_api_reference")
+      print("expectedRowCount")
+      print(expectedRowCount)
+
+      observeBeaconApiDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_beacon_api,
+        rv_general,
+        "patient_beacon_api_reference",
+        "yamlEditorIdPrefixes",
+        expectedRowCount
+      )
+    })
+
+    observeEvent(input$patient_beacon_api_target, {
+      req(input$patient_beacon_api_target)
+      expectedRowCount <- length(input$patient_beacon_api_target)
+      observeBeaconApiDataChange(
+        session,
+        input,
+        output,
+        rv_patient,
+        rv_beacon_api,
+        rv_general,
+        "patient_beacon_api_target",
+        "yamlEditorIdPrefixes",
+        expectedRowCount
+      )
+    })
+
     observeEvent(input$patient_example_reference, {
       req(input$patient_example_reference)
       expectedRowCount <- length(input$patient_example_reference)
@@ -1436,6 +1755,7 @@ mod_patient_mode_server <- function(
         db_conn,
         rv_patient,
         rv_sim,
+        rv_general,
         "patient_sim_reference",
         "yamlEditorIdPrefixes",
         expectedRowCount
@@ -1454,6 +1774,7 @@ mod_patient_mode_server <- function(
         db_conn,
         rv_patient,
         rv_sim,
+        rv_general,
         "patient_sim_target",
         "yamlEditorIdPrefixes",
         expectedRowCount
@@ -1470,9 +1791,6 @@ mod_patient_mode_server <- function(
       print("observeEvent input$simulatedRefsInputFormatRadio")
       rv_patient$inputFormat <- input$simulatedRefsInputFormatRadio
       print(rv_patient$inputFormat)
-
-      # simulatedData_input_dir <- "./data/output/simulatedData/"
-      # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
 
       print("rv_sim$simulationId")
       print(rv_sim$simulationId)
@@ -1520,138 +1838,176 @@ mod_patient_mode_server <- function(
       )
     })
 
-    generate_target_based_on_converted_data <- function(rv, rv_conversion, rv_general, convDataPath) {
-      print("generate_target_based_on_converted_data")
+    # generate_target_based_on_converted_data <- function(rv, rv_conversion, rv_general, convDataPath) {
+    #   print("generate_target_based_on_converted_data")
 
-      targetFilePath <- convDataPath
-      print("targetFilePath")
-      print(targetFilePath)
+    #   targetFilePath <- convDataPath
+    #   print("targetFilePath")
+    #   print(targetFilePath)
 
-      jsonArray <- fromJSON(
-        normalizePath(
-          file.path(
-            targetFilePath
-          )
-        ),
-        simplifyDataFrame = FALSE,
-      )
-      jsonObj <- jsonArray[[1]]
+    #   jsonArray <- fromJSON(
+    #     normalizePath(
+    #       file.path(
+    #         targetFilePath
+    #       )
+    #     ),
+    #     simplifyDataFrame = FALSE,
+    #   )
+    #   jsonObj <- jsonArray[[1]]
 
-      targetFilePath <- paste0(
-        rv_general$user_dirs$output$conv,
-        # get_golem_options("conversionOutputFolder"),
-        "/",
-        paste0(rv_conversion$id, "/"),
-        rv_conversion$id,
-        ".target.json"
-      )
-      file.create(targetFilePath)
+    #   targetFilePath <- paste0(
+    #     rv_general$user_dirs$output$conv,
+    #     # get_golem_options("conversionOutputFolder"),
+    #     "/",
+    #     paste0(rv_conversion$id, "/"),
+    #     rv_conversion$id,
+    #     ".target.json"
+    #   )
+    #   file.create(targetFilePath)
 
-      fileConn <- file(
-        targetFilePath,
-        open = "w"
-      )
-      writeLines(
-        toJSON(
-          jsonObj,
-          pretty = TRUE,
-          auto_unbox = TRUE
-        ),
-        con = fileConn
-      )
-      close(fileConn)
-      return(targetFilePath)
-    }
+    #   fileConn <- file(
+    #     targetFilePath,
+    #     open = "w"
+    #   )
+    #   writeLines(
+    #     toJSON(
+    #       jsonObj,
+    #       pretty = TRUE,
+    #       auto_unbox = TRUE
+    #     ),
+    #     con = fileConn
+    #   )
+    #   close(fileConn)
+    #   return(targetFilePath)
+    # }
 
-    generate_target_based_on_example_data <- function(rv,
-                                                      rv_input_examples,
-                                                      rv_general,
-                                                      exampleDataPath) {
-      print("generate_target_based_on_example_data")
+    # generate_target_based_on_beacon_data <- function(rv, rv_beacon_api, rv_general, beaconApiDataPath) {
+    #   print("generate_target_based_on_beacon_data")
 
-      targetFilePath <- exampleDataPath
-      print("targetFilePath")
-      print(targetFilePath)
+    #   targetFilePath <- beaconApiDataPath
+    #   print("targetFilePath")
+    #   print(targetFilePath)
 
-      jsonArray <- fromJSON(
-        normalizePath(
-          file.path(
-            targetFilePath
-          )
-        ),
-        simplifyDataFrame = FALSE,
-      )
-      jsonObj <- jsonArray[[1]]
+    #   jsonArray <- fromJSON(
+    #     normalizePath(
+    #       file.path(
+    #         targetFilePath
+    #       )
+    #     ),
+    #     simplifyDataFrame = FALSE,
+    #   )
+    #   jsonObj <- jsonArray[[1]]
 
-      targetFilePath <- paste0(
-        rv_general$user_dirs$output$example,
-        "/",
-        # get_golem_options("inputExamplesOutputFolder"),
-        rv_input_examples$retrievalId,
-        ".target.pxf.json"
-      )
-      file.create(targetFilePath)
+    #   targetFilePath <- paste0(
+    #     rv_general$user_dirs$output$beacon,
+    #     "/",
+    #     rv_beacon_api$queryId,
+    #     ".target.json"
+    #   )
+    #   file.create(targetFilePath)
 
-      fileConn <- file(
-        targetFilePath,
-        open = "w"
-      )
-      writeLines(
-        toJSON(
-          jsonObj,
-          pretty = TRUE,
-          auto_unbox = TRUE
-        ),
-        con = fileConn
-      )
-      close(fileConn)
-      return(targetFilePath)
-    }
+    #   fileConn <- file(
+    #     targetFilePath,
+    #     open = "w"
+    #   )
+    #   writeLines(
+    #     toJSON(
+    #       jsonObj,
+    #       pretty = TRUE,
+    #       auto_unbox = TRUE
+    #     ),
+    #     con = fileConn
+    #   )
+    #   close(fileConn)
+    #   return(targetFilePath)
+    # }
 
-    generate_target_based_on_simulated_data <- function(rv, rv_sim, rv_general, simDataPath) {
-      print("generate_target_based_on_simulated_data")
+    # generate_target_based_on_example_data <- function(rv,
+    #                                                   rv_input_examples,
+    #                                                   rv_general,
+    #                                                   exampleDataPath) {
+    #   print("generate_target_based_on_example_data")
 
-      targetFilePath <- simDataPath
-      print("targetFilePath")
-      print(targetFilePath)
+    #   targetFilePath <- exampleDataPath
+    #   print("targetFilePath")
+    #   print(targetFilePath)
 
-      jsonArray <- fromJSON(
-        normalizePath(
-          file.path(
-            targetFilePath
-          )
-        ),
-        simplifyDataFrame = FALSE,
-      )
-      jsonObj <- jsonArray[[1]]
+    #   jsonArray <- fromJSON(
+    #     normalizePath(
+    #       file.path(
+    #         targetFilePath
+    #       )
+    #     ),
+    #     simplifyDataFrame = FALSE,
+    #   )
+    #   jsonObj <- jsonArray[[1]]
 
-      targetFilePath <- paste0(
-        # get_golem_options("simulationOutputFolder"),
-        rv_general$user_dirs$output$sim,
-        # normalizePath("./data/output/simulatedData"),
-        "/",
-        rv_sim$simulationId,
-        ".target.",
-        rv$inputFormat,
-        ".json"
-      )
-      file.create(targetFilePath)
+    #   targetFilePath <- paste0(
+    #     rv_general$user_dirs$output$example,
+    #     "/",
+    #     rv_input_examples$retrievalId,
+    #     ".target.pxf.json"
+    #   )
+    #   file.create(targetFilePath)
 
-      fileConn <- file(
-        targetFilePath,
-        open = "w"
-      )
-      writeLines(
-        toJSON(
-          jsonObj,
-          pretty = TRUE,
-          auto_unbox = TRUE
-        ),
-        con = fileConn
-      )
-      close(fileConn)
-      return(targetFilePath)
-    }
+    #   fileConn <- file(
+    #     targetFilePath,
+    #     open = "w"
+    #   )
+    #   writeLines(
+    #     toJSON(
+    #       jsonObj,
+    #       pretty = TRUE,
+    #       auto_unbox = TRUE
+    #     ),
+    #     con = fileConn
+    #   )
+    #   close(fileConn)
+    #   return(targetFilePath)
+    # }
+
+    # generate_target_based_on_simulated_data <- function(rv, rv_sim, rv_general, simDataPath) {
+    #   print("generate_target_based_on_simulated_data")
+
+    #   targetFilePath <- simDataPath
+    #   print("targetFilePath")
+    #   print(targetFilePath)
+
+    #   jsonArray <- fromJSON(
+    #     normalizePath(
+    #       file.path(
+    #         targetFilePath
+    #       )
+    #     ),
+    #     simplifyDataFrame = FALSE,
+    #   )
+    #   jsonObj <- jsonArray[[1]]
+
+    #   targetFilePath <- paste0(
+    #     rv_general$user_dirs$output$sim,
+    #     "/",
+    #     rv_sim$simulationId,
+    #     ".target.",
+    #     rv$inputFormat,
+    #     ".json"
+    #   )
+    #   file.create(targetFilePath)
+
+    #   fileConn <- file(
+    #     targetFilePath,
+    #     open = "w"
+    #   )
+    #   writeLines(
+    #     toJSON(
+    #       jsonObj,
+    #       pretty = TRUE,
+    #       auto_unbox = TRUE
+    #     ),
+    #     con = fileConn
+    #   )
+    #   close(fileConn)
+    #   return(targetFilePath)
+    # }
 
     # might be needed for the cohort mode as well
     # create_new_mapping_df <- function() {
