@@ -83,6 +83,10 @@ restart-shinyproxy:
 	docker compose -f docker-compose.prod.yml down shinyproxy
 	docker compose -f docker-compose.prod.yml up -d shinyproxy
 
+re-shinyproxy-dev:
+	docker compose -f docker-compose.dev.yml down shinyproxy
+	docker compose -f docker-compose.dev.yml up -d shinyproxy
+
 # below is needed so that the user in the docker container
 # can write to the mounted volume data
 change-owner:

@@ -46,7 +46,7 @@ proxy:
           "${PR_DB_PORT}",
         ]
       container-image: "${DOCKER_IMG}"
-      access-groups: [admin, user] #assign the role "user" to all users
+      #access-groups: [admin, user] #assign the role "user" to all users
       container-network: pheno-ranker-ui_shiny-net
       container-volumes:
         [
@@ -58,7 +58,7 @@ proxy:
       description: Application which demonstrates the basics of a Shiny app
       container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
       container-image: openanalytics/shinyproxy-demo
-      access-groups: [admin, user] #assign the role "user" to all users
+      #access-groups: [admin, user] #assign the role "user" to all users
       container-network: pheno-ranker-ui_shiny-net
 logging:
   file:
