@@ -1,2 +1,2 @@
 prev:
-	quarto preview notebooks/pheno_blast_colors.ipynb --port 4200
+	quarto preview notebooks/binary_representaton_table.ipynb --port 4200
