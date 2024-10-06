@@ -120,12 +120,12 @@ mod_table_phenoBlast_server <- function(
         runId = runId,
         sep = ";"
       )
-      blast_data <- as.data.frame(blast_data)
-      print("blast_data")
+      # blast_data <- as.data.frame(blast_data)
+      # print("blast_data")
       # print(str(blast_data))
 
-      print("nrow(blast_data)")
-      print(nrow(blast_data))
+      # print("nrow(blast_data)")
+      # print(nrow(blast_data))
 
       # remove the 1st row
       blast_data <- blast_data[-1, ]
