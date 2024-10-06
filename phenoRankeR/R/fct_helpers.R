@@ -371,6 +371,8 @@ store_job_in_db <- function(
   # store the job in the database
   print("HERE before toJSON")
   settings_json <- toJSON(settings)
+  print("settings_json")
+  print(settings_json)
   print("HERE after toJSON")
 
   query <- sprintf(
@@ -1416,6 +1418,13 @@ sample_distinct_colors <- function(colors, num_samples, min_distance = 20) {
 
 get_color_mapping <- function(rv_general,runId, topLevels) {
 
+  print("in get_color_mapping in fct_helpers.R")
+  print("rv_general")
+  print(rv_general)
+
+  print("runId")
+  print(runId)
+
   db_conn <- rv_general$db_conn
   user_email <- rv_general$user_email
 
@@ -1423,8 +1432,21 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
     "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
     runId, get_user_id(user_email, db_conn)
   )
+
+  print("before dbGetQuery")
   res <- dbGetQuery(db_conn, query)
+  print("after dbGetQuery")
+  print("res")
+  print(res)
+
+  print("settings")
+  print(res$settings)
+
+  print("res$settings[1]")
+  print(res$settings[1])
   settings <- fromJSON(res$settings[1])
+  print("settings")
+  print(settings)
   inputFormat <- settings$input_format
 
   format_to_key <- list(

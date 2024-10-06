@@ -1521,7 +1521,7 @@ mod_patient_mode_server <- function(
       bin_df <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
         fileName_suffix = "_alignment.csv",
-        runId = runId,
+        runId = timestamp,
         sep = ";"
       )
 
@@ -1533,8 +1533,11 @@ mod_patient_mode_server <- function(
 
       top_levels <- unique(top_level_row)
 
-      rv_patient$colors_mapping <- get_table_row_colors(
-        rv_general$user_dirs$output$pats_ranked,
+      print("top_levels")
+      print(top_levels)
+      print("before get_color_mapping")
+      rv_patient$colors_mapping <- get_color_mapping(
+        rv_general,
         timestamp,
         top_levels
       )
