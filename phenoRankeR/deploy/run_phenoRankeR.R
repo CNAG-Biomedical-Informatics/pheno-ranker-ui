@@ -24,7 +24,7 @@ parse_args <- function(args) {
 }
 
 default_golem_opts <- list(
-  packageVersion = "0.0.0.9019",
+  packageVersion = "0.0.0.9020",
   userDataDir = "/app/data/user_data/",
   subDirs = list(
     uploads = list(
