@@ -222,7 +222,8 @@ app_server <- function(input, output, session) {
     blastData = NULL,
     rankingDf = NULL,
     allowedTerms = NULL,
-    col_colors = NULL
+    col_colors = NULL, #should no longer be needed
+    colors_mapping = NULL
   )
 
   rv_cohort <- reactiveValues(
@@ -592,11 +593,39 @@ app_server <- function(input, output, session) {
       }
       dir <- dirs[1]
 
-      rv_patient$col_colors <- get_table_row_colors(
+      # accessm blast data to get the top levels
+      bin_df <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
-        runId,
-        rv_general
+        fileName_suffix = "_alignment.csv",
+        runId = runId,
+        sep = ";"
       )
+
+      top_level_row <- bin_df[1, ]
+
+      # in the top level row remove everything after the first dot
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      top_level_row[1] < "top level"
+
+      top_levels <- unique(top_level_row)
+
+      print("top_levels")
+      print(top_levels)
+
+      rv_patient$colors_mapping <- get_color_mapping(
+        rv_general,
+        runId,
+        top_levels
+      )
+
+      print("colors_mapping")
+      print(rv_patient$colors_mapping)
+
+      # rv_patient$col_colors <- get_table_row_colors(
+      #   rv_general$user_dirs$output$pats_ranked,
+      #   runId,
+      #   rv_general
+      # )
 
       # TabHeader: Binary representation
       rv_patient$blastData <- mod_table_phenoBlast_server(

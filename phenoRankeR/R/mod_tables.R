@@ -647,6 +647,77 @@ mod_table_phenoHeadsUp_server <- function(
           )
         })
 
+        json_path_col <- filtered_df$`JSON Path`
+        # remove everything after the first dot
+        top_levels <- gsub("\\..*", "", json_path_col)
+
+        color_map <- get_color_mapping(
+          rv_general,
+          rv_patient$runId,
+          top_levels
+        )
+
+        print("color_map")
+        print(color_map)
+
+        color_col <- unlist(lapply(
+          top_levels,
+          function(x) color_map[[x]]
+        ))
+
+        print("color_col")
+        print(color_col)
+
+        # add the color col to the data frame
+        filtered_df$color <- color_col
+        print("filtered_df")
+        print(head(filtered_df))
+
+        rowCallback <- JS(
+          "function(row, data, index) {
+            console.log(data);
+            var color = data[data.length - 1] || 'rgb(255,255,255)'; 
+            $('td', row).css('background-color', color) ;
+          }"
+        )
+
+        # hide the last column using a initComplete callback
+        initComplete <- JS(
+          "function(settings, json) {
+            var table = settings.oInstance.api();
+            console.log(table);
+            table.column(8).visible(false);
+          }"
+        )
+
+        output$phenoHeadsUpTable <- renderDT({
+          datatable(
+            filtered_df,
+            escape = FALSE,
+            options = list(
+              autoWidth = TRUE,
+              columnDefs = list(
+                list(
+                  targets = "_all",
+                  width = "5px"
+                )
+              ),
+              paging = FALSE,
+              searching = TRUE,
+              info = FALSE,
+              scrollY = "500px",
+              rowCallback = rowCallback,
+              initComplete = initComplete
+            )) %>% formatStyle(
+              columns = 6, # Apply style to the JSON Path column
+              `white-space` = "nowrap",
+              `overflow` = "hidden",
+              `text-overflow` = "ellipsis",
+              `max-width` = "300px", # Restrict the cell's width
+              `cursor` = "pointer"
+            )
+        })
+
         # dt <- datatable(
         #   filtered_df,
         #   rownames = FALSE,
@@ -662,10 +733,10 @@ mod_table_phenoHeadsUp_server <- function(
         # print(col_colors)
 
         # check if col_colors is NULL
-        if (is.null(col_colors)) {
-          print("col_colors is NULL")
-          exit()
-        }
+        # if (is.null(col_colors)) {
+        #   print("col_colors is NULL")
+        #   exit()
+        # }
 
         # print("filtered_df")
         # print(filtered_df)
@@ -677,76 +748,76 @@ mod_table_phenoHeadsUp_server <- function(
         # }
 
         # add a new column to the data frame with the colors
-        temp_df <- filtered_df
+        # temp_df <- filtered_df
 
         # Clean the labels to avoid mismatches
-        temp_df$label_cleaned <- trimws(filtered_df$Label) # Remove leading/trailing whitespace
-        temp_df$label_cleaned <- tolower(filtered_df$Label)
-        temp_df$label_cleaned <- gsub("\\.", "-", temp_df$label_cleaned)
-        temp_df$label_cleaned <- gsub(":", "-", temp_df$label_cleaned)
-        temp_df$label_cleaned <- gsub("\\s+", "-", temp_df$label_cleaned) # Replace one or more spaces with a hyphen
-        temp_df$label_cleaned <- gsub("\\(", "-", temp_df$label_cleaned)
-        temp_df$label_cleaned <- gsub("\\)", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- trimws(filtered_df$Label) # Remove leading/trailing whitespace
+        # temp_df$label_cleaned <- tolower(filtered_df$Label)
+        # temp_df$label_cleaned <- gsub("\\.", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub(":", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub("\\s+", "-", temp_df$label_cleaned) # Replace one or more spaces with a hyphen
+        # temp_df$label_cleaned <- gsub("\\(", "-", temp_df$label_cleaned)
+        # temp_df$label_cleaned <- gsub("\\)", "-", temp_df$label_cleaned)
 
-        # Ensure col_colors names are also cleaned in the same way
-        names(col_colors) <- tolower(names(col_colors))
-        names(col_colors) <- gsub("^x", "", names(col_colors))
-        names(col_colors) <- gsub("\\.", "-", names(col_colors)) # Replace dots with hyphens
-        names(col_colors) <- gsub("\\s+", "-", names(col_colors)) # Replace one or more spaces with a hyphen
-        names(col_colors) <- trimws(names(col_colors))
+        # # Ensure col_colors names are also cleaned in the same way
+        # names(col_colors) <- tolower(names(col_colors))
+        # names(col_colors) <- gsub("^x", "", names(col_colors))
+        # names(col_colors) <- gsub("\\.", "-", names(col_colors)) # Replace dots with hyphens
+        # names(col_colors) <- gsub("\\s+", "-", names(col_colors)) # Replace one or more spaces with a hyphen
+        # names(col_colors) <- trimws(names(col_colors))
 
-        print("names(col_colors)")
-        print(names(col_colors))
+        # print("names(col_colors)")
+        # print(names(col_colors))
 
-        temp_df$color <- col_colors[temp_df$label_cleaned]
+        # temp_df$color <- col_colors[temp_df$label_cleaned]
 
-        # print("temp_df")
-        # print(temp_df)
+        # # print("temp_df")
+        # # print(temp_df)
 
-        output$phenoHeadsUpTable <- renderDT({
-          # Combine the filtered_df with the color column from temp_df
-          filtered_df$color <- temp_df$color
+        # output$phenoHeadsUpTable <- renderDT({
+        #   # Combine the filtered_df with the color column from temp_df
+        #   filtered_df$color <- temp_df$color
 
-          # Render the DataTable with custom row styles
-          datatable(
-            # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
-            filtered_df,
-            # extensions = c("Responsive"),
-            # extensions = c("Select", "SearchPanes"),
-            escape = FALSE, # Allow HTML in the table
-            options = list(
-              autoWidth = TRUE,
-              columnDefs = list(
-                list(
-                  width = "5px",
-                  targets = 1:ncol(filtered_df)
-                )
-              ),
-              columnDefs = list(list(
-                searchPanes = list(show = FALSE),
-                targets = 1:ncol(filtered_df)
-              )),
-              paging = FALSE,
-              searching = TRUE,
-              info = FALSE,
-              scrollY = "500px",
-              scrollX = TRUE,
-              rowCallback = JS(
-                "function(row, data, index) {
-                  var color = data[data.length - 1][0] || 'rgb(255,255,255)'; 
-                  $('td', row).css('background-color', color) ;
-                }"
-              )
-            )
-          ) %>% formatStyle(
-            columns = 6, # Apply style to the JSON Path column
-            `white-space` = "nowrap",
-            `overflow` = "hidden",
-            `text-overflow` = "ellipsis",
-            `max-width` = "300px", # Restrict the cell's width
-            `cursor` = "pointer"
-          )
-        })
+        #   # Render the DataTable with custom row styles
+        #   datatable(
+        #     # filtered_df[, -ncol(filtered_df)],  # Exclude the 'color' column from display
+        #     filtered_df,
+        #     # extensions = c("Responsive"),
+        #     # extensions = c("Select", "SearchPanes"),
+        #     escape = FALSE, # Allow HTML in the table
+        #     options = list(
+        #       autoWidth = TRUE,
+        #       columnDefs = list(
+        #         list(
+        #           width = "5px",
+        #           targets = 1:ncol(filtered_df)
+        #         )
+        #       ),
+        #       columnDefs = list(list(
+        #         searchPanes = list(show = FALSE),
+        #         targets = 1:ncol(filtered_df)
+        #       )),
+        #       paging = FALSE,
+        #       searching = TRUE,
+        #       info = FALSE,
+        #       scrollY = "500px",
+        #       scrollX = TRUE,
+        #       rowCallback = JS(
+        #         "function(row, data, index) {
+        #           var color = data[data.length - 1][0] || 'rgb(255,255,255)'; 
+        #           $('td', row).css('background-color', color) ;
+        #         }"
+        #       )
+        #     )
+        #   ) %>% formatStyle(
+        #     columns = 6, # Apply style to the JSON Path column
+        #     `white-space` = "nowrap",
+        #     `overflow` = "hidden",
+        #     `text-overflow` = "ellipsis",
+        #     `max-width` = "300px", # Restrict the cell's width
+        #     `cursor` = "pointer"
+        #   )
+        # })
         print("rendered table")
       }
 

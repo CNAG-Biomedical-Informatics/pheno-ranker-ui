@@ -1387,16 +1387,18 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
     )
     color_mapping <- json_data[[format_to_key[[inputFormat]]]]
   } else {
+    print("Input format not found")
     colors <- sample(hcl.colors(
       length(topLevels),
       palette = "pastel1"
     ))
+    print("colors")
+    print(colors)
 
     color_mapping <- list()
-    for (i in 1:seq_along(topLevels)) {
+    for (i in 1:length(topLevels)) {
       color_mapping[[topLevels[i]]] <- colors[i]
     }
-    print("Input format not found")
   }
   return(color_mapping)
 }
