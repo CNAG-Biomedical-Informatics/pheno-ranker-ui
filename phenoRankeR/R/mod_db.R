@@ -77,7 +77,7 @@ mod_db_server <- function(id){
       CREATE TABLE IF NOT EXISTS beacons (
       id SERIAL PRIMARY KEY,
       url varchar(255) NOT NULL UNIQUE,
-      added_by_user_with_id NOT NULL,
+      added_by_user_with_id numeric NOT NULL,
       added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
     )"
 
@@ -99,7 +99,7 @@ mod_db_server <- function(id){
         CREATE TABLE IF NOT EXISTS beacons (
         id INTEGER PRIMARY KEY,
         url varchar(255) NOT NULL UNIQUE,
-        added_by_user_with_id NOT NULL,
+        added_by_user_with_id numeric NOT NULL,
         added_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
       )"
 
