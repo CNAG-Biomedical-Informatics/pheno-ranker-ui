@@ -1767,9 +1767,6 @@ mod_patient_mode_server <- function(
       rv_patient$inputFormat <- input$simulatedRefsInputFormatRadio
       print(rv_patient$inputFormat)
 
-      # simulatedData_input_dir <- "./data/output/simulatedData/"
-      # simulatedData_input_dir <- get_golem_options("simulationOutputFolder")
-
       print("rv_sim$simulationId")
       print(rv_sim$simulationId)
 
