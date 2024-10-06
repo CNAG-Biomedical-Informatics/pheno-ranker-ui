@@ -1363,6 +1363,43 @@ observeConvertedDataChange <- function(
   })
 }
 
+get_color_mapping <- function(rv_general,runId, topLevels) {
+
+  db_conn <- rv_general$db_conn
+  user_email <- rv_general$user_email
+
+  query <- sprintf(
+    "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
+    runId, get_user_id(user_email, db_conn)
+  )
+  res <- dbGetQuery(db_conn, query)
+  settings <- fromJSON(res$settings[1])
+  inputFormat <- settings$input_format
+
+  format_to_key <- list(
+    "bff.json" = "bff",
+    "pxf.json" = "pxf"
+  )
+  color_mapping <- NULL
+  if (inputFormat %in% names(format_to_key)) {
+    json_data <- fromJSON(
+      "inst/extdata/config/pheno_blast_col_colors.json"
+    )
+    color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+  } else {
+    colors <- sample(hcl.colors(
+      length(topLevels),
+      palette = "pastel1"
+    ))
+
+    color_mapping <- list()
+    for (i in 1:seq_along(topLevels)) {
+      color_mapping[[topLevels[i]]] <- colors[i]
+    }
+    print("Input format not found")
+  }
+  return(color_mapping)
+}
 
 get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   blast_data <- readTxt(

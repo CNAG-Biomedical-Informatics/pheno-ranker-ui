@@ -115,12 +115,14 @@ mod_table_phenoBlast_server <- function(
       }
 
       # binary representation of each patient
-      blast_data <- readTxt(
+      # blast_data <- readTxt(
+      bin_df <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
         fileName_suffix = "_alignment.csv",
         runId = runId,
         sep = ";"
       )
+
       # blast_data <- as.data.frame(blast_data)
       # print("blast_data")
       # print(str(blast_data))
@@ -128,22 +130,128 @@ mod_table_phenoBlast_server <- function(
       # print("nrow(blast_data)")
       # print(nrow(blast_data))
 
-      top_level_row <- blast_data[1, ]
+      top_level_row <- bin_df[1, ]
+
+      # in the top level row remove everything after the first dot
       top_level_row <- gsub("\\..*", "", top_level_row)
-      # count the number of unique values in the top level row and put them into a list
-      top_level_to_count <- table(top_level_row)
+      top_level_row[1] < "top level"
 
-      # loop 
+      top_levels <- unique(top_level_row)
+      print("top_levels")
+      print(top_levels)
+
+      # add the top level row to the data frame
+      bin_df2 <- rbind(top_level_row, bin_df)
+
+      color_map <- get_color_mapping(
+        rv_general,
+        runId,
+        top_levels
+      )
+
+      print("color_map")
+      print(color_map)
+
+      # add a new row containing the colors
+      color_row <- unlist(sapply(
+        bin_df2[1, ],
+        function(x) color_map[[x]]
+      ))
+      color_row <- c("background-color", color_row)
+
+      # add the color row to the data frame
+      bin_df2 <- rbind(color_row, bin_df2)
+
+      # extra header row containing the top level value
+      # while its cells are merged by top level
+
+      top_level_to_count <- table(top_level_row[-1])
+      print("top_level_to_count")
+      print(top_level_to_count)
+
+      top_level_to_color <- setNames(
+        unique(color_row[-1]),
+        unique(top_level_row[-1])
+      )
+
+      header_row <- paste(
+        sapply(names(top_level_to_count), function(name) {
+          colspan_value <- top_level_to_count[[name]]
+          color <- top_level_to_color[[name]]
+          sprintf(
+            '<th colspan="%d" style="background-color:%s;">%s</th>',
+            colspan_value, color, name
+          )
+        }),
+        collapse = ""  # Collapse into a single string
+      )
+
+      # JavaScript to prepend the header row
+      headerCallback <- JS(
+        "function(thead, data, start, end, display) {",
+        sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
+        "}"
+      )
+
+      # JavaScript to color the columns based on the values in the 2nd row of the data
+      initComplete <- JS(
+        "function(settings, json) {",
+          "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').each(function() {",
+            # Loop over each column to set background color based on the value in the first row (background-color)
+            "for (var i = 0; i < $('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr:eq(0) td').length; i++) {",
+              "var color = $('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr:eq(0)').find('td:eq(' + i + ')').text();",
+              "console.log(color);",
+
+              # Apply background color to the cell
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').find('td:eq(' + i + ')').css('background-color', color);",
+
+              # Apply background color to the header
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable thead th.sorting_disabled').eq(i).css('background-color', color);",
+
+              # hide the row with the colors
+              "$('#patient_mode-binaryRepresentationTable-binaryRepresentationTable tbody tr').eq(0).hide();",
+            "}",
+          "});",
+        "}"
+      )
+
+      # remove row 2 and 3
+      bin_df3 <- bin_df2[-c(2, 3), ]
+
+      output$binaryRepresentationTable <- renderDT({
+        dt <- datatable(
+          bin_df3,
+          selection = "single",
+          rownames = FALSE,
+          escape = FALSE,
+          extensions = c("FixedColumns"),
+          options = list(
+            scrollY = "500px",
+            scrollX = TRUE,
+            fixedHeader = TRUE,
+            fixedColumns = list(leftColumns = 1),
+            paging = FALSE,
+            searching = FALSE,
+            ordering = FALSE,
+            headerCallback = headerCallback,
+            initComplete = initComplete
+          )
+        )
+        dt
+      }, )
+
+      # # count the number of unique values in the top level row and put them into a list
+      # top_level_to_count <- table(top_level_row)
 
 
-      print("top_level_row")
-      print(top_level_row)
+      # print("top_level_row")
+      # print(top_level_row)
 
-      # remove the 1st row
-      blast_data <- blast_data[-1, ]
+      # # remove the 1st row
+      # blast_data <- blast_data[-1, ]
 
-      # set the first column to ID
-      colnames(blast_data)[1] <- "Id"
+      # # set the first column to ID
+      # colnames(blast_data)[1] <- "Id"
 
 
 
@@ -161,13 +269,13 @@ mod_table_phenoBlast_server <- function(
       # with some custom filter logic which would be quite some work
       # postponed for now
 
-      col_colors <- rv_patient$col_colors
+      # col_colors <- rv_patient$col_colors
     
-      print("col_colors")
-      print(col_colors)
+      # print("col_colors")
+      # print(col_colors)
 
-      print("names(col_colors)")
-      print(names(col_colors))
+      # print("names(col_colors)")
+      # print(names(col_colors))
 
       # Dynamically calculate colspan for each category
       # header_row <- paste0(
@@ -178,76 +286,77 @@ mod_table_phenoBlast_server <- function(
       #   collapse = ""
       # )
 
-      print("header_row")
-      print(header_row)
+      # print("header_row")
+      # print(header_row)
 
-      output$binaryRepresentationTable <- renderDT({
-        dt <- datatable(
-          blast_data,
-          selection = "single",
-          rownames = FALSE,
-          escape = FALSE,
-          extensions = c("FixedColumns"),
-          options = list(
-            scrollY = "500px",
-            scrollX = TRUE,
-            fixedHeader = TRUE,
-            fixedColumns = list(leftColumns = 1),
-            paging = FALSE,
-            searching = FALSE,
-            ordering = FALSE,
-            # search = list(
-            #   regex = TRUE,   # Enable regular expression searching
-            #   caseInsensitive = TRUE
-            # ),
+      # output$binaryRepresentationTable <- renderDT({
+      #   dt <- datatable(
+      #     blast_data,
+      #     selection = "single",
+      #     rownames = FALSE,
+      #     escape = FALSE,
+      #     extensions = c("FixedColumns"),
+      #     options = list(
+      #       scrollY = "500px",
+      #       scrollX = TRUE,
+      #       fixedHeader = TRUE,
+      #       fixedColumns = list(leftColumns = 1),
+      #       paging = FALSE,
+      #       searching = FALSE,
+      #       ordering = FALSE,
+      #       # search = list(
+      #       #   regex = TRUE,   # Enable regular expression searching
+      #       #   caseInsensitive = TRUE
+      #       # ),
 
-            headerCallback = JS(
-              "function(thead, data, start, end, display){",
-              sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
-            "}"),
+      #       headerCallback = JS(
+      #         "function(thead, data, start, end, display){",
+      #         sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
+      #       "}"),
 
-            # colors the header row
-            initComplete = JS(
-              "function(settings, json) {",
-              paste0(unlist(lapply(names(col_colors), function(col_name) {
-                sprintf(
-                  "$('th').filter(function() { return $(this).text() === \"%s\"; }).css('background-color', '%s');",
-                  # "$('th:contains(\"%s\")').css('background-color', '%s');",
-                  col_name, col_colors[[col_name]]
-                )
-              })), collapse = " "),
-              "}"
-            )
-          )
-        )
-        # Apply color to each column based on the named list
-        # for (col_name in names(col_colors)) {
-        #   dt <- dt %>% formatStyle(columns = col_name, backgroundColor = col_colors[[col_name]])
-        # }
+      #       # colors the header row
+      #       initComplete = JS(
+      #         "function(settings, json) {",
+      #         paste0(unlist(lapply(names(col_colors), function(col_name) {
+      #           sprintf(
+      #             "$('th').filter(function() { return $(this).text() === \"%s\"; }).css('background-color', '%s');",
+      #             # "$('th:contains(\"%s\")').css('background-color', '%s');",
+      #             col_name, col_colors[[col_name]]
+      #           )
+      #         })), collapse = " "),
+      #         "}"
+      #       )
+      #     )
+      #   )
+      #   # Apply color to each column based on the named list
+      #   # for (col_name in names(col_colors)) {
+      #   #   dt <- dt %>% formatStyle(columns = col_name, backgroundColor = col_colors[[col_name]])
+      #   # }
 
-        print("mod_table_phenoBlast_col_colors")
-        print(col_colors)
+      #   print("mod_table_phenoBlast_col_colors")
+      #   print(col_colors)
 
-        # TODO
-        # load the col_colors from rv_patient
+      #   # TODO
+      #   # load the col_colors from rv_patient
 
-        # colors the rest of the columns
-        for (col_name in names(col_colors)) {
-          dt <- do.call(
-            "formatStyle",
-            list(
-              dt,
-              columns = col_name,
-              backgroundColor = col_colors[[col_name]]
-            )
-          )
-        }
-        dt
-      }, )
+      #   # colors the rest of the columns
+      #   for (col_name in names(col_colors)) {
+      #     dt <- do.call(
+      #       "formatStyle",
+      #       list(
+      #         dt,
+      #         columns = col_name,
+      #         backgroundColor = col_colors[[col_name]]
+      #       )
+      #     )
+      #   }
+      #   dt
+      # }, )
       output$binaryRepresentationTableHeader <- renderUI({
         div()
       })
-      return(blast_data)
+      return (bin_df)
+      # return(blast_data)
     }
 
     if (is.null(runId)) {
