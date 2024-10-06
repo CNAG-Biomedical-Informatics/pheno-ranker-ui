@@ -148,6 +148,24 @@ mod_table_phenoBlast_server <- function(
       # postponed for now
 
       col_colors <- rv_patient$col_colors
+    
+      print("col_colors")
+      print(col_colors)
+
+      print("names(col_colors)")
+      print(names(col_colors))
+
+      # Dynamically calculate colspan for each category
+      header_row <- paste0(
+        unlist(lapply(names(col_colors), function(col_name) {
+          colspan_value <- length(col_colors[[col_name]])
+          paste0("<th colspan=", colspan_value, ">", col_name, "</th>")
+        })),
+        collapse = ""
+      )
+
+      print("header_row")
+      print(header_row)
 
       output$binaryRepresentationTable <- renderDT({
         dt <- datatable(
@@ -168,6 +186,11 @@ mod_table_phenoBlast_server <- function(
             #   regex = TRUE,   # Enable regular expression searching
             #   caseInsensitive = TRUE
             # ),
+
+            headerCallback = JS(
+              "function(thead, data, start, end, display){",
+              sprintf("$(thead).closest('thead').prepend('<tr><th></th>%s</tr>');", header_row),
+            "}"),
 
             # colors the header row
             initComplete = JS(
@@ -463,8 +486,8 @@ mod_table_phenoHeadsUp_server <- function(
         )
 
         ranking_df <- rv_patient$rankingDf
-        print("ranking_df")
-        print(ranking_df)
+        # print("ranking_df")
+        # print(ranking_df)
 
         ranking_table_row <- ranking_df[ranking_df[, 1] == rv_patient$id, ]
 
@@ -512,8 +535,8 @@ mod_table_phenoHeadsUp_server <- function(
         #   )
         # )
 
-        print("mod_table_phenoHeadsUp col_colors")
-        print(col_colors)
+        # print("mod_table_phenoHeadsUp col_colors")
+        # print(col_colors)
 
         # check if col_colors is NULL
         if (is.null(col_colors)) {
@@ -521,8 +544,8 @@ mod_table_phenoHeadsUp_server <- function(
           exit()
         }
 
-        print("filtered_df")
-        print(filtered_df)
+        # print("filtered_df")
+        # print(filtered_df)
 
         # # convert col_colors to row_colors
         # row_colors <- vector("character", nrow(filtered_df))
@@ -554,8 +577,8 @@ mod_table_phenoHeadsUp_server <- function(
 
         temp_df$color <- col_colors[temp_df$label_cleaned]
 
-        print("temp_df")
-        print(temp_df)
+        # print("temp_df")
+        # print(temp_df)
 
         output$phenoHeadsUpTable <- renderDT({
           # Combine the filtered_df with the color column from temp_df

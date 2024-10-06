@@ -1192,8 +1192,8 @@ mod_patient_mode_server <- function(
         match <- regmatches(base_fn, regexpr("(bff|pxf)", base_fn))
 
         # Store it in a variable so it later can be saved in the database
-        input_format <- if (length(match) > 0) {
-          paste0(match, ".json")
+        if (length(match) > 0) {
+          input_format <- paste0(match, ".json")
         }
 
         print("input_format")

@@ -1390,24 +1390,49 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
     return()
   }
 
+  # replace spaces with "-"
+  jsonPaths <- gsub(" ", "-", jsonPaths)
+
   print("jsonPaths")
   print(jsonPaths)
 
   # map each jsonPath to a header
   jsonPath_to_header <- setNames(headers, jsonPaths)
+  print("jsonPath_to_header")
+  print(jsonPath_to_header)
 
   # get the unique top level keys from the jsonPaths
   # replace the top level keys with colors
   # the values of the dictionary are the headers
   # e.g. {"orange": ["Female","male"]}
   key_value_pairs <- strsplit(jsonPaths, "\\.")
-  dictionary <- setNames(jsonPaths, sapply(key_value_pairs, function(x) x[1]))
+
+  # topLevel_to_JSON_path <- lapply(jsonPaths, function(x) {
+  #   # Extract the part before the first period as the category
+  #   category <- sub("\\..*$", "", x)
+    
+  #   # Create a pair with the category and the full string
+  #   c(category, x)
+  # })
+
+  # print("topLevel_to_JSON_path")
+  # print(topLevel_to_JSON_path)
+
+  # print("key_value_pairs")
+  # print(key_value_pairs)
+  dictionary <- setNames(
+    jsonPaths, 
+    sapply(key_value_pairs, function(x) x[1]
+  ))
   topLevels <- unique(
     sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
   )
 
-  print("topLevels")
-  print(topLevels)
+  # print("dictionary")
+  # print(dictionary)
+
+  # print("topLevels")
+  # print(topLevels)
 
   # suggestion by Sofia
   # colors for the phenoblast table
@@ -1417,12 +1442,12 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   # h should be the variable (1-360)
   # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
 
-  json_data <- fromJSON(readLines(
-    "inst/extdata/config/pheno_blast_col_colors.json"
-  ))
+  # json_data <- fromJSON(readLines(
+  #   "inst/extdata/config/pheno_blast_col_colors.json"
+  # ))
 
-  print("json_data")
-  print(json_data)
+  # print("json_data")
+  # print(json_data)
 
   user_email <- rv_general$user_email
   db_conn <- rv_general$db_conn
@@ -1438,12 +1463,18 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   settings <- fromJSON(res$settings[1])
   inputFormat <- settings$input_format
 
-  # remove the .json
-  inputFormat <- substr(inputFormat, 1, nchar(inputFormat) - 5)
-  colors_mapping <- json_data[[inputFormat]]
- 
-  print("colors_mapping")
-  print(colors_mapping)
+  
+  format_to_key <- list(
+    "bff.json" = "bff",
+    "pxf.json" = "pxf"
+  )
+  color_mapping <- NULL
+  if (inputFormat %in% names(format_to_key)) {
+    json_data <- fromJSON(readLines(
+    "inst/extdata/config/pheno_blast_col_colors.json"
+    ))
+    color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+  }
 
   # Initialize color_scheme list
   color_scheme <- list()
@@ -1463,15 +1494,26 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
       names(dictionary)
     )]
 
-    # replace each value with the header
+    print("dict_values")
+    print(dict_values)
+
+    # # replace each value with the header
     for (j in 1:length(dict_values)) {
       dict_values[j] <- jsonPath_to_header[dict_values[j]]
     }
-    # color_scheme[[hex_colors[i]]] <- dict_values
-    color <- colors_mapping[[topLevel]]
-    # print("color")
-    # print(color)
-    color_scheme[[color]] <- dict_values
+    if (is.null(color_mapping)) {
+      hex_colors <- sample(hcl.colors(
+        length(topLevels),
+        palette = "pastel1"
+      ))
+      color_scheme[[hex_colors[i]]] <- dict_values
+    } else {
+      color <- color_mapping[[topLevel]]
+      color_scheme[[color]] <- list(
+        dict_values = dict_values,
+        topLevel = topLevel
+      )
+    }
   }
 
   print("color_scheme populated")
@@ -1479,10 +1521,17 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
 
   col_colors <- list()
   for (color in names(color_scheme)) {
-    for (col_name in color_scheme[[color]]) {
+    for (col_name in color_scheme[[color]]$dict_values) {
       col_colors[[col_name]] <- color
     }
   }
+
+
+  # print("dictionary")
+  # print(dictionary)
+
+  # count the number names in the dictionary
+  print(table(names(dictionary)))
 
   print("col_colors")
   print(col_colors)
