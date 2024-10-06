@@ -114,6 +114,7 @@ mod_table_phenoBlast_server <- function(
         return()
       }
 
+      # binary representation of each patient
       blast_data <- readTxt(
         rv_general$user_dirs$output$pats_ranked,
         fileName_suffix = "_alignment.csv",
@@ -127,11 +128,24 @@ mod_table_phenoBlast_server <- function(
       # print("nrow(blast_data)")
       # print(nrow(blast_data))
 
+      top_level_row <- blast_data[1, ]
+      top_level_row <- gsub("\\..*", "", top_level_row)
+      # count the number of unique values in the top level row and put them into a list
+      top_level_to_count <- table(top_level_row)
+
+      # loop 
+
+
+      print("top_level_row")
+      print(top_level_row)
+
       # remove the 1st row
       blast_data <- blast_data[-1, ]
 
       # set the first column to ID
       colnames(blast_data)[1] <- "Id"
+
+
 
       # TODO
       # figure out how to search but keep the first row fixed
@@ -156,13 +170,13 @@ mod_table_phenoBlast_server <- function(
       print(names(col_colors))
 
       # Dynamically calculate colspan for each category
-      header_row <- paste0(
-        unlist(lapply(names(col_colors), function(col_name) {
-          colspan_value <- length(col_colors[[col_name]])
-          paste0("<th colspan=", colspan_value, ">", col_name, "</th>")
-        })),
-        collapse = ""
-      )
+      # header_row <- paste0(
+      #   unlist(lapply(names(col_colors), function(col_name) {
+      #     colspan_value <- length(col_colors[[col_name]])
+      #     paste0("<th colspan=", colspan_value, ">", col_name, "</th>")
+      #   })),
+      #   collapse = ""
+      # )
 
       print("header_row")
       print(header_row)
