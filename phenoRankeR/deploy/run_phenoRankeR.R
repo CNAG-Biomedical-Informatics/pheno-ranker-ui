@@ -38,6 +38,7 @@ default_golem_opts <- list(
     ),
     output = list(
       sim = "simulatedData",
+      beacon = "beaconApi",
       examples = "inputExamples",
       conv = "convertedData",
       pats_ranked = "rankedPatients",
