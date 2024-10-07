@@ -177,7 +177,7 @@ render_decision_tree <- function(ns) {
       .tree li:hover > .hover-info {
         display: block;
       }
-      
+
       .hover-info .link {
         display: inline;
         padding: 0 ;
@@ -290,7 +290,7 @@ render_decision_tree <- function(ns) {
                   tags$a(
                     href = "#",
                     class = "process",
-                    grid_container( 
+                    grid_container(
                       layout = c(
                         "     1fr 1fr  ",
                         "1fr  bff  pxf  "
@@ -424,9 +424,14 @@ grid_layout <- new_gridlayout(
   c("explanation tree"),
   col_sizes = c("610px", "1fr"),
   alternate_layouts = list(
+    # layout = c(
+    #   "       250px            1fr     ",
+    #   "1fr    explanation      tree    "
+    # ),
     layout = c(
-      "       250px            1fr     ",
-      "1fr    explanation      tree    "
+      "         1fr         ",
+      "100px    explanation ",
+      "1fr      tree        "
     ),
     width_bounds = c(max = 1100)
   )

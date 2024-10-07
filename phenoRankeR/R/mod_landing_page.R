@@ -16,7 +16,6 @@
 
 # Utility function to create a card with an action button and image
 create_mode_card <- function(ns, area, header, button_id, button_text, img_src) {
-
   img_style <- "height: 200px; margin-top: -12px;"
   if (area == "patient_mode") {
     img_style <- "height: 150px; margin-top: 37px;"
@@ -55,9 +54,9 @@ mod_landing_page_ui <- function(id) {
   grid_container(
     layout = c(
       "         1fr           1fr     ",
-      "1fr      welcome       welcome ",
+      "80px     welcome       welcome ",
       "300px    cohort_mode   patient_mode",
-      "500px    new_user      new_user",
+      "1fr      new_user      new_user",
       "5px      version       version "
     ),
     gap_size = "0px",
