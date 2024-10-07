@@ -54,7 +54,7 @@ mod_landing_page_ui <- function(id) {
   grid_container(
     layout = c(
       "         1fr           1fr     ",
-      "80px     welcome       welcome ",
+      "85px     welcome       welcome ",
       "300px    cohort_mode   patient_mode",
       "1fr      new_user      new_user",
       "5px      version       version "

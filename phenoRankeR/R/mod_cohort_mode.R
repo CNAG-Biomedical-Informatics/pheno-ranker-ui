@@ -6,14 +6,14 @@
 #'
 #' @noRd
 #'
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom shiny NS actionButton
 #' @importFrom shinyjs click reset
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom jqr jq
 #' @importFrom utils write.csv
 
-cohort_layout <- c(
+default_layout <- c(
   "           480px     1fr           40px                    ",
   "35px       btn       tabbedView    btn_show_cohort_history ",
   "1100px     opts      tabbedView    btn_show_cohort_history ",
@@ -27,12 +27,30 @@ cohort_opts_layout <- c(
   "350px    variables    "
 )
 
+cohort_mode_layout <- new_gridlayout(
+  c(
+    "btn      tabbedView  btn_show_cohort_history",
+    "opts     tabbedView  btn_show_cohort_history",
+    "version  version     version"
+  ),
+  col_sizes = c("480px", "1fr", "40px"),
+  alternate_layouts = list(
+    layout = c(
+      "           300px     1fr           40px                    ",
+      "35px       btn       tabbedView    btn_show_cohort_history ",
+      "1100px     opts      tabbedView    btn_show_cohort_history ",
+      "1px        version   version       version                 "
+    ),
+    width_bounds = c(max = 1100)
+  )
+)
+
 mod_cohort_mode_ui <- function(id) {
   ns <- NS(id)
   version <- get_golem_options("packageVersion")
 
   grid_container(
-    layout = cohort_layout,
+    layout = cohort_mode_layout,
     gap_size = "5px",
     grid_place(
       area = "btn",
