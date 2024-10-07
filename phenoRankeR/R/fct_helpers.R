@@ -1510,178 +1510,178 @@ get_color_mapping <- function(rv_general, runId, topLevels) {
   return(color_mapping)
 }
 
+# Below no longer needed
+
+# get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
+#   blast_data <- readTxt(
+#     pats_ranked_dir,
+#     fileName_suffix = "_alignment.csv",
+#     runId = runId,
+#     sep = ";"
+#   )
+#   blast_data <- as.data.frame(blast_data)
+#   print("blast_data")
+#   # print(str(blast_data))
+
+#   print("nrow(blast_data)")
+#   print(nrow(blast_data))
+
+#   # header/first row to a character vector w/o the first column
+#   headers <- as.character(colnames(blast_data))[-1]
+#   jsonPaths <- as.character(blast_data[1, ])[-1]
+
+#   # if there is no jsonPath
+#   if (length(jsonPaths) == 0) {
+#     print("jsonPaths is empty")
+#     # TODO
+#     # throw error
+#     return()
+#   }
+
+#   # replace spaces with "-"
+#   jsonPaths <- gsub(" ", "-", jsonPaths)
+
+#   print("jsonPaths")
+#   print(jsonPaths)
+
+#   # map each jsonPath to a header
+#   jsonPath_to_header <- setNames(headers, jsonPaths)
+#   print("jsonPath_to_header")
+#   print(jsonPath_to_header)
+
+#   # get the unique top level keys from the jsonPaths
+#   # replace the top level keys with colors
+#   # the values of the dictionary are the headers
+#   # e.g. {"orange": ["Female","male"]}
+#   key_value_pairs <- strsplit(jsonPaths, "\\.")
+
+#   # topLevel_to_JSON_path <- lapply(jsonPaths, function(x) {
+#   #   # Extract the part before the first period as the category
+#   #   category <- sub("\\..*$", "", x)
+
+#   #   # Create a pair with the category and the full string
+#   #   c(category, x)
+#   # })
+
+#   # print("topLevel_to_JSON_path")
+#   # print(topLevel_to_JSON_path)
+
+#   # print("key_value_pairs")
+#   # print(key_value_pairs)
+#   dictionary <- setNames(
+#     jsonPaths,
+#     sapply(key_value_pairs, function(x) x[1])
+#   )
+#   topLevels <- unique(
+#     sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
+#   )
+
+#   # print("dictionary")
+#   # print(dictionary)
+
+#   # print("topLevels")
+#   # print(topLevels)
+
+#   # suggestion by Sofia
+#   # colors for the phenoblast table
+#   # should be in that range
+#   # hsla(170, 30%, 80%, 1)
+#   # s & l should be the fixed
+#   # h should be the variable (1-360)
+#   # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
+
+#   # json_data <- fromJSON(readLines(
+#   #   "inst/extdata/config/pheno_blast_col_colors.json"
+#   # ))
+
+#   # print("json_data")
+#   # print(json_data)
+
+#   user_email <- rv_general$user_email
+#   db_conn <- rv_general$db_conn
+#   userId <- get_user_id(user_email, db_conn)
+#   print("userId")
+#   print(userId)
+
+#   query <- sprintf(
+#     "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
+#     runId, userId
+#   )
+#   res <- dbGetQuery(db_conn, query)
+#   settings <- fromJSON(res$settings[1])
+#   inputFormat <- settings$input_format
 
 
-get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
-  blast_data <- readTxt(
-    pats_ranked_dir,
-    fileName_suffix = "_alignment.csv",
-    runId = runId,
-    sep = ";"
-  )
-  blast_data <- as.data.frame(blast_data)
-  print("blast_data")
-  # print(str(blast_data))
+#   format_to_key <- list(
+#     "bff.json" = "bff",
+#     "pxf.json" = "pxf"
+#   )
+#   # color_mapping <- NULL
+#   # if (inputFormat %in% names(format_to_key)) {
+#   #   json_data <- fromJSON(readLines(
+#   #   "inst/extdata/config/pheno_blast_col_colors.json"
+#   #   ))
+#   #   color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+#   # }
 
-  print("nrow(blast_data)")
-  print(nrow(blast_data))
+#   # Initialize color_scheme list
+#   color_scheme <- list()
+#   print("color_scheme")
+#   print(color_scheme)
 
-  # header/first row to a character vector w/o the first column
-  headers <- as.character(colnames(blast_data))[-1]
-  jsonPaths <- as.character(blast_data[1, ])[-1]
+#   print("topLevels")
+#   print(topLevels)
 
-  # if there is no jsonPath
-  if (length(jsonPaths) == 0) {
-    print("jsonPaths is empty")
-    # TODO
-    # throw error
-    return()
-  }
+#   for (i in 1:length(topLevels)) {
+#     topLevel <- topLevels[i]
+#     print(paste0("topLevel: ", topLevel))
 
-  # replace spaces with "-"
-  jsonPaths <- gsub(" ", "-", jsonPaths)
+#     dict_values <- dictionary[grep(
+#       topLevel,
+#       names(dictionary)
+#     )]
 
-  print("jsonPaths")
-  print(jsonPaths)
+#     print("dict_values")
+#     print(dict_values)
 
-  # map each jsonPath to a header
-  jsonPath_to_header <- setNames(headers, jsonPaths)
-  print("jsonPath_to_header")
-  print(jsonPath_to_header)
+#     # # replace each value with the header
+#     for (j in 1:length(dict_values)) {
+#       dict_values[j] <- jsonPath_to_header[dict_values[j]]
+#     }
+#     if (is.null(color_mapping)) {
+#       hex_colors <- sample(hcl.colors(
+#         length(topLevels),
+#         palette = "pastel1"
+#       ))
+#       color_scheme[[hex_colors[i]]] <- dict_values
+#     } else {
+#       color <- color_mapping[[topLevel]]
+#       color_scheme[[color]] <- list(
+#         dict_values = dict_values,
+#         topLevel = topLevel
+#       )
+#     }
+#   }
 
-  # get the unique top level keys from the jsonPaths
-  # replace the top level keys with colors
-  # the values of the dictionary are the headers
-  # e.g. {"orange": ["Female","male"]}
-  key_value_pairs <- strsplit(jsonPaths, "\\.")
+#   print("color_scheme populated")
+#   print(color_scheme)
 
-  # topLevel_to_JSON_path <- lapply(jsonPaths, function(x) {
-  #   # Extract the part before the first period as the category
-  #   category <- sub("\\..*$", "", x)
-
-  #   # Create a pair with the category and the full string
-  #   c(category, x)
-  # })
-
-  # print("topLevel_to_JSON_path")
-  # print(topLevel_to_JSON_path)
-
-  # print("key_value_pairs")
-  # print(key_value_pairs)
-  dictionary <- setNames(
-    jsonPaths,
-    sapply(key_value_pairs, function(x) x[1])
-  )
-  topLevels <- unique(
-    sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
-  )
-
-  # print("dictionary")
-  # print(dictionary)
-
-  # print("topLevels")
-  # print(topLevels)
-
-  # suggestion by Sofia
-  # colors for the phenoblast table
-  # should be in that range
-  # hsla(170, 30%, 80%, 1)
-  # s & l should be the fixed
-  # h should be the variable (1-360)
-  # hex_colors <- sample(hcl.colors(length(topLevels), palette = "pastel1"))
-
-  # json_data <- fromJSON(readLines(
-  #   "inst/extdata/config/pheno_blast_col_colors.json"
-  # ))
-
-  # print("json_data")
-  # print(json_data)
-
-  user_email <- rv_general$user_email
-  db_conn <- rv_general$db_conn
-  userId <- get_user_id(user_email, db_conn)
-  print("userId")
-  print(userId)
-
-  query <- sprintf(
-    "SELECT settings FROM jobs WHERE run_id = '%s' AND user_id = %d AND status = 'success'",
-    runId, userId
-  )
-  res <- dbGetQuery(db_conn, query)
-  settings <- fromJSON(res$settings[1])
-  inputFormat <- settings$input_format
+#   col_colors <- list()
+#   for (color in names(color_scheme)) {
+#     for (col_name in color_scheme[[color]]$dict_values) {
+#       col_colors[[col_name]] <- color
+#     }
+#   }
 
 
-  format_to_key <- list(
-    "bff.json" = "bff",
-    "pxf.json" = "pxf"
-  )
-  # color_mapping <- NULL
-  # if (inputFormat %in% names(format_to_key)) {
-  #   json_data <- fromJSON(readLines(
-  #   "inst/extdata/config/pheno_blast_col_colors.json"
-  #   ))
-  #   color_mapping <- json_data[[format_to_key[[inputFormat]]]]
-  # }
+#   # print("dictionary")
+#   # print(dictionary)
 
-  # Initialize color_scheme list
-  color_scheme <- list()
-  print("color_scheme")
-  print(color_scheme)
+#   # count the number names in the dictionary
+#   print(table(names(dictionary)))
 
-  print("topLevels")
-  print(topLevels)
+#   print("col_colors")
+#   print(col_colors)
 
-  for (i in 1:length(topLevels)) {
-    topLevel <- topLevels[i]
-    print(paste0("topLevel: ", topLevel))
-
-    dict_values <- dictionary[grep(
-      topLevel,
-      names(dictionary)
-    )]
-
-    print("dict_values")
-    print(dict_values)
-
-    # # replace each value with the header
-    for (j in 1:length(dict_values)) {
-      dict_values[j] <- jsonPath_to_header[dict_values[j]]
-    }
-    if (is.null(color_mapping)) {
-      hex_colors <- sample(hcl.colors(
-        length(topLevels),
-        palette = "pastel1"
-      ))
-      color_scheme[[hex_colors[i]]] <- dict_values
-    } else {
-      color <- color_mapping[[topLevel]]
-      color_scheme[[color]] <- list(
-        dict_values = dict_values,
-        topLevel = topLevel
-      )
-    }
-  }
-
-  print("color_scheme populated")
-  print(color_scheme)
-
-  col_colors <- list()
-  for (color in names(color_scheme)) {
-    for (col_name in color_scheme[[color]]$dict_values) {
-      col_colors[[col_name]] <- color
-    }
-  }
-
-
-  # print("dictionary")
-  # print(dictionary)
-
-  # count the number names in the dictionary
-  print(table(names(dictionary)))
-
-  print("col_colors")
-  print(col_colors)
-
-  return(col_colors)
-}
+#   return(col_colors)
+# }
