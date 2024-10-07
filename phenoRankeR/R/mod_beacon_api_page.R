@@ -2,7 +2,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom shiny NS actionButton
 #' @importFrom DT renderDT dataTableOutput JS
 #' @importFrom shinyjs useShinyjs extendShinyjs click js reset
@@ -22,13 +22,33 @@ mode_beacon_api_layout <- c(
   "1px      version     version version                        "
 )
 
+query_beacon_api_util_layout <- new_gridlayout(
+  c(
+    "btn beaconRes btn_show_beacon_query_history",
+    "table beaconRes btn_show_beacon_query_history",
+    "download beaconRes btn_show_beacon_query_history",
+    "version version version"
+  ),
+  col_sizes = c("500px", "1fr", "40px"),
+  alternate_layouts = list(
+    layout = c(
+      "         320px        1fr          40px                     ",
+      "30px     btn         beaconRes  btn_show_beacon_query_history",
+      "800px    table       beaconRes  btn_show_beacon_query_history",
+      "70px     download    beaconRes  btn_show_beacon_query_history",
+      "1px      version     version      version                   "
+    ),
+    width_bounds = c(max = 1100)
+  )
+)
+
 mod_beacon_api_page_ui <- function(id) {
   ns <- NS(id)
   version <- get_golem_options("packageVersion")
   max_individuals <- get_golem_options("maxIndividuals")
 
   grid_container(
-    layout = mode_beacon_api_layout,
+    layout = query_beacon_api_util_layout,
     gap_size = "0px",
     grid_place(
       area = "btn",
