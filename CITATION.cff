@@ -13,11 +13,11 @@ authors:
     email: Ivo.leist@cnag.eu
     affiliation: >-
       Centro Nacional de Análisis Genómico (CNAG),
-      Universitat de Barcelona (UB) 
-    orcid: 'https://orcid.org/0000-0002-9772-443X'
+      Universitat de Barcelona (UB)
+    orcid: "https://orcid.org/0000-0002-9772-443X"
 repository-code: >-
   https://github.com/CNAG-Biomedical-Informatics/pheno-ranker-ui
-url: 'https://pheno-ranker.cnag.eu'
+url: "https://pheno-ranker.cnag.eu"
 abstract: >-
   The web ui (R-Shiny application) for Pheno-Ranker, a tool
   designed for performing semantic similarity analysis on
@@ -34,23 +34,23 @@ keywords:
   - phenopackets-v2
 license: GPL-3.0
 commit: bbfdd9310cead55516eac7d8163bd1509c5c9c25
-version: 0.0.0.9020
-date-released: '2024-09-04'
+version: 0.0.0.9021
+date-released: "2024-09-04"
 preferred-citation:
   type: unpublished
   authors:
-  - given-names: Ivo Christopher
-    family-names: Leist
-  - given-names: María
-    family-names: Rivas-Torrubia
-  - given-names: Marta Eugenia
-    family-names: Alarcón Riquelme
-  - given-names: Guillermo
-    family-names: Barturen
-  - name: PRECISESADS Clinical Consortium
-  - given-names: Ivo Glynne
-    family-names: Gut
-  - given-names: Manuel
-    family-names: Rueda
+    - given-names: Ivo Christopher
+      family-names: Leist
+    - given-names: María
+      family-names: Rivas-Torrubia
+    - given-names: Marta Eugenia
+      family-names: Alarcón Riquelme
+    - given-names: Guillermo
+      family-names: Barturen
+    - name: PRECISESADS Clinical Consortium
+    - given-names: Ivo Glynne
+      family-names: Gut
+    - given-names: Manuel
+      family-names: Rueda
   title: "Pheno-Ranker: A Toolkit for Comparison of Phenotypic Data Stored in GA4GH Standards and Beyond."
   year: 2024

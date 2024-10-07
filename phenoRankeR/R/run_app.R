@@ -17,7 +17,7 @@ run_app <- function(
     enableBookmarking = NULL,
     uiPattern = "/",
     golem_opts = list(
-      packageVersion = "0.0.0.9020",
+      packageVersion = "0.0.0.9021",
       userDataDir = "../data/user_data/",
       subDirs = list(
         uploads = list(
