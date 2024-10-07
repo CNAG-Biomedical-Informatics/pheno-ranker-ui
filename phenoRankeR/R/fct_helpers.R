@@ -1456,7 +1456,7 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
   color_mapping <- NULL
   if (inputFormat %in% names(format_to_key)) {
     json_data <- fromJSON(
-      "inst/extdata/config/pheno_blast_col_colors.json"
+      normalizePath("inst/extdata/config/pheno_blast_col_colors.json")
     )
     color_mapping <- json_data[[format_to_key[[inputFormat]]]]
   } else {
@@ -1584,13 +1584,13 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
     "bff.json" = "bff",
     "pxf.json" = "pxf"
   )
-  color_mapping <- NULL
-  if (inputFormat %in% names(format_to_key)) {
-    json_data <- fromJSON(readLines(
-    "inst/extdata/config/pheno_blast_col_colors.json"
-    ))
-    color_mapping <- json_data[[format_to_key[[inputFormat]]]]
-  }
+  # color_mapping <- NULL
+  # if (inputFormat %in% names(format_to_key)) {
+  #   json_data <- fromJSON(readLines(
+  #   "inst/extdata/config/pheno_blast_col_colors.json"
+  #   ))
+  #   color_mapping <- json_data[[format_to_key[[inputFormat]]]]
+  # }
 
   # Initialize color_scheme list
   color_scheme <- list()
