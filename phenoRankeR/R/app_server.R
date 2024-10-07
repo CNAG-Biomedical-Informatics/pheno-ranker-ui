@@ -386,13 +386,16 @@ app_server <- function(input, output, session) {
       print("res")
       print(res)
 
+      print("nrow(res)")
+      print(nrow(res))
+
       # if the query does not return a result
       # return
 
-      # if (nrow(res) == 0) {
-      #   print("no results found")
-      #   return()
-      # }
+      if (nrow(res) == 0) {
+        print("no results found")
+        return()
+      }
 
       settings <- fromJSON(res$settings)
       print("settings")
