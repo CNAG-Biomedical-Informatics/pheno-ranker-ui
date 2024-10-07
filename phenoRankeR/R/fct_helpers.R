@@ -1371,24 +1371,24 @@ generate_hsla_colors <- function(h_start, h_end, fixed_s = 30, fixed_l = 80, fix
 
   # Create a vector of hues in the range [h_start, h_end]
   hues <- seq(h_start, h_end, by = 1)
-  
+
   # Generate HSLA color strings
   hsla_colors <- paste0("hsla(", hues, ", ", fixed_s, "%, ", fixed_l, "%, ", fixed_a, ")")
-  
+
   return(hsla_colors)
 }
 
 # Function to filter hues with a minimum distance between them
 filter_distinct_hues <- function(hues, min_distance) {
-  selected_hues <- numeric(0)  # Empty vector to store selected hues
-  
+  selected_hues <- numeric(0) # Empty vector to store selected hues
+
   # Iterate over the hues and select those that are sufficiently far apart
   for (hue in hues) {
     if (length(selected_hues) == 0 || all(abs(hue - selected_hues) >= min_distance)) {
       selected_hues <- c(selected_hues, hue)
     }
   }
-  
+
   return(selected_hues)
 }
 
@@ -1396,28 +1396,27 @@ filter_distinct_hues <- function(hues, min_distance) {
 sample_distinct_colors <- function(colors, num_samples, min_distance = 20) {
   # Get the hues from the colors by extracting the numeric values between "hsla(" and ","
   hues <- as.numeric(sub("hsla\\((\\d+),.*", "\\1", colors))
-  
+
   # Filter the hues to ensure they are spaced by at least min_distance
   distinct_hues <- filter_distinct_hues(hues, min_distance)
-  
+
   # If we cannot get enough nicely spaced hues, we randomly sample the remaining ones
   if (length(distinct_hues) < num_samples) {
-    remaining_hues <- setdiff(hues, distinct_hues)  # Find the remaining hues
-    additional_hues <- sample(remaining_hues, num_samples - length(distinct_hues))  # Sample the rest
-    selected_hues <- c(distinct_hues, additional_hues)  # Combine distinct and additional hues
+    remaining_hues <- setdiff(hues, distinct_hues) # Find the remaining hues
+    additional_hues <- sample(remaining_hues, num_samples - length(distinct_hues)) # Sample the rest
+    selected_hues <- c(distinct_hues, additional_hues) # Combine distinct and additional hues
   } else {
-    selected_hues <- sample(distinct_hues, num_samples)  # Sample from the nicely spaced hues
+    selected_hues <- sample(distinct_hues, num_samples) # Sample from the nicely spaced hues
   }
-  
+
   # Return the corresponding colors
   selected_colors <- colors[match(selected_hues, hues)]
-  
+
   return(selected_colors)
 }
 
 
-get_color_mapping <- function(rv_general,runId, topLevels) {
-
+get_color_mapping <- function(rv_general, runId, topLevels) {
   print("in get_color_mapping in fct_helpers.R")
   print("rv_general")
   print(rv_general)
@@ -1455,12 +1454,42 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
   )
   color_mapping <- NULL
   if (inputFormat %in% names(format_to_key)) {
-    json_data <- fromJSON(
-      # without readLines it fails in the docker container
-      readLines(
-        "inst/extdata/config/pheno_blast_col_colors.json"
+    # hardcoded for now because the json file
+    # cannot be accessed in the docker container
+    json_data <- list(
+      bff = list(
+        diseases = "rgb(158, 1, 66)",
+        ethnicity = "rgb(213, 62, 79)",
+        exposures = "rgb(244, 109, 67)",
+        geographicOrigin = "rgb(253, 174, 97)",
+        id = "rgb(189, 195, 199)",
+        interventionsOrProcedures = "rgb(255, 255, 191)",
+        karyotypicSex = "rgb(230, 245, 152)",
+        measures = "rgb(171, 221, 164)",
+        pedigrees = "rgb(102, 194, 165)",
+        phenotypicFeatures = "rgb(50, 136, 189)",
+        sex = "rgb(94, 79, 162)",
+        treatments = "rgb(254, 224, 139)"
+      ),
+      pxf = list(
+        id = "rgb(189, 195, 199)",
+        subject = "rgb(213, 62, 79)",
+        phenotypicFeatures = "rgb(244, 109, 67)",
+        measurements = "rgb(253, 174, 97)",
+        biosamples = "rgb(254, 224, 139)",
+        interpretations = "rgb(255, 255, 191)",
+        diseases = "rgb(230, 245, 152)",
+        medicalActions = "rgb(171, 221, 164)",
+        files = "rgb(102, 194, 165)"
       )
     )
+
+    # json_data <- fromJSON(
+    #   # without readLines it fails in the docker container
+    #   readLines(
+    #     "inst/extdata/config/pheno_blast_col_colors.json"
+    #   )
+    # )
     color_mapping <- json_data[[format_to_key[[inputFormat]]]]
   } else {
     hsla_colors <- generate_hsla_colors(1, 360)
@@ -1529,7 +1558,7 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   # topLevel_to_JSON_path <- lapply(jsonPaths, function(x) {
   #   # Extract the part before the first period as the category
   #   category <- sub("\\..*$", "", x)
-    
+
   #   # Create a pair with the category and the full string
   #   c(category, x)
   # })
@@ -1540,9 +1569,9 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   # print("key_value_pairs")
   # print(key_value_pairs)
   dictionary <- setNames(
-    jsonPaths, 
-    sapply(key_value_pairs, function(x) x[1]
-  ))
+    jsonPaths,
+    sapply(key_value_pairs, function(x) x[1])
+  )
   topLevels <- unique(
     sapply(strsplit(jsonPaths, "\\."), function(x) x[1])
   )
@@ -1582,7 +1611,7 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   settings <- fromJSON(res$settings[1])
   inputFormat <- settings$input_format
 
-  
+
   format_to_key <- list(
     "bff.json" = "bff",
     "pxf.json" = "pxf"
@@ -1604,7 +1633,6 @@ get_table_row_colors <- function(pats_ranked_dir, runId, rv_general) {
   print(topLevels)
 
   for (i in 1:length(topLevels)) {
-
     topLevel <- topLevels[i]
     print(paste0("topLevel: ", topLevel))
 

@@ -326,17 +326,12 @@ mod_beacon_api_page_server <- function(
     iv$add_rule("arraySizeInput", sv_between(0, max_individuals))
     iv$enable()
 
-    # retrieved_examples_folder <- get_golem_options(
-    #   "inputExamplesOutputFolder"
-    # )
-
     observe({
       req(rv_beacon_api$queryId)
 
       path <- paste0(
         rv_general$user_dirs$output$beacon,
         "/",
-        # retrieved_examples_folder,
         rv_beacon_api$queryId
       )
       bffOutputFn <- paste0(path, ".bff.json")
@@ -557,7 +552,6 @@ mod_beacon_api_page_server <- function(
           dbExecute(db_conn, query)
         }
       }
-
     })
 
     observeEvent(input$beaconSelector, {
