@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom shiny NS actionButton
 #' @importFrom shinyjs click reset
 #' @importFrom shinyAce aceEditor updateAceEditor
@@ -29,12 +29,33 @@ patient_opts_layout <- c(
   "350px    variables  "
 )
 
+patient_mode_layout <- new_gridlayout(
+  c(
+    "btn      phenoBlast      btn_show_patient_history",
+    "opts     phenoBlast      btn_show_patient_history",
+    "opts     phenoHeadsUp    btn_show_patient_history",
+    "version  version         version"
+  ),
+  col_sizes = c("550px", "1fr", "40px"),
+  alternate_layouts = list(
+    layout = c(
+      "         300px   1fr           40px",
+      "35px     btn     phenoBlast    btn_show_patient_history",
+      "320px    opts    phenoBlast    btn_show_patient_history",
+      "1fr      opts    phenoHeadsUp  btn_show_patient_history",
+      "1px      version version       version                 "
+    ),
+    width_bounds = c(max = 1110)
+  )
+)
+
+
 mod_patient_mode_ui <- function(id) {
   ns <- NS(id)
   version <- get_golem_options("packageVersion")
 
   grid_container(
-    layout = mod_patient_mode_layout,
+    layout = patient_mode_layout,
     gap_size = "5px",
     grid_place(
       area = "btn",
