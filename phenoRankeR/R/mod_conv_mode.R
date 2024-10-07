@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom shinyAce aceEditor
 #' @importFrom jsonlite read_json fromJSON toJSON
 #' @import shiny
@@ -41,12 +41,32 @@ dl_explanation <- tags$p(
   the configuration file for Pheno-Ranker"
 )
 
+conv_csv_util_layout <- new_gridlayout(
+  c(
+    "btn convRes btn_show_conv_history",
+    "opts convRes btn_show_conv_history",
+    "download convRes btn_show_conv_history",
+    "version version version"
+  ),
+  col_sizes = c("500px", "1fr", "40px"),
+  alternate_layouts = list(
+    layout = c(
+      "           320px       1fr      40px",
+      "30px       btn         convRes  btn_show_conv_history",
+      "600px      opts        convRes  btn_show_conv_history",
+      "180px      download    convRes  btn_show_conv_history",
+      "1px        version     version  version              "
+    ),
+    width_bounds = c(max = 1100)
+  )
+)
+
 mod_conv_mode_ui <- function(id) {
   ns <- NS(id)
   version <- get_golem_options("packageVersion")
 
   grid_container(
-    layout = conv_mode_layout,
+    layout = conv_csv_util_layout,
     grid_place(
       area = "btn",
       actionButton(
@@ -91,7 +111,7 @@ mod_conv_mode_ui <- function(id) {
         grid_container(
           layout = c(
             "      1fr          1fr          1fr          ",
-            "75px  explanation  explanation  explanation  ",
+            "100px  explanation  explanation  explanation  ",
             "25px  output       cfg          both         "
           ),
           gap_size = "5px",
@@ -151,7 +171,6 @@ mod_conv_output_viewer_ui <- function(id) {
 
 mod_conv_output_viewer_server <- function(id, conv_out, cfg_out, rv_conversion) {
   moduleServer(id, function(input, output, session) {
-
     print("cfg_out")
     print(cfg_out)
     output$yaml_viewer <- renderUI({
