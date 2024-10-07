@@ -1456,7 +1456,10 @@ get_color_mapping <- function(rv_general,runId, topLevels) {
   color_mapping <- NULL
   if (inputFormat %in% names(format_to_key)) {
     json_data <- fromJSON(
-      normalizePath("inst/extdata/config/pheno_blast_col_colors.json")
+      # without readLines it fails in the docker container
+      readLines(
+        "inst/extdata/config/pheno_blast_col_colors.json"
+      )
     )
     color_mapping <- json_data[[format_to_key[[inputFormat]]]]
   } else {
