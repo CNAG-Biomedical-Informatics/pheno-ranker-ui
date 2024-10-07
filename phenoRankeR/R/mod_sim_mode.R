@@ -2,7 +2,7 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
-#' @importFrom gridlayout grid_container grid_card grid_place
+#' @importFrom gridlayout grid_container grid_card grid_place new_gridlayout
 #' @importFrom shiny NS actionButton
 #' @importFrom DT renderDT dataTableOutput JS
 #' @importFrom shinyjs useShinyjs extendShinyjs click js reset
@@ -22,13 +22,33 @@ mode_sim_layout <- c(
   "1px      version     version version             "
 )
 
+get_sim_util_layout <- new_gridlayout(
+  c(
+    "btn simRes btn_show_sim_history",
+    "table simRes btn_show_sim_history",
+    "download simRes btn_show_sim_history",
+    "version version version"
+  ),
+  col_sizes = c("500px", "1fr", "40px"),
+  alternate_layouts = list(
+    layout = c(
+      "         410px        1fr          40px                ",
+      "30px     btn         simRes  btn_show_sim_history",
+      "800px    table       simRes  btn_show_sim_history",
+      "70px     download    simRes  btn_show_sim_history",
+      "1px      version     version version             "
+    ),
+    width_bounds = c(max = 1100)
+  )
+)
+
 mod_sim_mode_ui <- function(id) {
   ns <- NS(id)
   max_individuals <- get_golem_options("maxIndividuals")
   version <- get_golem_options("packageVersion")
 
   grid_container(
-    layout = mode_sim_layout,
+    layout = get_sim_util_layout,
     gap_size = "0px",
     grid_place(
       area = "btn",
@@ -45,7 +65,7 @@ mod_sim_mode_ui <- function(id) {
         grid_container(
           layout = c(
             "         1fr         1fr           ",
-            "85px     checkboxes  arraySizeInput",
+            "100px     checkboxes  arraySizeInput",
             "620px    onts        onts          "
           ),
           gap_size = "0px",
@@ -459,6 +479,9 @@ mod_sim_mode_server <- function(id, session, db_conn, db_driver, rv_sim, rv_gene
     )
 
     # Render the DataTable with input fields for count and max_pool_size
+
+    # TODO
+    # make the table more narrow
     output$simulationSettings <- renderDT(
       data,
       selection = "none",
