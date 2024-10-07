@@ -389,10 +389,10 @@ app_server <- function(input, output, session) {
       # if the query does not return a result
       # return
 
-      if (nrow(res) == 0) {
-        print("no results found")
-        return()
-      }
+      # if (nrow(res) == 0) {
+      #   print("no results found")
+      #   return()
+      # }
 
       settings <- fromJSON(res$settings)
       print("settings")
@@ -929,6 +929,10 @@ app_server <- function(input, output, session) {
   })
 
   observeEvent(input[["landing_page-navigateToCohortMode"]], {
+    updateNavbarPage(session, "nav", "cohort")
+  })
+
+  observeEvent(input[["landing_page-navigateToCohortMode2"]], {
     updateNavbarPage(session, "nav", "cohort")
   })
 
