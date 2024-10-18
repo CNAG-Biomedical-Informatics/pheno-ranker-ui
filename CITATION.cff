@@ -34,7 +34,7 @@ keywords:
   - phenopackets-v2
 license: GPL-3.0
 commit: bbfdd9310cead55516eac7d8163bd1509c5c9c25
-version: 0.0.0.9021
+version: 0.0.0.9022
 date-released: "2024-09-04"
 preferred-citation:
   type: unpublished

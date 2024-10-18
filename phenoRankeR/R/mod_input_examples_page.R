@@ -91,6 +91,7 @@ mod_input_examples_page_ui <- function(id) {
               ),
               br(),
               span("Used version:"),
+              # TODO: remove hard-coded version
               a("0.1.18",
                 href = "https://github.com/monarch-initiative/phenopacket-store/releases/tag/0.1.18",
                 target = "_blank"

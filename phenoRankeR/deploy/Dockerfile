@@ -1,4 +1,4 @@
-FROM manuelrueda/pheno-ranker:0.11 as base
+FROM manuelrueda/pheno-ranker:0.12 as base
 
 WORKDIR /usr/share/pheno-ranker
 
@@ -6,7 +6,7 @@ FROM base as builder
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 ENV R_VERSION=4.4.1
-ENV PhenoRankeR_VERSION=0.0.0.9021
+ENV PhenoRankeR_VERSION=0.0.0.9022
 ENV PPM_URL=packagemanager.posit.co/cran/__linux__/bullseye/latest
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
