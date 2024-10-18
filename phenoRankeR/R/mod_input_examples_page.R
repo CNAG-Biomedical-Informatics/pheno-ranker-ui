@@ -66,7 +66,8 @@ mod_input_examples_page_ui <- function(id) {
           layout = c(
             "       1fr           ",
             "85px   exampleSource ",
-            "85px   sourceInfo     ",
+            "100px  sourceInfo    ",
+            "10px   separator     ",
             "85px   textInput     ",
             "85px   arraySizeInput"
           ),
@@ -75,7 +76,7 @@ mod_input_examples_page_ui <- function(id) {
             area = "exampleSource",
             selectInput(
               ns("exampleSource"),
-              "Example source:",
+              "",
               c("phenopacket-store")
             )
           ),
@@ -87,8 +88,18 @@ mod_input_examples_page_ui <- function(id) {
                 Phenopacket store",
                 href = "https://monarch-initiative.github.io/phenopacket-store/collections",
                 target = "_blank"
+              ),
+              br(),
+              span("Used version:"),
+              a("0.1.18",
+                href = "https://github.com/monarch-initiative/phenopacket-store/releases/tag/0.1.18",
+                target = "_blank"
               )
             )
+          ),
+          grid_place(
+            area = "separator",
+            hr()
           ),
           grid_place(
             area = "textInput",
