@@ -23,6 +23,7 @@ Imports:
     lubridate,
     magrittr,
     odbc,
+    pkgload,
     plotly,
     reactR,
     shiny (== 1.7.4.1),

@@ -109,6 +109,12 @@ dive:
 test:
 	cd phenoRankeR && Rscript -e "devtools::test()"
 
+rec_test:
+	cd phenoRankeR && Rscript tests/shinytest2_record_test.R
+
+shinytest2:
+	cd phenoRankeR && Rscript -e "shinytest2::test_app()"
+
 rcmdcheck:
 	cd phenoRankeR && Rscript -e "rcmdcheck::rcmdcheck()"
 

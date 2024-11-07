@@ -14,3 +14,5 @@ $run_dev.*
 ^codecov\.yml$
 ^deploy$
 
+^app\.R$
+^rsconnect$

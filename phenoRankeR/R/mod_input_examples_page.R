@@ -182,6 +182,13 @@ get_input_examples <- function(retrievalId, number_of_individuals, cohort_names,
     full.names = TRUE
   )
 
+  # TODO
+  # is below maybe failing when testing?
+  # {shiny}      R  stderr ----------- Warning: Error in if: argument is of length zero
+  # {shiny}      R  stderr -----------   120: numericInput
+  # {shiny}      R  stderr -----------   101: mod_input_examples_page_ui
+  # {shiny}      R  stderr -----------    73: ui [/home/ivo/projects/bioinfo/cnag/repos/pheno-ranker-ui/phenoRankeR/R/app_ui.R#15]
+
   if (length(cohort_names) > 0) {
     cohort_names <- strsplit(cohort_names, ",")[[1]]
     json_files <- json_files[grep(paste(cohort_names, collapse = "|"), json_files)]
