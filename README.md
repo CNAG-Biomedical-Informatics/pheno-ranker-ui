@@ -2,7 +2,7 @@
   <a href="https://github.com/cnag-biomedical-informatics/pheno-ranker"><img src="https://raw.githubusercontent.com/cnag-biomedical-informatics/pheno-ranker/main/docs/img/PR-logo.png" width="400" alt="Pheno-Ranker"></a>
 </p>
 <p align="center">
-    <em>Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond</em>
+    <em>Pheno-Ranker: a toolkit for comparison of phenotypic data stored in GA4GH standards and beyond</em>
 </p>
 
 <!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m794601507-a686af3c42ebb3ff3f2673b2)](https://stats.uptimerobot.com/4nrjwuYQPm) -->
@@ -58,7 +58,7 @@ how to prepare your environment and run the services.
 
 The author requests that any published work that utilizes `pheno-ranker-UI` includes a cite to the the following reference:
 
-Ivo C. et al., (2024). Advancing Semantic Similarity Analysis of Phenotypic Data Stored in GA4GH Standards and Beyond. Submitted. \[Software\]. Available from https://github.com/cnag-biomedical-informatics/pheno-ranker
+Leist, I.C. et al., (2024). Pheno-Ranker: a toolkit for comparison of phenotypic data stored in GA4GH standards and beyond. BMC Bioinformatics. DOI: 10.1186/s12859-024-05993-2
 
 ### AUTHOR
 
