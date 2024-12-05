@@ -11,6 +11,7 @@ proxy:
   authentication: openid
   my-apps-mode: InLine
   admin-groups: admin
+  template-path: /opt/shinyproxy
   openid:
     auth-url: "https://${DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
     # auth-url: "https://${DOMAIN}:8444/auth/realms/${KC_REALM}/protocol/openid-connect/auth"

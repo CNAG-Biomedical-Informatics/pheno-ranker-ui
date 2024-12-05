@@ -11,6 +11,7 @@ proxy:
   authentication: openid
   my-apps-mode: InLine
   admin-groups: admin
+  template-path: /opt/shinyproxy/templates/modified_navbar_matomo
   openid:
     auth-url: "http://${DOMAIN}:8080/realms/${KC_REALM}/protocol/openid-connect/auth"
     # auth-url: "https://${DOMAIN}:8444/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
