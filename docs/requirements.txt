@@ -30,3 +30,4 @@ soupsieve==2.4.1
 termcolor==2.3.0
 urllib3==2.0.3
 watchdog==3.0.0
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
